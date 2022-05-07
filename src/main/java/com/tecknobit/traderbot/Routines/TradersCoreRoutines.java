@@ -1,16 +1,15 @@
 package com.tecknobit.traderbot.Routines;
 
-import java.util.ArrayList;
-
 public abstract class TradersCoreRoutines {
 
-    public abstract double getWalletBalance();
+    /*public abstract double getWalletBalance() throws Exception;
 
-    public abstract <T> ArrayList<T> getAssetsList() throws Exception;
 
     public abstract <T> ArrayList<T> getTransactionsList();
 
-    public abstract <T> T getAccountDetails();
+    public abstract <T> T getAccountDetails();*/
+
+    public abstract String lastBalanceUpdate() throws Exception;
 
     public abstract String getErrorResponse();
 
