@@ -15,6 +15,7 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
     implementation 'com.github.N7ghtm4r3:CoinbaseManager:1.0.0'
     implementation 'com.github.N7ghtm4r3:BinanceManager:1.0.1'
+    implementation 'org.json:json:20220320'
 }
 
 test {
