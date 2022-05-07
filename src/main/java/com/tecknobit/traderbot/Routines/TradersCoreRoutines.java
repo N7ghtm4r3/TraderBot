@@ -9,8 +9,6 @@ public abstract class TradersCoreRoutines {
 
     public abstract <T> T getAccountDetails();*/
 
-    public abstract String lastBalanceUpdate() throws Exception;
-
     public abstract String getErrorResponse();
 
 }
