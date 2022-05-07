@@ -7,11 +7,14 @@ version '1.0.0'
 
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    implementation 'com.github.N7ghtm4r3:CoinbaseManager:1.0.0'
+    implementation 'com.github.N7ghtm4r3:BinanceManager:1.0.1'
 }
 
 test {
