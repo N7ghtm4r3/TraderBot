@@ -14,7 +14,6 @@ import static com.tecknobit.binancemanager.Managers.SignedManagers.Wallet.Record
 
 public class BinanceTraderBot extends TradersCoreRoutines {
 
-    public static final String COMPARE_CURRENCY = "USDT";
     private final BinanceSpotManager binanceSpotManager;
     private final BinanceMarketManager binanceMarketManager;
 
@@ -28,6 +27,7 @@ public class BinanceTraderBot extends TradersCoreRoutines {
         binanceMarketManager = new BinanceMarketManager();
     }
 
+    @Override
     public double getWalletBalance(String currency) throws Exception {
         SpotAccountInformation accountInformation = binanceSpotManager.getObjectSpotAccountInformation();
         HashMap<String, Double> lastPrice = new HashMap<>();
@@ -53,6 +53,7 @@ public class BinanceTraderBot extends TradersCoreRoutines {
         return balance;
     }
 
+    @Override
     public double getWalletBalance(String currency, int decimals) throws Exception {
         return binanceMarketManager.roundValue(getWalletBalance(currency), decimals);
     }
