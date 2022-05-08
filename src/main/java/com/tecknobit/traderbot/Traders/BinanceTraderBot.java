@@ -20,7 +20,6 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     private final BinanceWalletManager binanceWalletManager;
     private final BinanceSpotManager binanceSpotManager;
     private final BinanceMarketManager binanceMarketManager;
-
     private ConcurrentHashMap<String, Double> lastPrices;
     private final ArrayList<Coin> coins;
 
