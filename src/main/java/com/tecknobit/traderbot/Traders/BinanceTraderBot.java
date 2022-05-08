@@ -169,7 +169,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
             transactions.clear();
             for (Coin coin : coins){
                 if(coin.isTradingEnabled()){
-                    String symbol = coin.getAsset() + lastQuoteCurrency;
+                    String symbol = coin.getAsset() + lastQuoteCurrency;;
                     if(!symbol.startsWith(lastQuoteCurrency)) {
                         for (SpotOrderStatus order : binanceSpotManager.getObjectAllOrdersList(symbol)){
                             if(order.getStatus().equals("FILLED")){
