@@ -27,7 +27,6 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     private final HashMap<String, Double> lastPrices;
     private final ArrayList<Asset> assets;
     private final ArrayList<Coin> coins;
-
     private String lastQuoteCurrency;
     private long REFRESH_PRICES_TIME;
     private long lastPricesRefresh;
