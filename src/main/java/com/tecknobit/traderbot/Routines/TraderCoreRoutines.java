@@ -18,7 +18,7 @@ public abstract class TraderCoreRoutines {
 
     protected abstract ArrayList<Asset> getAssetsList(String currency) throws IOException;
 
-    protected abstract ArrayList<Transaction> getTransactionsList() throws Exception;
+    public abstract ArrayList<Transaction> getTransactionsList(String quoteCurrency, String dateFormat) throws Exception;
 
     protected abstract String getErrorResponse();
 

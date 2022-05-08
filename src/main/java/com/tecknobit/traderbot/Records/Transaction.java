@@ -36,5 +36,16 @@ public class Transaction {
         return quantity;
     }
 
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "symbol='" + symbol + '\'' +
+                ", side='" + side + '\'' +
+                ", transactionDate='" + transactionDate + '\'' +
+                ", price=" + price +
+                ", quantity=" + quantity +
+                '}';
+    }
+
 }
 

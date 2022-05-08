@@ -3,6 +3,7 @@ package com.tecknobit.traderbot.Records;
 import static com.tecknobit.binancemanager.Managers.SignedManagers.Wallet.Records.AccountSnapshots.AccountSnapshotSpot.BalancesSpot;
 
 public final class Coin extends BalancesSpot {
+
     private final String name;
     private final boolean tradingEnabled;
 
