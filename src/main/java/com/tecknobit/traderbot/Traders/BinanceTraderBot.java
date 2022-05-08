@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class BinanceTraderBot extends TraderCoreRoutines {
+
     private final BinanceWalletManager binanceWalletManager;
     private final BinanceMarketManager binanceMarketManager;
     private final BinanceSpotManager binanceSpotManager;
@@ -31,7 +32,6 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     private long REFRESH_PRICES_TIME;
     private long lastPricesRefresh;
     private double balance;
-
 
     public BinanceTraderBot(String apiKey, String secretKey) throws Exception {
         binanceWalletManager = new BinanceWalletManager(apiKey, secretKey);
