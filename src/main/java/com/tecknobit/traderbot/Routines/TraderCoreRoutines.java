@@ -9,14 +9,16 @@ public abstract class TraderCoreRoutines {
 
     protected static final String COMPARE_CURRENCY = "USDT";
 
-    public abstract double getWalletBalance(String currency) throws Exception;
+    protected abstract void initTrader() throws Exception;
 
-    public abstract double getWalletBalance(String currency, int decimals) throws Exception;
+    protected abstract double getWalletBalance(String currency);
 
-    public abstract ArrayList<Asset> getAssetsList(String currency) throws Exception;
+    protected abstract double getWalletBalance(String currency, int decimals);
 
-    public abstract ArrayList<Transaction> getTransactionsList() throws Exception;
+    protected abstract ArrayList<Asset> getAssetsList(String currency);
 
-    public abstract String getErrorResponse();
+    protected abstract ArrayList<Transaction> getTransactionsList() throws Exception;
+
+    protected abstract String getErrorResponse();
 
 }
