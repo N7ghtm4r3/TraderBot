@@ -16,18 +16,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class BinanceTraderBot extends TraderCoreRoutines {
-
     private final BinanceWalletManager binanceWalletManager;
     private final BinanceSpotManager binanceSpotManager;
     private final BinanceMarketManager binanceMarketManager;
+    private long REFRESH_PRICES_TIME;
     private final HashMap<String, Double> lastPrices;
-
     private final ArrayList<Coin> coins;
+
+    private long lastPricesRefresh;
 
     public BinanceTraderBot(String apiKey, String secretKey) throws Exception {
         binanceWalletManager = new BinanceWalletManager(apiKey, secretKey);
         binanceSpotManager = new BinanceSpotManager(apiKey, secretKey);
         binanceMarketManager = new BinanceMarketManager();
+        REFRESH_PRICES_TIME = 10000L;
         lastPrices = new HashMap<>();
         coins = new ArrayList<>();
         initTrader();
@@ -37,6 +39,33 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         binanceWalletManager = new BinanceWalletManager(apiKey, secretKey, baseEndpoint);
         binanceSpotManager = new BinanceSpotManager(apiKey, secretKey, baseEndpoint);
         binanceMarketManager = new BinanceMarketManager();
+        REFRESH_PRICES_TIME = 10000L;
+        lastPrices = new HashMap<>();
+        coins = new ArrayList<>();
+        initTrader();
+    }
+
+    public BinanceTraderBot(String apiKey, String secretKey, int refreshPricesTime) throws Exception {
+        binanceWalletManager = new BinanceWalletManager(apiKey, secretKey);
+        binanceSpotManager = new BinanceSpotManager(apiKey, secretKey);
+        binanceMarketManager = new BinanceMarketManager();
+        if(refreshPricesTime >= 5 && refreshPricesTime <= 3600)
+            REFRESH_PRICES_TIME = refreshPricesTime * 1000L;
+        else
+            throw new IllegalArgumentException("Refresh prices time must be more than 5 (5s) and less than 3600 (1h)");
+        lastPrices = new HashMap<>();
+        coins = new ArrayList<>();
+        initTrader();
+    }
+
+    public BinanceTraderBot(String apiKey, String secretKey, String baseEndpoint, int refreshPricesTime) throws Exception {
+        binanceWalletManager = new BinanceWalletManager(apiKey, secretKey, baseEndpoint);
+        binanceSpotManager = new BinanceSpotManager(apiKey, secretKey, baseEndpoint);
+        binanceMarketManager = new BinanceMarketManager();
+        if(refreshPricesTime >= 5 && refreshPricesTime <= 3600)
+            REFRESH_PRICES_TIME = refreshPricesTime * 1000L;
+        else
+            throw new IllegalArgumentException("Refresh prices time must be more than 5 (5s) and less than 3600 (1h)");
         lastPrices = new HashMap<>();
         coins = new ArrayList<>();
         initTrader();
@@ -61,7 +90,8 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     }
 
     @Override
-    public double getWalletBalance(String currency) {
+    public double getWalletBalance(String currency) throws IOException {
+        getLastPrices();
         double balance = 0;
         for (Coin coin : coins)
             if(coin.isTradingEnabled())
@@ -75,12 +105,13 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     }
 
     @Override
-    public double getWalletBalance(String currency, int decimals) {
+    public double getWalletBalance(String currency, int decimals) throws IOException {
         return binanceMarketManager.roundValue(getWalletBalance(currency), decimals);
     }
 
     @Override
-    public ArrayList<Asset> getAssetsList(String currency) {
+    public ArrayList<Asset> getAssetsList(String currency) throws IOException {
+        getLastPrices();
         ArrayList<Asset> assets = new ArrayList<>();
         for (Coin coin : coins){
             if(coin.isTradingEnabled()){
@@ -110,16 +141,26 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         return transactions;
     }
 
+    public void setRefreshPricesTime(int refreshPricesTime) {
+        if(refreshPricesTime >= 5 && refreshPricesTime <= 3600)
+            REFRESH_PRICES_TIME = refreshPricesTime * 1000L;
+        else
+            throw new IllegalArgumentException("Refresh prices time must be more than 5 (5s) and less than 3600 (1h)");
+    }
+
     @Override
     public String getErrorResponse() {
         return binanceSpotManager.getErrorResponse();
     }
 
     private void getLastPrices() throws IOException {
-        for(TickerPriceChange tickerPriceChange : binanceMarketManager.getTickerPriceChangeList()) {
-            String symbol = tickerPriceChange.getSymbol();
-            if(symbol.endsWith(COMPARE_CURRENCY))
-                lastPrices.put(symbol, tickerPriceChange.getLastPrice());
+        if((System.currentTimeMillis() - lastPricesRefresh) >= REFRESH_PRICES_TIME){
+            lastPricesRefresh = System.currentTimeMillis();
+            for(TickerPriceChange tickerPriceChange : binanceMarketManager.getTickerPriceChangeList()) {
+                String symbol = tickerPriceChange.getSymbol();
+                if(symbol.endsWith(COMPARE_CURRENCY))
+                    lastPrices.put(symbol, tickerPriceChange.getLastPrice());
+            }
         }
     }
 
