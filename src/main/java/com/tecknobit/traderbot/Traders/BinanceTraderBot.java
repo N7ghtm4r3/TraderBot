@@ -13,20 +13,22 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
 
 public class BinanceTraderBot extends TraderCoreRoutines {
 
     private final BinanceWalletManager binanceWalletManager;
     private final BinanceSpotManager binanceSpotManager;
     private final BinanceMarketManager binanceMarketManager;
-    private ConcurrentHashMap<String, Double> lastPrices;
+    private final HashMap<String, Double> lastPrices;
+
     private final ArrayList<Coin> coins;
 
     public BinanceTraderBot(String apiKey, String secretKey) throws Exception {
         binanceWalletManager = new BinanceWalletManager(apiKey, secretKey);
         binanceSpotManager = new BinanceSpotManager(apiKey, secretKey);
         binanceMarketManager = new BinanceMarketManager();
+        lastPrices = new HashMap<>();
         coins = new ArrayList<>();
         initTrader();
     }
@@ -35,13 +37,14 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         binanceWalletManager = new BinanceWalletManager(apiKey, secretKey, baseEndpoint);
         binanceSpotManager = new BinanceSpotManager(apiKey, secretKey, baseEndpoint);
         binanceMarketManager = new BinanceMarketManager();
+        lastPrices = new HashMap<>();
         coins = new ArrayList<>();
         initTrader();
     }
 
     @Override
     protected void initTrader() throws Exception {
-        lastPrices = getLastPrices();
+        getLastPrices();
         JSONArray allCoins = binanceWalletManager.getJSONAllCoins();
         for (int j=0; j < allCoins.length(); j++){
             JSONObject coin = allCoins.getJSONObject(j);
@@ -112,14 +115,12 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         return binanceSpotManager.getErrorResponse();
     }
 
-    private ConcurrentHashMap<String, Double> getLastPrices() throws IOException {
-        ConcurrentHashMap<String, Double> lastPrices = new ConcurrentHashMap<>();
+    private void getLastPrices() throws IOException {
         for(TickerPriceChange tickerPriceChange : binanceMarketManager.getTickerPriceChangeList()) {
             String symbol = tickerPriceChange.getSymbol();
             if(symbol.endsWith(COMPARE_CURRENCY))
                 lastPrices.put(symbol, tickerPriceChange.getLastPrice());
         }
-        return lastPrices;
     }
 
 }
