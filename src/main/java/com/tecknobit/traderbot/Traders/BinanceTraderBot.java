@@ -238,4 +238,5 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         return (System.currentTimeMillis() - lastPricesRefresh) >= REFRESH_PRICES_TIME;
     }
 
+
 }

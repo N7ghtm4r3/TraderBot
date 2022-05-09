@@ -1,5 +1,7 @@
 package com.tecknobit.traderbot.Records;
 
+import static com.tecknobit.traderbot.Routines.TraderCoreRoutines.tradingTools;
+
 public class Transaction {
 
     private final String symbol;
@@ -33,7 +35,7 @@ public class Transaction {
     }
 
     public double getValue(int decimals) {
-        return value;
+        return tradingTools.roundValue(value, decimals);
     }
 
     public double getQuantity() {

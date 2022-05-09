@@ -1,5 +1,6 @@
 package com.tecknobit.traderbot.Routines;
 
+import com.tecknobit.apimanager.Tools.Trading.TradingTools;
 import com.tecknobit.traderbot.Records.Asset;
 import com.tecknobit.traderbot.Records.Transaction;
 
@@ -7,6 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public abstract class TraderCoreRoutines {
+
+    public static TradingTools tradingTools = new TradingTools();
 
     protected static final String COMPARE_CURRENCY = "USDT";
 
