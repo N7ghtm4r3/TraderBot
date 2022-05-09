@@ -5,14 +5,14 @@ public class Transaction {
     private final String symbol;
     private final String side;
     private final String transactionDate;
-    private final double price;
+    private final double value;
     private final double quantity;
 
-    public Transaction(String symbol, String side, String transactionDate, double price, double quantity) {
+    public Transaction(String symbol, String side, String transactionDate, double value, double quantity) {
         this.symbol = symbol;
         this.side = side;
         this.transactionDate = transactionDate;
-        this.price = price;
+        this.value = value;
         this.quantity = quantity;
     }
 
@@ -28,8 +28,12 @@ public class Transaction {
         return transactionDate;
     }
 
-    public double getPrice() {
-        return price;
+    public double getValue() {
+        return value;
+    }
+
+    public double getValue(int decimals) {
+        return value;
     }
 
     public double getQuantity() {
@@ -42,7 +46,7 @@ public class Transaction {
                 "symbol='" + symbol + '\'' +
                 ", side='" + side + '\'' +
                 ", transactionDate='" + transactionDate + '\'' +
-                ", price=" + price +
+                ", value=" + value +
                 ", quantity=" + quantity +
                 '}';
     }

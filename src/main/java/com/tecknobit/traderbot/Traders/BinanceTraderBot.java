@@ -26,8 +26,10 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     private final ArrayList<Transaction> transactions;
     private final HashMap<String, Double> lastPrices;
     private final ArrayList<Asset> assets;
-    private final ArrayList<Coin> coins;
-    private String lastQuoteCurrency;
+    private final HashMap<String, Coin> coins;
+    private String lastTransactionCurrency;
+    private String lastBalanceCurrency;
+    private String lastAssetCurrency;
     private long REFRESH_PRICES_TIME;
     private long lastPricesRefresh;
     private double balance;
@@ -37,11 +39,13 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         binanceSpotManager = new BinanceSpotManager(apiKey, secretKey);
         binanceMarketManager = new BinanceMarketManager();
         transactions = new ArrayList<>();
+        lastBalanceCurrency = "";
+        lastAssetCurrency = "";
+        lastTransactionCurrency = "";
         REFRESH_PRICES_TIME = 10000L;
         lastPrices = new HashMap<>();
         assets = new ArrayList<>();
-        coins = new ArrayList<>();
-        lastQuoteCurrency = "";
+        coins = new HashMap<>();
         balance = -1;
         initTrader();
     }
@@ -51,11 +55,13 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         binanceSpotManager = new BinanceSpotManager(apiKey, secretKey, baseEndpoint);
         binanceMarketManager = new BinanceMarketManager();
         transactions = new ArrayList<>();
+        lastBalanceCurrency = "";
+        lastAssetCurrency = "";
+        lastTransactionCurrency = "";
         REFRESH_PRICES_TIME = 10000L;
         lastPrices = new HashMap<>();
         assets = new ArrayList<>();
-        coins = new ArrayList<>();
-        lastQuoteCurrency = "";
+        coins = new HashMap<>();
         balance = -1;
         initTrader();
     }
@@ -65,14 +71,16 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         binanceSpotManager = new BinanceSpotManager(apiKey, secretKey);
         binanceMarketManager = new BinanceMarketManager();
         transactions = new ArrayList<>();
+        lastBalanceCurrency = "";
+        lastAssetCurrency = "";
+        lastTransactionCurrency = "";
         if(refreshPricesTime >= 5 && refreshPricesTime <= 3600)
             REFRESH_PRICES_TIME = refreshPricesTime * 1000L;
         else
             throw new IllegalArgumentException("Refresh prices time must be more than 5 (5s) and less than 3600 (1h)");
         lastPrices = new HashMap<>();
         assets = new ArrayList<>();
-        coins = new ArrayList<>();
-        lastQuoteCurrency = "";
+        coins = new HashMap<>();
         balance = -1;
         initTrader();
     }
@@ -82,14 +90,16 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         binanceSpotManager = new BinanceSpotManager(apiKey, secretKey, baseEndpoint);
         binanceMarketManager = new BinanceMarketManager();
         transactions = new ArrayList<>();
+        lastBalanceCurrency = "";
+        lastAssetCurrency = "";
+        lastTransactionCurrency = "";
         if(refreshPricesTime >= 5 && refreshPricesTime <= 3600)
             REFRESH_PRICES_TIME = refreshPricesTime * 1000L;
         else
             throw new IllegalArgumentException("Refresh prices time must be more than 5 (5s) and less than 3600 (1h)");
         lastPrices = new HashMap<>();
         assets = new ArrayList<>();
-        coins = new ArrayList<>();
-        lastQuoteCurrency = "";
+        coins = new HashMap<>();
         balance = -1;
         initTrader();
     }
@@ -102,8 +112,9 @@ public class BinanceTraderBot extends TraderCoreRoutines {
             JSONObject coin = allCoins.getJSONObject(j);
             double free = coin.getDouble("free");
             if(free > 0){
-                coins.add(new Coin(coin.getBoolean("trading"),
-                        coin.getString("coin"),
+                String symbol = coin.getString("coin");
+                coins.put(symbol, new Coin(coin.getBoolean("trading"),
+                        symbol,
                         free,
                         coin.getDouble("locked"),
                         coin.getString("name")
@@ -114,10 +125,11 @@ public class BinanceTraderBot extends TraderCoreRoutines {
 
     @Override
     public double getWalletBalance(String currency) throws IOException {
-        if(isRefreshTime() || balance == -1){
+        if(isRefreshTime() || !lastBalanceCurrency.equals(currency)){
             refreshLastPrices();
+            lastBalanceCurrency = currency;
             balance = 0;
-            for (Coin coin : coins)
+            for (Coin coin : coins.values())
                 if(coin.isTradingEnabled())
                     balance += coin.getFree() * lastPrices.get(coin.getAsset() + COMPARE_CURRENCY);
             if(!currency.equals(COMPARE_CURRENCY)){
@@ -136,10 +148,11 @@ public class BinanceTraderBot extends TraderCoreRoutines {
 
     @Override
     public ArrayList<Asset> getAssetsList(String currency) throws IOException {
-        if(isRefreshTime() || assets.isEmpty()){
+        if(isRefreshTime() || !lastAssetCurrency.equals(currency)){
             refreshLastPrices();
             assets.clear();
-            for (Coin coin : coins){
+            lastAssetCurrency = currency;
+            for (Coin coin : coins.values()){
                 if(coin.isTradingEnabled()){
                     double free = coin.getFree();
                     String asset = coin.getAsset();
@@ -163,20 +176,25 @@ public class BinanceTraderBot extends TraderCoreRoutines {
 
     @Override
     public ArrayList<Transaction> getTransactionsList(String quoteCurrency, String dateFormat) throws Exception {
-        if(isRefreshTime() || !lastQuoteCurrency.equals(quoteCurrency)){
+        if(isRefreshTime() || !lastTransactionCurrency.equals(quoteCurrency)){
             refreshLastPrices();
-            lastQuoteCurrency = quoteCurrency;
+            lastTransactionCurrency = quoteCurrency;
             transactions.clear();
-            for (Coin coin : coins){
+            for (Coin coin : coins.values()){
                 if(coin.isTradingEnabled()){
-                    String symbol = coin.getAsset() + lastQuoteCurrency;;
-                    if(!symbol.startsWith(lastQuoteCurrency)) {
+                    String symbol = coin.getAsset() + lastTransactionCurrency;
+                    if(!symbol.startsWith(lastTransactionCurrency)) {
                         for (SpotOrderStatus order : binanceSpotManager.getObjectAllOrdersList(symbol)){
                             if(order.getStatus().equals("FILLED")){
+                                String date;
+                                if(dateFormat != null)
+                                    date = new SimpleDateFormat(dateFormat).format(new Date(order.getTime()));
+                                else
+                                    date = new Date(order.getTime()).toString();
                                 transactions.add(new Transaction(symbol,
                                         order.getSide(),
-                                        new SimpleDateFormat(dateFormat).format(new Date(order.getTime())),
-                                        order.getPrice(),
+                                        date,
+                                        order.getCummulativeQuoteQty(),
                                         order.getExecutedQty()
                                 ));
                             }
@@ -186,6 +204,11 @@ public class BinanceTraderBot extends TraderCoreRoutines {
             }
         }
         return transactions;
+    }
+
+    @Override
+    public ArrayList<Transaction> getTransactionsList(String quoteCurrency) throws Exception {
+        return getTransactionsList(quoteCurrency, null);
     }
 
     public void setRefreshPricesTime(int refreshPricesTime) {

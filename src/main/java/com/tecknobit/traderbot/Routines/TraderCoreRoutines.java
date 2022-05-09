@@ -20,6 +20,8 @@ public abstract class TraderCoreRoutines {
 
     public abstract ArrayList<Transaction> getTransactionsList(String quoteCurrency, String dateFormat) throws Exception;
 
+    public abstract ArrayList<Transaction> getTransactionsList(String quoteCurrency) throws Exception;
+
     protected abstract String getErrorResponse();
 
 }
