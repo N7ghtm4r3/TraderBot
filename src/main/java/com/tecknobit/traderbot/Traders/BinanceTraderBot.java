@@ -281,6 +281,13 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         return getTransactionsList(quoteCurrency, null);
     }
 
+    
+
+    @Override
+    public String getErrorResponse() {
+        return binanceSpotManager.getErrorResponse();
+    }
+
     public void setRefreshPricesTime(int refreshPricesTime) {
         if(refreshPricesTime >= 5 && refreshPricesTime <= 3600)
             REFRESH_PRICES_TIME = refreshPricesTime * 1000L;
@@ -296,17 +303,13 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         if(!quoteCurrencies.contains(newQuote))
             quoteCurrencies.add(newQuote);
     }
+
     public boolean removeQuoteCurrency(String quoteToRemove){
         return quoteCurrencies.remove(quoteToRemove);
     }
 
     public ArrayList<String> getQuoteCurrencies() {
         return quoteCurrencies;
-    }
-
-    @Override
-    public String getErrorResponse() {
-        return binanceSpotManager.getErrorResponse();
     }
 
     private void refreshLastPrices() throws IOException {
