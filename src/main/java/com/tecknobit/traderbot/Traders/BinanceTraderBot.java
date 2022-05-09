@@ -5,6 +5,7 @@ import com.tecknobit.binancemanager.Managers.Market.Records.Tickers.TickerPriceC
 import com.tecknobit.binancemanager.Managers.SignedManagers.Trade.Spot.BinanceSpotManager;
 import com.tecknobit.binancemanager.Managers.SignedManagers.Trade.Spot.Records.Orders.Response.SpotOrderStatus;
 import com.tecknobit.binancemanager.Managers.SignedManagers.Wallet.BinanceWalletManager;
+import com.tecknobit.coinbasemanager.Managers.ExchangePro.Orders.Records.Order;
 import com.tecknobit.traderbot.Records.Asset;
 import com.tecknobit.traderbot.Records.Coin;
 import com.tecknobit.traderbot.Records.Transaction;
@@ -281,7 +282,27 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         return getTransactionsList(quoteCurrency, null);
     }
 
-    
+    @Override
+    public void buyMarket(String symbol, double quantity) throws Exception {
+        placeAnOrder(symbol, quantity, Order.BUY_SIDE);
+    }
+
+    @Override
+    public void sellMarket(String symbol, double quantity) throws Exception {
+        placeAnOrder(symbol, quantity, Order.SELL_SIDE);
+    }
+
+    @Override
+    protected void placeAnOrder(String symbol, double quantity, String side) throws Exception {
+        HashMap<String, Object> quantityParam = new HashMap<>();
+        quantityParam.put("quantity", quantity);
+        orderStatus = binanceSpotManager.sendNewOrder(symbol, side, Order.MARKET_TYPE, quantityParam);
+    }
+
+    @Override
+    public <T> T getOrderStatus(FormatResponseType formatResponseType) {
+        return super.getOrderStatus(formatResponseType);
+    }
 
     @Override
     public String getErrorResponse() {
