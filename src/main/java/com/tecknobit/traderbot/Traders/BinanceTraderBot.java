@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+import static com.tecknobit.binancemanager.Managers.Market.Records.Stats.ExchangeInformation.Symbol;
+
 public class BinanceTraderBot extends TraderCoreRoutines {
 
     private final BinanceWalletManager binanceWalletManager;
@@ -26,6 +28,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     private final BinanceSpotManager binanceSpotManager;
     private final ArrayList<Transaction> transactions;
     private final ArrayList<Transaction> allTransactions;
+    private final HashMap<String, Symbol> tradingPairsList;
     private final HashMap<String, Double> lastPrices;
     private final HashMap<String, Coin> coins;
     private ArrayList<String> quoteCurrencies;
@@ -36,11 +39,13 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     private long REFRESH_PRICES_TIME;
     private long lastPricesRefresh;
     private double balance;
+    private JSONArray allCoins;
 
     public BinanceTraderBot(String apiKey, String secretKey) throws Exception {
         binanceWalletManager = new BinanceWalletManager(apiKey, secretKey);
         binanceSpotManager = new BinanceSpotManager(apiKey, secretKey);
         binanceMarketManager = new BinanceMarketManager();
+        tradingPairsList = new HashMap<>();
         allTransactions = new ArrayList<>();
         quoteCurrencies = new ArrayList<>();
         transactions = new ArrayList<>();
@@ -59,6 +64,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         binanceWalletManager = new BinanceWalletManager(apiKey, secretKey, baseEndpoint);
         binanceSpotManager = new BinanceSpotManager(apiKey, secretKey, baseEndpoint);
         binanceMarketManager = new BinanceMarketManager();
+        tradingPairsList = new HashMap<>();
         allTransactions = new ArrayList<>();
         quoteCurrencies = new ArrayList<>();
         transactions = new ArrayList<>();
@@ -77,6 +83,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         binanceWalletManager = new BinanceWalletManager(apiKey, secretKey);
         binanceSpotManager = new BinanceSpotManager(apiKey, secretKey);
         binanceMarketManager = new BinanceMarketManager();
+        tradingPairsList = new HashMap<>();
         allTransactions = new ArrayList<>();
         quoteCurrencies = new ArrayList<>();
         transactions = new ArrayList<>();
@@ -98,6 +105,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         binanceWalletManager = new BinanceWalletManager(apiKey, secretKey, baseEndpoint);
         binanceSpotManager = new BinanceSpotManager(apiKey, secretKey, baseEndpoint);
         binanceMarketManager = new BinanceMarketManager();
+        tradingPairsList = new HashMap<>();
         allTransactions = new ArrayList<>();
         quoteCurrencies = new ArrayList<>();
         transactions = new ArrayList<>();
@@ -120,6 +128,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         binanceWalletManager = new BinanceWalletManager(apiKey, secretKey);
         binanceSpotManager = new BinanceSpotManager(apiKey, secretKey);
         binanceMarketManager = new BinanceMarketManager();
+        tradingPairsList = new HashMap<>();
         allTransactions = new ArrayList<>();
         this.quoteCurrencies = quoteCurrencies;
         transactions = new ArrayList<>();
@@ -142,6 +151,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         binanceWalletManager = new BinanceWalletManager(apiKey, secretKey, baseEndpoint);
         binanceSpotManager = new BinanceSpotManager(apiKey, secretKey, baseEndpoint);
         binanceMarketManager = new BinanceMarketManager();
+        tradingPairsList = new HashMap<>();
         allTransactions = new ArrayList<>();
         this.quoteCurrencies = quoteCurrencies;
         transactions = new ArrayList<>();
@@ -162,7 +172,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     @Override
     protected void initTrader() throws Exception {
         refreshLastPrices();
-        JSONArray allCoins = binanceWalletManager.getJSONAllCoins();
+        allCoins = binanceWalletManager.getJSONAllCoins();
         for (int j=0; j < allCoins.length(); j++){
             JSONObject coin = allCoins.getJSONObject(j);
             double free = coin.getDouble("free");
@@ -176,6 +186,8 @@ public class BinanceTraderBot extends TraderCoreRoutines {
                 ));
             }
         }
+        for (Symbol symbol : binanceMarketManager.getObjectExchangeInformation().getSymbols())
+            tradingPairsList.put(symbol.getSymbol(), symbol);
     }
 
     @Override
@@ -285,6 +297,21 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     @Override
     public void buyMarket(String symbol, double quantity) throws Exception {
         placeAnOrder(symbol, quantity, Order.BUY_SIDE);
+        Symbol coinSymbol = tradingPairsList.get(symbol);
+        insertQuoteCurrency(coinSymbol.getQuoteAsset());
+        String baseAsset = coinSymbol.getBaseAsset();
+        Coin coin = coins.get(baseAsset);
+        if(coin != null){
+            double newQuantity = coin.getFree() + quantity;
+            //set new quantity value with new custom object
+        }else{
+            coins.put(baseAsset, new Coin(true,
+                    baseAsset,
+                    quantity,
+                    0,
+                    "get name method"
+            ));
+        }
     }
 
     @Override

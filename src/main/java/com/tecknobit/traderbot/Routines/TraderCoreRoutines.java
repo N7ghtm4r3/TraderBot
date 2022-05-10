@@ -17,6 +17,7 @@ public abstract class TraderCoreRoutines {
     public static TradingTools tradingTools = new TradingTools();
     protected static final String COMPARE_CURRENCY = "USDT";
     protected String orderStatus;
+
     public static enum FormatResponseType{
         String,
         JSON,
