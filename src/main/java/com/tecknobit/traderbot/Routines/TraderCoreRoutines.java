@@ -26,19 +26,19 @@ public abstract class TraderCoreRoutines {
 
     protected abstract void initTrader() throws Exception;
 
-    protected abstract double getWalletBalance(String currency) throws IOException;
+    protected abstract double getWalletBalance(String currency, boolean forceRefresh) throws IOException;
 
-    protected abstract double getWalletBalance(String currency, int decimals) throws IOException;
+    protected abstract double getWalletBalance(String currency, boolean forceRefresh, int decimals) throws IOException;
 
-    protected abstract ArrayList<Asset> getAssetsList(String currency) throws IOException;
+    protected abstract ArrayList<Asset> getAssetsList(String currency, boolean forceRefresh) throws IOException;
 
-    protected abstract ArrayList<Transaction> getAllTransactions() throws Exception;
+    protected abstract ArrayList<Transaction> getAllTransactions(boolean forceRefresh) throws Exception;
 
-    protected abstract ArrayList<Transaction> getAllTransactions(String dateFormat) throws Exception;
+    protected abstract ArrayList<Transaction> getAllTransactions(String dateFormat, boolean forceRefresh) throws Exception;
 
-    protected abstract ArrayList<Transaction> getTransactionsList(String quoteCurrency) throws Exception;
+    protected abstract ArrayList<Transaction> getTransactionsList(String quoteCurrency, boolean forceRefresh) throws Exception;
 
-    protected abstract ArrayList<Transaction> getTransactionsList(String quoteCurrency, String dateFormat) throws Exception;
+    protected abstract ArrayList<Transaction> getTransactionsList(String quoteCurrency, String dateFormat, boolean forceRefresh) throws Exception;
 
     protected abstract void buyMarket(String symbol, double quantity) throws Exception;
 

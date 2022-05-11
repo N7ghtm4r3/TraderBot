@@ -182,8 +182,8 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     }
 
     @Override
-    public double getWalletBalance(String currency) throws IOException {
-        if(isRefreshTime() || !lastBalanceCurrency.equals(currency)){
+    public double getWalletBalance(String currency, boolean forceRefresh) throws IOException {
+        if(isRefreshTime() || !lastBalanceCurrency.equals(currency) || forceRefresh){
             refreshLastPrices();
             lastBalanceCurrency = currency;
             balance = 0;
@@ -200,13 +200,13 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     }
 
     @Override
-    public double getWalletBalance(String currency, int decimals) throws IOException {
-        return binanceMarketManager.roundValue(getWalletBalance(currency), decimals);
+    public double getWalletBalance(String currency, boolean forceRefresh, int decimals) throws IOException {
+        return binanceMarketManager.roundValue(getWalletBalance(currency, forceRefresh), decimals);
     }
 
     @Override
-    public ArrayList<Asset> getAssetsList(String currency) throws IOException {
-        if(isRefreshTime() || !lastAssetCurrency.equals(currency)){
+    public ArrayList<Asset> getAssetsList(String currency, boolean forceRefresh) throws IOException {
+        if(isRefreshTime() || !lastAssetCurrency.equals(currency) || forceRefresh){
             refreshLastPrices();
             assets.clear();
             lastAssetCurrency = currency;
@@ -233,24 +233,24 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     }
 
     @Override
-    public ArrayList<Transaction> getAllTransactions(String dateFormat) throws Exception {
-        if(isRefreshTime() || allTransactions.isEmpty()) {
+    public ArrayList<Transaction> getAllTransactions(String dateFormat, boolean forceRefresh) throws Exception {
+        if(isRefreshTime() || allTransactions.isEmpty() || forceRefresh) {
             allTransactions.clear();
             for (String quoteCurrency : quoteCurrencies)
-                allTransactions.addAll(getTransactionsList(quoteCurrency, dateFormat));
+                allTransactions.addAll(getTransactionsList(quoteCurrency, dateFormat, forceRefresh));
             transactions.clear();
         }
         return allTransactions;
     }
 
     @Override
-    public ArrayList<Transaction> getAllTransactions() throws Exception {
-        return getAllTransactions(null);
+    public ArrayList<Transaction> getAllTransactions(boolean forceRefresh) throws Exception {
+        return getAllTransactions(null, forceRefresh);
     }
 
     @Override
-    public ArrayList<Transaction> getTransactionsList(String quoteCurrency, String dateFormat) throws Exception {
-        if(isRefreshTime() || !lastTransactionCurrency.equals(quoteCurrency)){
+    public ArrayList<Transaction> getTransactionsList(String quoteCurrency, String dateFormat, boolean forceRefresh) throws Exception {
+        if(isRefreshTime() || !lastTransactionCurrency.equals(quoteCurrency) || forceRefresh){
             refreshLastPrices();
             lastTransactionCurrency = quoteCurrency;
             transactions.clear();
@@ -284,8 +284,8 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     }
 
     @Override
-    public ArrayList<Transaction> getTransactionsList(String quoteCurrency) throws Exception {
-        return getTransactionsList(quoteCurrency, null);
+    public ArrayList<Transaction> getTransactionsList(String quoteCurrency, boolean forceRefresh) throws Exception {
+        return getTransactionsList(quoteCurrency, null, forceRefresh);
     }
 
     @Override
@@ -328,7 +328,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     protected void placeAnOrder(String symbol, double quantity, String side) throws Exception {
         HashMap<String, Object> quantityParam = new HashMap<>();
         quantityParam.put("quantity", quantity);
-        orderStatus = binanceSpotManager.sendNewOrder(symbol, side, MARKET_TYPE, quantityParam);
+        orderStatus = binanceSpotManager.testNewOrder(symbol, side, MARKET_TYPE, quantityParam);
     }
 
     private void insertCoin(String symbol, double quantity) throws Exception {
