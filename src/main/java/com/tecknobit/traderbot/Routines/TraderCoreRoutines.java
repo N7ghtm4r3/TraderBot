@@ -54,7 +54,8 @@ public abstract class TraderCoreRoutines {
 
     protected abstract ArrayList<Transaction> getTransactionsList(String quoteCurrency, boolean forceRefresh) throws Exception;
 
-    protected abstract ArrayList<Transaction> getTransactionsList(String quoteCurrency, String dateFormat, boolean forceRefresh) throws Exception;
+    protected abstract ArrayList<Transaction> getTransactionsList(String quoteCurrency, String dateFormat,
+                                                                  boolean forceRefresh) throws Exception;
 
     protected abstract void buyMarket(String symbol, double quantity) throws Exception;
 
