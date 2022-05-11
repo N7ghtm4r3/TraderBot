@@ -9,10 +9,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
+import java.lang.String;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static com.tecknobit.traderbot.Routines.TraderCoreRoutines.FormatResponseType.String;
 import static com.tecknobit.traderbot.Routines.TraderCoreRoutines.FormatResponseType.*;
 
 public abstract class TraderCoreRoutines {
@@ -42,11 +43,11 @@ public abstract class TraderCoreRoutines {
 
     protected abstract void initTrader() throws Exception;
 
-    protected abstract double getWalletBalance(String currency, boolean forceRefresh) throws IOException;
+    protected abstract double getWalletBalance(String currency, boolean forceRefresh) throws Exception;
 
-    protected abstract double getWalletBalance(String currency, boolean forceRefresh, int decimals) throws IOException;
+    protected abstract double getWalletBalance(String currency, boolean forceRefresh, int decimals) throws Exception;
 
-    protected abstract ArrayList<Asset> getAssetsList(String currency, boolean forceRefresh) throws IOException;
+    protected abstract ArrayList<Asset> getAssetsList(String currency, boolean forceRefresh) throws Exception;
 
     protected abstract ArrayList<Transaction> getAllTransactions(boolean forceRefresh) throws Exception;
 
@@ -82,5 +83,35 @@ public abstract class TraderCoreRoutines {
     }
 
     protected abstract String getErrorResponse();
+
+    protected abstract void refreshLatestPrice() throws Exception;
+
+    protected void setRefreshPricesTime(int refreshPricesTime) {
+        if(refreshPricesTime >= 5 && refreshPricesTime <= 3600)
+            REFRESH_PRICES_TIME = refreshPricesTime * 1000L;
+        else
+            throw new IllegalArgumentException("Refresh prices time must be more than 5 (5s) and less than 3600 (1h)");
+    }
+
+    protected void setQuoteCurrencies(ArrayList<String> quoteCurrencies) {
+        this.quoteCurrencies = quoteCurrencies;
+    }
+
+    protected void insertQuoteCurrency(String newQuote){
+        if(!quoteCurrencies.contains(newQuote))
+            quoteCurrencies.add(newQuote);
+    }
+
+    protected boolean removeQuoteCurrency(String quoteToRemove){
+        return quoteCurrencies.remove(quoteToRemove);
+    }
+
+    protected ArrayList<String> getQuoteCurrencies() {
+        return quoteCurrencies;
+    }
+
+    protected boolean isRefreshTime(){
+        return (System.currentTimeMillis() - lastPricesRefresh) >= REFRESH_PRICES_TIME;
+    }
 
 }

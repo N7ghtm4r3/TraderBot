@@ -12,7 +12,6 @@ import com.tecknobit.traderbot.Records.Transaction;
 import com.tecknobit.traderbot.Routines.TraderCoreRoutines;
 import org.json.JSONException;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -72,6 +71,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         binanceWalletManager = new BinanceWalletManager(apiKey, secretKey);
         binanceSpotManager = new BinanceSpotManager(apiKey, secretKey);
         binanceMarketManager = new BinanceMarketManager();
+        this.quoteCurrencies = quoteCurrencies;
         if(refreshPricesTime >= 5 && refreshPricesTime <= 3600)
             REFRESH_PRICES_TIME = refreshPricesTime * 1000L;
         else
@@ -84,6 +84,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         binanceWalletManager = new BinanceWalletManager(apiKey, secretKey, baseEndpoint);
         binanceSpotManager = new BinanceSpotManager(apiKey, secretKey, baseEndpoint);
         binanceMarketManager = new BinanceMarketManager();
+        this.quoteCurrencies = quoteCurrencies;
         if(refreshPricesTime >= 5 && refreshPricesTime <= 3600)
             REFRESH_PRICES_TIME = refreshPricesTime * 1000L;
         else
@@ -91,11 +92,28 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         initTrader();
     }
 
+    public BinanceTraderBot(String apiKey, String secretKey, ArrayList<String> quoteCurrencies) throws Exception {
+        binanceWalletManager = new BinanceWalletManager(apiKey, secretKey);
+        binanceSpotManager = new BinanceSpotManager(apiKey, secretKey);
+        binanceMarketManager = new BinanceMarketManager();
+        this.quoteCurrencies = quoteCurrencies;
+        initTrader();
+    }
+
+    public BinanceTraderBot(String apiKey, String secretKey, String baseEndpoint, ArrayList<String> quoteCurrencies) throws Exception {
+        binanceWalletManager = new BinanceWalletManager(apiKey, secretKey, baseEndpoint);
+        binanceSpotManager = new BinanceSpotManager(apiKey, secretKey, baseEndpoint);
+        binanceMarketManager = new BinanceMarketManager();
+        this.quoteCurrencies = quoteCurrencies;
+        initTrader();
+    }
+
     @Override
     protected void initTrader() throws Exception {
         tradingPairsList = new HashMap<>();
         allTransactions = new ArrayList<>();
-        quoteCurrencies = new ArrayList<>();
+        if(quoteCurrencies == null)
+            quoteCurrencies = new ArrayList<>();
         transactions = new ArrayList<>();
         lastBalanceCurrency = "";
         lastAssetCurrency = "";
@@ -103,7 +121,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         lastPrices = new HashMap<>();
         assets = new ArrayList<>();
         coins = new HashMap<>();
-        refreshLastPrices();
+        refreshLatestPrice();
         for (CoinInformation coin : binanceWalletManager.getAllCoinsList()){
             double free = coin.getFree();
             if(free > 0){
@@ -121,9 +139,9 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     }
 
     @Override
-    public double getWalletBalance(String currency, boolean forceRefresh) throws IOException {
+    public double getWalletBalance(String currency, boolean forceRefresh) throws Exception {
         if(isRefreshTime() || !lastBalanceCurrency.equals(currency) || forceRefresh){
-            refreshLastPrices();
+            refreshLatestPrice();
             lastBalanceCurrency = currency;
             balance = 0;
             for (Coin coin : coins.values())
@@ -139,14 +157,14 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     }
 
     @Override
-    public double getWalletBalance(String currency, boolean forceRefresh, int decimals) throws IOException {
+    public double getWalletBalance(String currency, boolean forceRefresh, int decimals) throws Exception {
         return binanceMarketManager.roundValue(getWalletBalance(currency, forceRefresh), decimals);
     }
 
     @Override
-    public ArrayList<Asset> getAssetsList(String currency, boolean forceRefresh) throws IOException {
+    public ArrayList<Asset> getAssetsList(String currency, boolean forceRefresh) throws Exception {
         if(isRefreshTime() || !lastAssetCurrency.equals(currency) || forceRefresh){
-            refreshLastPrices();
+            refreshLatestPrice();
             assets.clear();
             lastAssetCurrency = currency;
             for (Coin coin : coins.values()){
@@ -190,7 +208,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     @Override
     public ArrayList<Transaction> getTransactionsList(String quoteCurrency, String dateFormat, boolean forceRefresh) throws Exception {
         if(isRefreshTime() || !lastTransactionCurrency.equals(quoteCurrency) || forceRefresh){
-            refreshLastPrices();
+            refreshLatestPrice();
             lastTransactionCurrency = quoteCurrency;
             transactions.clear();
             for (Coin coin : coins.values()){
@@ -289,31 +307,8 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         return binanceSpotManager.getErrorResponse();
     }
 
-    public void setRefreshPricesTime(int refreshPricesTime) {
-        if(refreshPricesTime >= 5 && refreshPricesTime <= 3600)
-            REFRESH_PRICES_TIME = refreshPricesTime * 1000L;
-        else
-            throw new IllegalArgumentException("Refresh prices time must be more than 5 (5s) and less than 3600 (1h)");
-    }
-
-    public void setQuoteCurrencies(ArrayList<String> quoteCurrencies) {
-        this.quoteCurrencies = quoteCurrencies;
-    }
-
-    public void insertQuoteCurrency(String newQuote){
-        if(!quoteCurrencies.contains(newQuote))
-            quoteCurrencies.add(newQuote);
-    }
-
-    public boolean removeQuoteCurrency(String quoteToRemove){
-        return quoteCurrencies.remove(quoteToRemove);
-    }
-
-    public ArrayList<String> getQuoteCurrencies() {
-        return quoteCurrencies;
-    }
-
-    private void refreshLastPrices() throws IOException {
+    @Override
+    protected void refreshLatestPrice() throws Exception {
         if(isRefreshTime()){
             lastPricesRefresh = System.currentTimeMillis();
             for(TickerPriceChange tickerPriceChange : binanceMarketManager.getTickerPriceChangeList()) {
@@ -324,8 +319,29 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         }
     }
 
-    private boolean isRefreshTime(){
-        return (System.currentTimeMillis() - lastPricesRefresh) >= REFRESH_PRICES_TIME;
+    @Override
+    public void setQuoteCurrencies(ArrayList<String> quoteCurrencies) {
+        super.setQuoteCurrencies(quoteCurrencies);
+    }
+
+    @Override
+    public void setRefreshPricesTime(int refreshPricesTime) {
+        super.setRefreshPricesTime(refreshPricesTime);
+    }
+
+    @Override
+    public void insertQuoteCurrency(String newQuote) {
+        super.insertQuoteCurrency(newQuote);
+    }
+
+    @Override
+    public boolean removeQuoteCurrency(String quoteToRemove) {
+        return super.removeQuoteCurrency(quoteToRemove);
+    }
+
+    @Override
+    public ArrayList<String> getQuoteCurrencies() {
+        return super.getQuoteCurrencies();
     }
 
 }
