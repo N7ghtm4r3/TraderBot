@@ -33,17 +33,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         binanceWalletManager = new BinanceWalletManager(apiKey, secretKey);
         binanceSpotManager = new BinanceSpotManager(apiKey, secretKey);
         binanceMarketManager = new BinanceMarketManager();
-        tradingPairsList = new HashMap<>();
-        allTransactions = new ArrayList<>();
-        quoteCurrencies = new ArrayList<>();
-        transactions = new ArrayList<>();
-        lastBalanceCurrency = "";
-        lastAssetCurrency = "";
-        lastTransactionCurrency = "";
         REFRESH_PRICES_TIME = 10000L;
-        lastPrices = new HashMap<>();
-        assets = new ArrayList<>();
-        coins = new HashMap<>();
         initTrader();
     }
 
@@ -51,17 +41,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         binanceWalletManager = new BinanceWalletManager(apiKey, secretKey, baseEndpoint);
         binanceSpotManager = new BinanceSpotManager(apiKey, secretKey, baseEndpoint);
         binanceMarketManager = new BinanceMarketManager();
-        tradingPairsList = new HashMap<>();
-        allTransactions = new ArrayList<>();
-        quoteCurrencies = new ArrayList<>();
-        transactions = new ArrayList<>();
-        lastBalanceCurrency = "";
-        lastAssetCurrency = "";
-        lastTransactionCurrency = "";
         REFRESH_PRICES_TIME = 10000L;
-        lastPrices = new HashMap<>();
-        assets = new ArrayList<>();
-        coins = new HashMap<>();
         initTrader();
     }
 
@@ -69,20 +49,10 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         binanceWalletManager = new BinanceWalletManager(apiKey, secretKey);
         binanceSpotManager = new BinanceSpotManager(apiKey, secretKey);
         binanceMarketManager = new BinanceMarketManager();
-        tradingPairsList = new HashMap<>();
-        allTransactions = new ArrayList<>();
-        quoteCurrencies = new ArrayList<>();
-        transactions = new ArrayList<>();
-        lastBalanceCurrency = "";
-        lastAssetCurrency = "";
-        lastTransactionCurrency = "";
         if(refreshPricesTime >= 5 && refreshPricesTime <= 3600)
             REFRESH_PRICES_TIME = refreshPricesTime * 1000L;
         else
             throw new IllegalArgumentException("Refresh prices time must be more than 5 (5s) and less than 3600 (1h)");
-        lastPrices = new HashMap<>();
-        assets = new ArrayList<>();
-        coins = new HashMap<>();
         initTrader();
     }
 
@@ -90,20 +60,10 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         binanceWalletManager = new BinanceWalletManager(apiKey, secretKey, baseEndpoint);
         binanceSpotManager = new BinanceSpotManager(apiKey, secretKey, baseEndpoint);
         binanceMarketManager = new BinanceMarketManager();
-        tradingPairsList = new HashMap<>();
-        allTransactions = new ArrayList<>();
-        quoteCurrencies = new ArrayList<>();
-        transactions = new ArrayList<>();
-        lastBalanceCurrency = "";
-        lastAssetCurrency = "";
-        lastTransactionCurrency = "";
         if(refreshPricesTime >= 5 && refreshPricesTime <= 3600)
             REFRESH_PRICES_TIME = refreshPricesTime * 1000L;
         else
             throw new IllegalArgumentException("Refresh prices time must be more than 5 (5s) and less than 3600 (1h)");
-        lastPrices = new HashMap<>();
-        assets = new ArrayList<>();
-        coins = new HashMap<>();
         initTrader();
     }
 
@@ -112,20 +72,10 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         binanceWalletManager = new BinanceWalletManager(apiKey, secretKey);
         binanceSpotManager = new BinanceSpotManager(apiKey, secretKey);
         binanceMarketManager = new BinanceMarketManager();
-        tradingPairsList = new HashMap<>();
-        allTransactions = new ArrayList<>();
-        this.quoteCurrencies = quoteCurrencies;
-        transactions = new ArrayList<>();
-        lastBalanceCurrency = "";
-        lastAssetCurrency = "";
-        lastTransactionCurrency = "";
         if(refreshPricesTime >= 5 && refreshPricesTime <= 3600)
             REFRESH_PRICES_TIME = refreshPricesTime * 1000L;
         else
             throw new IllegalArgumentException("Refresh prices time must be more than 5 (5s) and less than 3600 (1h)");
-        lastPrices = new HashMap<>();
-        assets = new ArrayList<>();
-        coins = new HashMap<>();
         initTrader();
     }
 
@@ -134,25 +84,25 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         binanceWalletManager = new BinanceWalletManager(apiKey, secretKey, baseEndpoint);
         binanceSpotManager = new BinanceSpotManager(apiKey, secretKey, baseEndpoint);
         binanceMarketManager = new BinanceMarketManager();
-        tradingPairsList = new HashMap<>();
-        allTransactions = new ArrayList<>();
-        this.quoteCurrencies = quoteCurrencies;
-        transactions = new ArrayList<>();
-        lastBalanceCurrency = "";
-        lastAssetCurrency = "";
-        lastTransactionCurrency = "";
         if(refreshPricesTime >= 5 && refreshPricesTime <= 3600)
             REFRESH_PRICES_TIME = refreshPricesTime * 1000L;
         else
             throw new IllegalArgumentException("Refresh prices time must be more than 5 (5s) and less than 3600 (1h)");
-        lastPrices = new HashMap<>();
-        assets = new ArrayList<>();
-        coins = new HashMap<>();
         initTrader();
     }
 
     @Override
     protected void initTrader() throws Exception {
+        tradingPairsList = new HashMap<>();
+        allTransactions = new ArrayList<>();
+        quoteCurrencies = new ArrayList<>();
+        transactions = new ArrayList<>();
+        lastBalanceCurrency = "";
+        lastAssetCurrency = "";
+        lastTransactionCurrency = "";
+        lastPrices = new HashMap<>();
+        assets = new ArrayList<>();
+        coins = new HashMap<>();
         refreshLastPrices();
         for (CoinInformation coin : binanceWalletManager.getAllCoinsList()){
             double free = coin.getFree();
