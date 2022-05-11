@@ -23,22 +23,22 @@ import static com.tecknobit.coinbasemanager.Managers.ExchangePro.Orders.Records.
 
 public class BinanceTraderBot extends TraderCoreRoutines {
 
-    private final BinanceWalletManager binanceWalletManager;
-    private final BinanceMarketManager binanceMarketManager;
-    private final BinanceSpotManager binanceSpotManager;
-    private final ArrayList<Transaction> transactions;
-    private final ArrayList<Transaction> allTransactions;
-    private final HashMap<String, Symbol> tradingPairsList;
-    private final HashMap<String, Double> lastPrices;
-    private final HashMap<String, Coin> coins;
-    private ArrayList<String> quoteCurrencies;
-    private String lastTransactionCurrency;
-    private final ArrayList<Asset> assets;
-    private String lastBalanceCurrency;
-    private String lastAssetCurrency;
-    private long REFRESH_PRICES_TIME;
-    private long lastPricesRefresh;
-    private double balance;
+    protected final BinanceWalletManager binanceWalletManager;
+    protected final BinanceMarketManager binanceMarketManager;
+    protected final BinanceSpotManager binanceSpotManager;
+    protected final ArrayList<Transaction> transactions;
+    protected final ArrayList<Transaction> allTransactions;
+    protected final HashMap<String, Symbol> tradingPairsList;
+    protected final HashMap<String, Double> lastPrices;
+    protected final HashMap<String, Coin> coins;
+    protected ArrayList<String> quoteCurrencies;
+    protected String lastTransactionCurrency;
+    protected final ArrayList<Asset> assets;
+    protected String lastBalanceCurrency;
+    protected String lastAssetCurrency;
+    protected long REFRESH_PRICES_TIME;
+    protected long lastPricesRefresh;
+    protected double balance;
 
     public BinanceTraderBot(String apiKey, String secretKey) throws Exception {
         binanceWalletManager = new BinanceWalletManager(apiKey, secretKey);
@@ -55,7 +55,6 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         lastPrices = new HashMap<>();
         assets = new ArrayList<>();
         coins = new HashMap<>();
-        balance = -1;
         initTrader();
     }
 
@@ -74,7 +73,6 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         lastPrices = new HashMap<>();
         assets = new ArrayList<>();
         coins = new HashMap<>();
-        balance = -1;
         initTrader();
     }
 
@@ -96,7 +94,6 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         lastPrices = new HashMap<>();
         assets = new ArrayList<>();
         coins = new HashMap<>();
-        balance = -1;
         initTrader();
     }
 
@@ -118,7 +115,6 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         lastPrices = new HashMap<>();
         assets = new ArrayList<>();
         coins = new HashMap<>();
-        balance = -1;
         initTrader();
     }
 
@@ -141,7 +137,6 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         lastPrices = new HashMap<>();
         assets = new ArrayList<>();
         coins = new HashMap<>();
-        balance = -1;
         initTrader();
     }
 
@@ -164,7 +159,6 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         lastPrices = new HashMap<>();
         assets = new ArrayList<>();
         coins = new HashMap<>();
-        balance = -1;
         initTrader();
     }
 

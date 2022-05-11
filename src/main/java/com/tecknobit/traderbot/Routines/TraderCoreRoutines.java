@@ -18,7 +18,7 @@ public abstract class TraderCoreRoutines {
     protected static final String COMPARE_CURRENCY = "USDT";
     protected String orderStatus;
 
-    public static enum FormatResponseType{
+    public enum FormatResponseType{
         String,
         JSON,
         CustomObject
@@ -58,7 +58,7 @@ public abstract class TraderCoreRoutines {
                     return null;
                 }
             }
-            
+
         }
         return null;
     }
