@@ -1,7 +1,6 @@
 package com.tecknobit.traderbot.Routines;
 
 import com.tecknobit.apimanager.Tools.Trading.TradingTools;
-import com.tecknobit.binancemanager.Managers.Market.Records.Stats.ExchangeInformation;
 import com.tecknobit.traderbot.Records.Asset;
 import com.tecknobit.traderbot.Records.Coin;
 import com.tecknobit.traderbot.Records.Transaction;
@@ -22,7 +21,6 @@ public abstract class TraderCoreRoutines {
     protected static final String COMPARE_CURRENCY = "USDT";
     protected ArrayList<Transaction> transactions;
     protected ArrayList<Transaction> allTransactions;
-    protected HashMap<String, ExchangeInformation.Symbol> tradingPairsList;
     protected HashMap<String, Double> lastPrices;
     protected HashMap<String, Coin> coins;
     protected ArrayList<String> quoteCurrencies;

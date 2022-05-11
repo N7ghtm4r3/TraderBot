@@ -1,7 +1,12 @@
 package com.tecknobit.traderbot.Traders.Interfaces.Native;
 
 import com.tecknobit.coinbasemanager.Managers.ExchangePro.Account.CoinbaseAccountManager;
+import com.tecknobit.coinbasemanager.Managers.ExchangePro.Account.Records.CoinbaseAccount;
+import com.tecknobit.coinbasemanager.Managers.ExchangePro.Currencies.CoinbaseCurrenciesManager;
+import com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.CoinbaseProductsManager;
+import com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.Records.TradingPair;
 import com.tecknobit.traderbot.Records.Asset;
+import com.tecknobit.traderbot.Records.Coin;
 import com.tecknobit.traderbot.Records.Transaction;
 import com.tecknobit.traderbot.Routines.TraderCoreRoutines;
 
@@ -11,39 +16,67 @@ import java.util.HashMap;
 public class CoinbaseTraderBot extends TraderCoreRoutines {
 
     private final CoinbaseAccountManager coinbaseAccountManager;
+    private final CoinbaseProductsManager coinbaseProductsManager;
+    private final CoinbaseCurrenciesManager coinbaseCurrenciesManager;
+    protected HashMap<String, TradingPair> tradingPairsList;
 
-    public CoinbaseTraderBot(String apiKey, String apiSecret, String passphrase, String defaultErrorMessage, int timeout) {
-        coinbaseAccountManager = new CoinbaseAccountManager(apiKey, apiSecret, passphrase, defaultErrorMessage,timeout);
+    public CoinbaseTraderBot(String apiKey, String apiSecret, String passphrase, String defaultErrorMessage,
+                             int timeout) throws Exception {
+        coinbaseAccountManager = new CoinbaseAccountManager(apiKey, apiSecret, passphrase, defaultErrorMessage, timeout);
+        coinbaseProductsManager = new CoinbaseProductsManager(apiKey, apiSecret, passphrase, defaultErrorMessage, timeout);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, defaultErrorMessage, timeout);
+        initTrader();
     }
-    public CoinbaseTraderBot(String apiKey, String apiSecret, String passphrase, int timeout) {
+    public CoinbaseTraderBot(String apiKey, String apiSecret, String passphrase, int timeout) throws Exception {
         coinbaseAccountManager = new CoinbaseAccountManager(apiKey, apiSecret, passphrase, timeout);
+        coinbaseProductsManager = new CoinbaseProductsManager(apiKey, apiSecret, passphrase, timeout);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, timeout);
+        initTrader();
     }
 
-    public CoinbaseTraderBot(String apiKey, String apiSecret, String passphrase, String defaultErrorMessage) {
+    public CoinbaseTraderBot(String apiKey, String apiSecret, String passphrase, String defaultErrorMessage) throws Exception {
         coinbaseAccountManager = new CoinbaseAccountManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
+        coinbaseProductsManager = new CoinbaseProductsManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
+        initTrader();
     }
 
-    public CoinbaseTraderBot(String apiKey, String apiSecret, String passphrase) {
+    public CoinbaseTraderBot(String apiKey, String apiSecret, String passphrase) throws Exception {
         coinbaseAccountManager = new CoinbaseAccountManager(apiKey, apiSecret, passphrase);
+        coinbaseProductsManager = new CoinbaseProductsManager(apiKey, apiSecret, passphrase);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase);
+        initTrader();
     }
 
     public CoinbaseTraderBot(String apiKey, String apiSecret, String passphrase, String defaultErrorMessage, int timeout,
-                             ArrayList<String> quoteCurrencies) {
-        coinbaseAccountManager = new CoinbaseAccountManager(apiKey, apiSecret, passphrase, defaultErrorMessage,timeout);
+                             ArrayList<String> quoteCurrencies) throws Exception {
+        coinbaseAccountManager = new CoinbaseAccountManager(apiKey, apiSecret, passphrase, defaultErrorMessage, timeout);
+        coinbaseProductsManager = new CoinbaseProductsManager(apiKey, apiSecret, passphrase, defaultErrorMessage, timeout);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, defaultErrorMessage, timeout);
+        initTrader();
     }
     public CoinbaseTraderBot(String apiKey, String apiSecret, String passphrase, int timeout,
-                             ArrayList<String> quoteCurrencies) {
+                             ArrayList<String> quoteCurrencies) throws Exception {
         coinbaseAccountManager = new CoinbaseAccountManager(apiKey, apiSecret, passphrase, timeout);
+        coinbaseProductsManager = new CoinbaseProductsManager(apiKey, apiSecret, passphrase, timeout);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, timeout);
+        initTrader();
     }
 
     public CoinbaseTraderBot(String apiKey, String apiSecret, String passphrase, String defaultErrorMessage,
-                             ArrayList<String> quoteCurrencies) {
+                             ArrayList<String> quoteCurrencies) throws Exception {
         coinbaseAccountManager = new CoinbaseAccountManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
+        coinbaseProductsManager = new CoinbaseProductsManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
+        initTrader();
     }
 
     public CoinbaseTraderBot(String apiKey, String apiSecret, String passphrase,
-                             ArrayList<String> quoteCurrencies) {
+                             ArrayList<String> quoteCurrencies) throws Exception {
         coinbaseAccountManager = new CoinbaseAccountManager(apiKey, apiSecret, passphrase);
+        coinbaseProductsManager = new CoinbaseProductsManager(apiKey, apiSecret, passphrase);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase);
+        initTrader();
     }
 
     @Override
@@ -59,11 +92,24 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         lastPrices = new HashMap<>();
         assets = new ArrayList<>();
         coins = new HashMap<>();
+        refreshLatestPrice();
+        for (CoinbaseAccount coin : coinbaseAccountManager.getCoinbaseWalletsList()){
+            double balance = coin.getBalance();
+            if(balance > 0){
+                String symbol = coin.getId();
+                coins.put(symbol, new Coin(coinbaseCurrenciesManager.getCurrencyObject(coin.getCurrency()).getName(),
+                        true,
+                        symbol,
+                        balance
+                ));
+            }
+        }
+        for (TradingPair tradingPair : coinbaseProductsManager.getAllTradingPairsList())
+            tradingPairsList.put(tradingPair.getId(), tradingPair);
     }
 
     @Override
     public double getWalletBalance(String currency, boolean forceRefresh) throws Exception {
-        System.out.println(coinbaseAccountManager.getCoinbaseWallets());
         return 0;
     }
 
@@ -119,7 +165,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
 
     @Override
     protected String getErrorResponse() {
-        return null;
+        return coinbaseAccountManager.getErrorResponse();
     }
 
     @Override

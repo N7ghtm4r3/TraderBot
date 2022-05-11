@@ -27,6 +27,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     protected final BinanceWalletManager binanceWalletManager;
     protected final BinanceMarketManager binanceMarketManager;
     protected final BinanceSpotManager binanceSpotManager;
+    protected HashMap<String, Symbol> tradingPairsList;
 
     public BinanceTraderBot(String apiKey, String secretKey) throws Exception {
         binanceWalletManager = new BinanceWalletManager(apiKey, secretKey);
@@ -126,11 +127,10 @@ public class BinanceTraderBot extends TraderCoreRoutines {
             double free = coin.getFree();
             if(free > 0){
                 String symbol = coin.getCoin();
-                coins.put(symbol, new Coin(coin.isTrading(),
+                coins.put(symbol, new Coin(coin.getName(),
+                        coin.isTrading(),
                         symbol,
-                        free,
-                        coin.getLocked(),
-                        coin.getName()
+                        free
                 ));
             }
         }
@@ -146,7 +146,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
             balance = 0;
             for (Coin coin : coins.values())
                 if(coin.isTradingEnabled())
-                    balance += coin.getFree() * lastPrices.get(coin.getAsset() + COMPARE_CURRENCY);
+                    balance += coin.getBalance() * lastPrices.get(coin.getAsset() + COMPARE_CURRENCY);
             if(!currency.equals(COMPARE_CURRENCY)){
                 try {
                     balance /= binanceMarketManager.getCurrentAveragePriceValue(currency + COMPARE_CURRENCY);
@@ -169,7 +169,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
             lastAssetCurrency = currency;
             for (Coin coin : coins.values()){
                 if(coin.isTradingEnabled()){
-                    double free = coin.getFree();
+                    double free = coin.getBalance();
                     String asset = coin.getAsset();
                     double value = free * lastPrices.get(asset + COMPARE_CURRENCY);
                     if(!currency.equals(COMPARE_CURRENCY)){
@@ -255,7 +255,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
             String baseAsset = coinSymbol.getBaseAsset();
             Coin coin = coins.get(baseAsset);
             if(coin != null)
-                insertCoin(baseAsset, coin.getFree() + quantity);
+                insertCoin(baseAsset, coin.getBalance() + quantity);
             else
                 insertCoin(baseAsset, quantity);
         }else
@@ -271,7 +271,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
             Symbol coinSymbol = tradingPairsList.get(symbol);
             String baseAsset = coinSymbol.getBaseAsset();
             Coin coin = coins.get(baseAsset);
-            double newQuantity = coin.getFree() - quantity;
+            double newQuantity = coin.getBalance() - quantity;
             if(newQuantity == 0)
                 coins.remove(baseAsset);
             else
@@ -289,11 +289,10 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     }
 
     private void insertCoin(String symbol, double quantity) throws Exception {
-        coins.put(symbol, new Coin(true,
+        coins.put(symbol, new Coin(binanceWalletManager.getSingleCoinObject(symbol).getName(),
+                true,
                 symbol,
-                quantity,
-                0,
-                binanceWalletManager.getSingleCoinObject(symbol).getName()
+                quantity
         ));
     }
 

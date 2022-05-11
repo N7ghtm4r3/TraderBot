@@ -1,24 +1,43 @@
 package com.tecknobit.traderbot.Records;
 
-import com.tecknobit.binancemanager.Managers.SignedManagers.Wallet.Records.AccountSnapshots.AccountSnapshotSpot.BalanceSpot;
-
-public final class Coin extends BalanceSpot {
+public final class Coin {
 
     private final String name;
-    private final boolean tradingEnabled;
+    private boolean tradingEnabled;
+    private final String asset;
+    private double balance;
 
-    public Coin(boolean tradingEnabled, String asset, double free, double locked, String name) {
-        super(asset, free, locked);
-        this.tradingEnabled = tradingEnabled;
+    public Coin(String name, boolean tradingEnabled, String asset, double balance) {
         this.name = name;
+        this.tradingEnabled = tradingEnabled;
+        this.asset = asset;
+        this.balance = balance;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public boolean isTradingEnabled() {
         return tradingEnabled;
     }
 
-    public String getName() {
-        return name;
+    public void setTradingEnabled(boolean tradingEnabled) {
+        this.tradingEnabled = tradingEnabled;
+    }
+
+    public String getAsset() {
+        return asset;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double balance) {
+        if(balance < 0)
+            throw new IllegalArgumentException("Balance value cannot be less than 0");
+        this.balance = balance;
     }
 
 }
