@@ -1,4 +1,4 @@
-package com.tecknobit.traderbot.Traders;
+package com.tecknobit.traderbot.Traders.Interfaces.Native;
 
 import com.tecknobit.binancemanager.Managers.Market.BinanceMarketManager;
 import com.tecknobit.binancemanager.Managers.Market.Records.Tickers.TickerPriceChange;
@@ -21,24 +21,13 @@ import java.util.HashMap;
 import static com.tecknobit.binancemanager.Managers.Market.Records.Stats.ExchangeInformation.Symbol;
 import static com.tecknobit.coinbasemanager.Managers.ExchangePro.Orders.Records.Order.*;
 
+// TODO: 11/05/2022 ADD MARGIN AND FUTURES FEATURES AND DIFFERENT ORDER METHOD
+
 public class BinanceTraderBot extends TraderCoreRoutines {
 
     protected final BinanceWalletManager binanceWalletManager;
     protected final BinanceMarketManager binanceMarketManager;
     protected final BinanceSpotManager binanceSpotManager;
-    protected final ArrayList<Transaction> transactions;
-    protected final ArrayList<Transaction> allTransactions;
-    protected final HashMap<String, Symbol> tradingPairsList;
-    protected final HashMap<String, Double> lastPrices;
-    protected final HashMap<String, Coin> coins;
-    protected ArrayList<String> quoteCurrencies;
-    protected String lastTransactionCurrency;
-    protected final ArrayList<Asset> assets;
-    protected String lastBalanceCurrency;
-    protected String lastAssetCurrency;
-    protected long REFRESH_PRICES_TIME;
-    protected long lastPricesRefresh;
-    protected double balance;
 
     public BinanceTraderBot(String apiKey, String secretKey) throws Exception {
         binanceWalletManager = new BinanceWalletManager(apiKey, secretKey);
