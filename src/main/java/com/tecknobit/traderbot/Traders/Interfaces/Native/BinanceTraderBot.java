@@ -24,6 +24,7 @@ import static com.tecknobit.coinbasemanager.Managers.ExchangePro.Orders.Records.
 
 public class BinanceTraderBot extends TraderCoreRoutines {
 
+    protected static final String COMPARE_CURRENCY = "USDT";
     protected final BinanceWalletManager binanceWalletManager;
     protected final BinanceMarketManager binanceMarketManager;
     protected final BinanceSpotManager binanceSpotManager;

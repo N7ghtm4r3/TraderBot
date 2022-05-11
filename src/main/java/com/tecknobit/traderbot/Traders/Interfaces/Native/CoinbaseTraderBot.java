@@ -16,6 +16,7 @@ import java.util.HashMap;
 
 public class CoinbaseTraderBot extends TraderCoreRoutines {
 
+    protected static final String COMPARE_CURRENCY = "USD";
     private final CoinbaseAccountManager coinbaseAccountManager;
     private final CoinbaseProductsManager coinbaseProductsManager;
     private final CoinbaseCurrenciesManager coinbaseCurrenciesManager;
@@ -193,7 +194,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
             lastPricesRefresh = System.currentTimeMillis();
             for (String productId : tradingPairsList.keySet()) {
                 try {
-                    if(productId.endsWith(COMPARE_CURRENCY) || productId.endsWith("USD"))
+                    if(productId.endsWith(COMPARE_CURRENCY))
                         lastPrices.put(productId.split("-")[0],
                                 coinbaseProductsManager.getProductTickerObject(productId).getPrice());
                 }catch (JSONException ignored){
