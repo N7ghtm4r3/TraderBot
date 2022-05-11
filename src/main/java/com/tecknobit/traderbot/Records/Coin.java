@@ -1,8 +1,8 @@
 package com.tecknobit.traderbot.Records;
 
-import static com.tecknobit.binancemanager.Managers.SignedManagers.Wallet.Records.AccountSnapshots.AccountSnapshotSpot.BalancesSpot;
+import com.tecknobit.binancemanager.Managers.SignedManagers.Wallet.Records.AccountSnapshots.AccountSnapshotSpot.BalanceSpot;
 
-public final class Coin extends BalancesSpot {
+public final class Coin extends BalanceSpot {
 
     private final String name;
     private final boolean tradingEnabled;

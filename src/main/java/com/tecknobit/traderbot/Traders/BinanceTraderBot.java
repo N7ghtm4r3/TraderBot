@@ -5,13 +5,12 @@ import com.tecknobit.binancemanager.Managers.Market.Records.Tickers.TickerPriceC
 import com.tecknobit.binancemanager.Managers.SignedManagers.Trade.Spot.BinanceSpotManager;
 import com.tecknobit.binancemanager.Managers.SignedManagers.Trade.Spot.Records.Orders.Response.SpotOrderStatus;
 import com.tecknobit.binancemanager.Managers.SignedManagers.Wallet.BinanceWalletManager;
-import com.tecknobit.coinbasemanager.Managers.ExchangePro.Orders.Records.Order;
+import com.tecknobit.binancemanager.Managers.SignedManagers.Wallet.Records.Asset.CoinInformation;
 import com.tecknobit.traderbot.Records.Asset;
 import com.tecknobit.traderbot.Records.Coin;
 import com.tecknobit.traderbot.Records.Transaction;
 import com.tecknobit.traderbot.Routines.TraderCoreRoutines;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -20,6 +19,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import static com.tecknobit.binancemanager.Managers.Market.Records.Stats.ExchangeInformation.Symbol;
+import static com.tecknobit.coinbasemanager.Managers.ExchangePro.Orders.Records.Order.*;
 
 public class BinanceTraderBot extends TraderCoreRoutines {
 
@@ -39,7 +39,6 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     private long REFRESH_PRICES_TIME;
     private long lastPricesRefresh;
     private double balance;
-    private JSONArray allCoins;
 
     public BinanceTraderBot(String apiKey, String secretKey) throws Exception {
         binanceWalletManager = new BinanceWalletManager(apiKey, secretKey);
@@ -172,17 +171,15 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     @Override
     protected void initTrader() throws Exception {
         refreshLastPrices();
-        allCoins = binanceWalletManager.getJSONAllCoins();
-        for (int j=0; j < allCoins.length(); j++){
-            JSONObject coin = allCoins.getJSONObject(j);
-            double free = coin.getDouble("free");
+        for (CoinInformation coin : binanceWalletManager.getAllCoinsList()){
+            double free = coin.getFree();
             if(free > 0){
-                String symbol = coin.getString("coin");
-                coins.put(symbol, new Coin(coin.getBoolean("trading"),
+                String symbol = coin.getCoin();
+                coins.put(symbol, new Coin(coin.isTrading(),
                         symbol,
                         free,
-                        coin.getDouble("locked"),
-                        coin.getString("name")
+                        coin.getLocked(),
+                        coin.getName()
                 ));
             }
         }
@@ -267,20 +264,23 @@ public class BinanceTraderBot extends TraderCoreRoutines {
                 if(coin.isTradingEnabled()){
                     String symbol = coin.getAsset() + lastTransactionCurrency;
                     if(!symbol.startsWith(lastTransactionCurrency)) {
-                        for (SpotOrderStatus order : binanceSpotManager.getObjectAllOrdersList(symbol)){
-                            if(order.getStatus().equals("FILLED")){
-                                String date;
-                                if(dateFormat != null)
-                                    date = new SimpleDateFormat(dateFormat).format(new Date(order.getTime()));
-                                else
-                                    date = new Date(order.getTime()).toString();
-                                transactions.add(new Transaction(symbol,
-                                        order.getSide(),
-                                        date,
-                                        order.getCummulativeQuoteQty(),
-                                        order.getExecutedQty()
-                                ));
+                        try {
+                            for (SpotOrderStatus order : binanceSpotManager.getObjectAllOrdersList(symbol)){
+                                if(order.getStatus().equals("FILLED")){
+                                    String date;
+                                    if(dateFormat != null)
+                                        date = new SimpleDateFormat(dateFormat).format(new Date(order.getTime()));
+                                    else
+                                        date = new Date(order.getTime()).toString();
+                                    transactions.add(new Transaction(symbol,
+                                            order.getSide(),
+                                            date,
+                                            order.getCummulativeQuoteQty(),
+                                            order.getExecutedQty()
+                                    ));
+                                }
                             }
+                        }catch (JSONException ignored){
                         }
                     }
                 }
@@ -296,34 +296,54 @@ public class BinanceTraderBot extends TraderCoreRoutines {
 
     @Override
     public void buyMarket(String symbol, double quantity) throws Exception {
-        placeAnOrder(symbol, quantity, Order.BUY_SIDE);
-        Symbol coinSymbol = tradingPairsList.get(symbol);
-        insertQuoteCurrency(coinSymbol.getQuoteAsset());
-        String baseAsset = coinSymbol.getBaseAsset();
-        Coin coin = coins.get(baseAsset);
-        if(coin != null){
-            double newQuantity = coin.getFree() + quantity;
-            //set new quantity value with new custom object
-        }else{
-            coins.put(baseAsset, new Coin(true,
-                    baseAsset,
-                    quantity,
-                    0,
-                    "get name method"
-            ));
-        }
+        placeAnOrder(symbol, quantity, BUY_SIDE);
+        int statusCode = binanceSpotManager.getStatusResponse();
+        if(statusCode == 200) {
+            Symbol coinSymbol = tradingPairsList.get(symbol);
+            insertQuoteCurrency(coinSymbol.getQuoteAsset());
+            String baseAsset = coinSymbol.getBaseAsset();
+            Coin coin = coins.get(baseAsset);
+            if(coin != null)
+                insertCoin(baseAsset, coin.getFree() + quantity);
+            else
+                insertCoin(baseAsset, quantity);
+        }else
+            throw new Exception("Error during buy order status code: [" + statusCode + "]" +
+                    " error message: [" + binanceSpotManager.getErrorResponse() + "]");
     }
 
     @Override
     public void sellMarket(String symbol, double quantity) throws Exception {
-        placeAnOrder(symbol, quantity, Order.SELL_SIDE);
+        placeAnOrder(symbol, quantity, SELL_SIDE);
+        int statusCode = binanceSpotManager.getStatusResponse();
+        if(statusCode == 200) {
+            Symbol coinSymbol = tradingPairsList.get(symbol);
+            String baseAsset = coinSymbol.getBaseAsset();
+            Coin coin = coins.get(baseAsset);
+            double newQuantity = coin.getFree() - quantity;
+            if(newQuantity == 0)
+                coins.remove(baseAsset);
+            else
+                insertCoin(baseAsset, newQuantity);
+        }else
+            throw new Exception("Error during sell order status code: [" + statusCode + "]" +
+                    " error message: [" + binanceSpotManager.getErrorResponse() + "]");
     }
 
     @Override
     protected void placeAnOrder(String symbol, double quantity, String side) throws Exception {
         HashMap<String, Object> quantityParam = new HashMap<>();
         quantityParam.put("quantity", quantity);
-        orderStatus = binanceSpotManager.sendNewOrder(symbol, side, Order.MARKET_TYPE, quantityParam);
+        orderStatus = binanceSpotManager.sendNewOrder(symbol, side, MARKET_TYPE, quantityParam);
+    }
+
+    private void insertCoin(String symbol, double quantity) throws Exception {
+        coins.put(symbol, new Coin(true,
+                symbol,
+                quantity,
+                0,
+                binanceWalletManager.getSingleCoinObject(symbol).getName()
+        ));
     }
 
     @Override

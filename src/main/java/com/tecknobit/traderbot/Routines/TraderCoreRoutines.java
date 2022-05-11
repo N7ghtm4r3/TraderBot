@@ -58,6 +58,7 @@ public abstract class TraderCoreRoutines {
                     return null;
                 }
             }
+            
         }
         return null;
     }

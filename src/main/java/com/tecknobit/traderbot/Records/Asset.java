@@ -4,8 +4,8 @@ public class Asset {
 
     private final String index;
     private final String assetName;
-    private final double quantity;
-    private final double value;
+    private double quantity;
+    private double value;
 
     private final String currency;
     public Asset(String index, String assetName, double quantity, double value, String currency) {
@@ -28,8 +28,20 @@ public class Asset {
         return quantity;
     }
 
+    public void setQuantity(double quantity) {
+        if(quantity < 0)
+            throw new IllegalArgumentException("Quantity value cannot be less than 0");
+        this.quantity = quantity;
+    }
+
     public double getValue() {
         return value;
+    }
+
+    public void setValue(double value) {
+        if(value < 0)
+            throw new IllegalArgumentException("Value cannot be less than 0");
+        this.value = value;
     }
 
     public String getCurrency() {
