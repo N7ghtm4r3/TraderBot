@@ -53,6 +53,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         coinbaseAccountManager = new CoinbaseAccountManager(apiKey, apiSecret, passphrase, defaultErrorMessage, timeout);
         coinbaseProductsManager = new CoinbaseProductsManager(apiKey, apiSecret, passphrase, defaultErrorMessage, timeout);
         coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, defaultErrorMessage, timeout);
+        this.quoteCurrencies = quoteCurrencies;
         initTrader();
     }
     public CoinbaseTraderBot(String apiKey, String apiSecret, String passphrase, int timeout,
@@ -60,6 +61,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         coinbaseAccountManager = new CoinbaseAccountManager(apiKey, apiSecret, passphrase, timeout);
         coinbaseProductsManager = new CoinbaseProductsManager(apiKey, apiSecret, passphrase, timeout);
         coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, timeout);
+        this.quoteCurrencies = quoteCurrencies;
         initTrader();
     }
 
@@ -68,6 +70,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         coinbaseAccountManager = new CoinbaseAccountManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
         coinbaseProductsManager = new CoinbaseProductsManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
         coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
+        this.quoteCurrencies = quoteCurrencies;
         initTrader();
     }
 
@@ -76,6 +79,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         coinbaseAccountManager = new CoinbaseAccountManager(apiKey, apiSecret, passphrase);
         coinbaseProductsManager = new CoinbaseProductsManager(apiKey, apiSecret, passphrase);
         coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase);
+        this.quoteCurrencies = quoteCurrencies;
         initTrader();
     }
 
