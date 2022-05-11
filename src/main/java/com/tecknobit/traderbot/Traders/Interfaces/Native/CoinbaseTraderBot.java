@@ -9,6 +9,7 @@ import com.tecknobit.traderbot.Records.Asset;
 import com.tecknobit.traderbot.Records.Coin;
 import com.tecknobit.traderbot.Records.Transaction;
 import com.tecknobit.traderbot.Routines.TraderCoreRoutines;
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -96,12 +97,11 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         lastPrices = new HashMap<>();
         assets = new ArrayList<>();
         coins = new HashMap<>();
-        refreshLatestPrice();
         for (CoinbaseAccount coin : coinbaseAccountManager.getCoinbaseWalletsList()){
             double balance = coin.getBalance();
             if(balance > 0){
-                String symbol = coin.getId();
-                coins.put(symbol, new Coin(coinbaseCurrenciesManager.getCurrencyObject(coin.getCurrency()).getName(),
+                String symbol = coin.getCurrency();
+                coins.put(symbol, new Coin(coinbaseCurrenciesManager.getCurrencyObject(symbol).getName(),
                         true,
                         symbol,
                         balance
@@ -110,16 +110,34 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         }
         for (TradingPair tradingPair : coinbaseProductsManager.getAllTradingPairsList())
             tradingPairsList.put(tradingPair.getId(), tradingPair);
+        refreshLatestPrice();
     }
 
     @Override
     public double getWalletBalance(String currency, boolean forceRefresh) throws Exception {
-        return 0;
+        if(isRefreshTime() || !lastBalanceCurrency.equals(currency) || forceRefresh){
+            refreshLatestPrice();
+            lastBalanceCurrency = currency;
+            balance = 0;
+            for (Coin coin : coins.values()) {
+                if(coin.isTradingEnabled()) {
+                    System.out.println(coin.getAsset());
+                    balance += coin.getBalance() * lastPrices.get(coin.getAsset());
+                }
+            }
+            if(!lastBalanceCurrency.equals(currency)){
+                try {
+                    balance /= coinbaseProductsManager.getProductTickerObject(currency + COMPARE_CURRENCY).getPrice();
+                }catch (Exception ignored){
+                }
+            }
+        }
+        return balance;
     }
 
     @Override
     public double getWalletBalance(String currency, boolean forceRefresh, int decimals) throws Exception {
-        return 0;
+        return coinbaseProductsManager.roundValue(getWalletBalance(currency, forceRefresh), decimals);
     }
 
     @Override
@@ -163,7 +181,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
     }
 
     @Override
-    public  <T> T getOrderStatus(FormatResponseType formatResponseType) {
+    public <T> T getOrderStatus(FormatResponseType formatResponseType) {
         return super.getOrderStatus(formatResponseType);
     }
 
@@ -174,7 +192,17 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
 
     @Override
     protected void refreshLatestPrice() throws Exception {
-
+        if(isRefreshTime()){
+            lastPricesRefresh = System.currentTimeMillis();
+            for (String productId : tradingPairsList.keySet()) {
+                try {
+                    if(productId.endsWith(COMPARE_CURRENCY) || productId.endsWith("USD"))
+                        lastPrices.put(productId.split("-")[0],
+                                coinbaseProductsManager.getProductTickerObject(productId).getPrice());
+                }catch (JSONException ignored){
+                }
+            }
+        }
     }
 
     @Override
