@@ -119,13 +119,10 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
             refreshLatestPrice();
             lastBalanceCurrency = currency;
             balance = 0;
-            for (Coin coin : coins.values()) {
-                if(coin.isTradingEnabled()) {
-                    System.out.println(coin.getAsset());
+            for (Coin coin : coins.values())
+                if(coin.isTradingEnabled())
                     balance += coin.getBalance() * lastPrices.get(coin.getAsset());
-                }
-            }
-            if(!lastBalanceCurrency.equals(currency)){
+            if(!lastBalanceCurrency.equals(COMPARE_CURRENCY)){
                 try {
                     balance /= coinbaseProductsManager.getProductTickerObject(currency + COMPARE_CURRENCY).getPrice();
                 }catch (Exception ignored){
