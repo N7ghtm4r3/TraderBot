@@ -1,5 +1,7 @@
 package com.tecknobit.traderbot.Records;
 
+import static com.tecknobit.binancemanager.Managers.SignedManagers.Trade.Common.TradeConstants.BUY;
+import static com.tecknobit.binancemanager.Managers.SignedManagers.Trade.Common.TradeConstants.SELL;
 import static com.tecknobit.traderbot.Routines.TraderCoreRoutines.tradingTools;
 
 public class Transaction {
@@ -11,10 +13,20 @@ public class Transaction {
     private final double quantity;
 
     public Transaction(String symbol, String side, String transactionDate, double value, double quantity) {
+        if(symbol == null || symbol.isBlank())
+            throw new IllegalArgumentException("Symbol must contains characters");
         this.symbol = symbol;
+        if(!symbol.equals(BUY) && !symbol.equals(SELL))
+            throw new IllegalArgumentException("Side can be only value BUY or SELL");
         this.side = side;
+        if(transactionDate == null || transactionDate.isBlank())
+            throw new IllegalArgumentException("Transaction date must contains characters");
         this.transactionDate = transactionDate;
+        if(value < 0)
+            throw new IllegalArgumentException("Value cannot be less than 0");
         this.value = value;
+        if(quantity < 0)
+            throw new IllegalArgumentException("Quantity value cannot be less than 0");
         this.quantity = quantity;
     }
 
@@ -40,17 +52,6 @@ public class Transaction {
 
     public double getQuantity() {
         return quantity;
-    }
-
-    @Override
-    public String toString() {
-        return "Transaction{" +
-                "symbol='" + symbol + '\'' +
-                ", side='" + side + '\'' +
-                ", transactionDate='" + transactionDate + '\'' +
-                ", value=" + value +
-                ", quantity=" + quantity +
-                '}';
     }
 
 }

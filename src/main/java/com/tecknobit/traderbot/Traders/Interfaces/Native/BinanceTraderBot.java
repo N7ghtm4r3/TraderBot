@@ -128,10 +128,10 @@ public class BinanceTraderBot extends TraderCoreRoutines {
             double free = coin.getFree();
             if(free > 0){
                 String symbol = coin.getCoin();
-                coins.put(symbol, new Coin(coin.getName(),
-                        coin.isTrading(),
-                        symbol,
-                        free
+                coins.put(symbol, new Coin(symbol,
+                        coin.getName(),
+                        free,
+                        coin.isTrading()
                 ));
             }
         }
@@ -147,7 +147,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
             balance = 0;
             for (Coin coin : coins.values())
                 if(coin.isTradingEnabled())
-                    balance += coin.getBalance() * lastPrices.get(coin.getAsset() + COMPARE_CURRENCY);
+                    balance += coin.getQuantity() * lastPrices.get(coin.getAssetIndex() + COMPARE_CURRENCY);
             if(!currency.equals(COMPARE_CURRENCY)){
                 try {
                     balance /= binanceMarketManager.getCurrentAveragePriceValue(currency + COMPARE_CURRENCY);
@@ -170,8 +170,8 @@ public class BinanceTraderBot extends TraderCoreRoutines {
             lastAssetCurrency = currency;
             for (Coin coin : coins.values()){
                 if(coin.isTradingEnabled()){
-                    double free = coin.getBalance();
-                    String asset = coin.getAsset();
+                    double free = coin.getQuantity();
+                    String asset = coin.getAssetIndex();
                     double value = free * lastPrices.get(asset + COMPARE_CURRENCY);
                     if(!currency.equals(COMPARE_CURRENCY)){
                         try {
@@ -179,7 +179,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
                         }catch (Exception ignored){}
                     }
                     assets.add(new Asset(asset,
-                            coin.getName(),
+                            coin.getAssetName(),
                             free,
                             value,
                             currency
@@ -214,7 +214,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
             transactions.clear();
             for (Coin coin : coins.values()){
                 if(coin.isTradingEnabled()){
-                    String symbol = coin.getAsset() + lastTransactionCurrency;
+                    String symbol = coin.getAssetIndex() + lastTransactionCurrency;
                     if(!symbol.startsWith(lastTransactionCurrency)) {
                         try {
                             for (SpotOrderStatus order : binanceSpotManager.getObjectAllOrdersList(symbol)){
@@ -256,7 +256,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
             String baseAsset = coinSymbol.getBaseAsset();
             Coin coin = coins.get(baseAsset);
             if(coin != null)
-                insertCoin(baseAsset, coin.getBalance() + quantity);
+                insertCoin(baseAsset, coin.getQuantity() + quantity);
             else
                 insertCoin(baseAsset, quantity);
         }else
@@ -272,7 +272,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
             Symbol coinSymbol = tradingPairsList.get(symbol);
             String baseAsset = coinSymbol.getBaseAsset();
             Coin coin = coins.get(baseAsset);
-            double newQuantity = coin.getBalance() - quantity;
+            double newQuantity = coin.getQuantity() - quantity;
             if(newQuantity == 0)
                 coins.remove(baseAsset);
             else
@@ -290,10 +290,10 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     }
 
     private void insertCoin(String symbol, double quantity) throws Exception {
-        coins.put(symbol, new Coin(binanceWalletManager.getSingleCoinObject(symbol).getName(),
-                true,
-                symbol,
-                quantity
+        coins.put(symbol, new Coin(symbol,
+                binanceWalletManager.getSingleCoinObject(symbol).getName(),
+                quantity,
+                true
         ));
     }
 

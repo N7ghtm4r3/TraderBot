@@ -1,21 +1,12 @@
 package com.tecknobit.traderbot.Records;
 
-public final class Coin {
+public final class Coin extends Token{
 
-    private final String name;
     private boolean tradingEnabled;
-    private final String asset;
-    private double balance;
 
-    public Coin(String name, boolean tradingEnabled, String asset, double balance) {
-        this.name = name;
+    public Coin(String assetIndex, String assetName, double quantity, boolean tradingEnabled) {
+        super(assetIndex, assetName, quantity);
         this.tradingEnabled = tradingEnabled;
-        this.asset = asset;
-        this.balance = balance;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public boolean isTradingEnabled() {
@@ -24,20 +15,6 @@ public final class Coin {
 
     public void setTradingEnabled(boolean tradingEnabled) {
         this.tradingEnabled = tradingEnabled;
-    }
-
-    public String getAsset() {
-        return asset;
-    }
-
-    public double getBalance() {
-        return balance;
-    }
-
-    public void setBalance(double balance) {
-        if(balance < 0)
-            throw new IllegalArgumentException("Balance value cannot be less than 0");
-        this.balance = balance;
     }
 
 }

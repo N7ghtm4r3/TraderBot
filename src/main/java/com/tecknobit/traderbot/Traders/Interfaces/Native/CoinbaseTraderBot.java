@@ -102,10 +102,10 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
             double balance = coin.getBalance();
             if(balance > 0){
                 String symbol = coin.getCurrency();
-                coins.put(symbol, new Coin(coinbaseCurrenciesManager.getCurrencyObject(symbol).getName(),
-                        true,
-                        symbol,
-                        balance
+                coins.put(symbol, new Coin(symbol,
+                        coinbaseCurrenciesManager.getCurrencyObject(symbol).getName(),
+                        balance,
+                        true
                 ));
             }
         }
@@ -122,7 +122,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
             balance = 0;
             for (Coin coin : coins.values())
                 if(coin.isTradingEnabled())
-                    balance += coin.getBalance() * lastPrices.get(coin.getAsset());
+                    balance += coin.getQuantity() * lastPrices.get(coin.getAssetIndex());
             if(!lastBalanceCurrency.equals(COMPARE_CURRENCY)){
                 try {
                     balance /= coinbaseProductsManager.getProductTickerObject(currency + COMPARE_CURRENCY).getPrice();
@@ -140,7 +140,31 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
 
     @Override
     public ArrayList<Asset> getAssetsList(String currency, boolean forceRefresh) throws Exception {
-        return null;
+        if(isRefreshTime() || !lastAssetCurrency.equals(currency) || forceRefresh){
+            refreshLatestPrice();
+            lastAssetCurrency = currency;
+            assets.clear();
+            for (Coin coin : coins.values()) {
+                String index = coin.getAssetIndex();
+                double quantity = coin.getQuantity();
+                double balance = quantity * lastPrices.get(index);
+                if(!currency.equals(COMPARE_CURRENCY)){
+                    try {
+                        balance /= coinbaseProductsManager.getProductTickerObject(BinanceTraderBot.COMPARE_CURRENCY
+                                + "-" + currency).getPrice();
+                    }catch (Exception ignored){
+                        
+                    }
+                }
+                assets.add(new Asset(index,
+                        coin.getAssetName(),
+                        quantity,
+                        balance,
+                        currency
+                ));
+            }
+        }
+        return assets;
     }
 
     @Override
@@ -193,10 +217,10 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         if(isRefreshTime()){
             lastPricesRefresh = System.currentTimeMillis();
             for (String productId : tradingPairsList.keySet()) {
+                String[] productIds = productId.split("-");
                 try {
-                    if(productId.endsWith(COMPARE_CURRENCY))
-                        lastPrices.put(productId.split("-")[0],
-                                coinbaseProductsManager.getProductTickerObject(productId).getPrice());
+                    if(productIds[1].equals(COMPARE_CURRENCY))
+                        lastPrices.put(productIds[0], coinbaseProductsManager.getProductTickerObject(productId).getPrice());
                 }catch (JSONException ignored){
                 }
             }
