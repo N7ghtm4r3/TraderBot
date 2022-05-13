@@ -18,6 +18,8 @@ import static com.tecknobit.traderbot.Routines.TraderCoreRoutines.FormatResponse
 public abstract class TraderCoreRoutines {
 
     public static TradingTools tradingTools = new TradingTools();
+    protected static final String USD_CURRENCY = "USD";
+    protected static final String USDT_CURRENCY = "USDT";
     protected ArrayList<Transaction> transactions;
     protected ArrayList<Transaction> allTransactions;
     protected HashMap<String, Double> lastPrices;

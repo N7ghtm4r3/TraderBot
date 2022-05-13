@@ -23,8 +23,6 @@ import static com.tecknobit.coinbasemanager.Managers.ExchangePro.Orders.Records.
 // TODO: 11/05/2022 ADD MARGIN AND FUTURES FEATURES AND DIFFERENT ORDER METHOD
 
 public class BinanceTraderBot extends TraderCoreRoutines {
-
-    protected static final String COMPARE_CURRENCY = "USDT";
     protected final BinanceWalletManager binanceWalletManager;
     protected final BinanceMarketManager binanceMarketManager;
     protected final BinanceSpotManager binanceSpotManager;
@@ -147,10 +145,10 @@ public class BinanceTraderBot extends TraderCoreRoutines {
             balance = 0;
             for (Coin coin : coins.values())
                 if(coin.isTradingEnabled())
-                    balance += coin.getQuantity() * lastPrices.get(coin.getAssetIndex() + COMPARE_CURRENCY);
-            if(!currency.equals(COMPARE_CURRENCY)){
+                    balance += coin.getQuantity() * lastPrices.get(coin.getAssetIndex() + USDT_CURRENCY);
+            if(!currency.contains(USD_CURRENCY)){
                 try {
-                    balance /= binanceMarketManager.getCurrentAveragePriceValue(currency + COMPARE_CURRENCY);
+                    balance /= binanceMarketManager.getCurrentAveragePriceValue(currency + USDT_CURRENCY);
                 }catch (Exception ignored){}
             }
         }
@@ -172,10 +170,10 @@ public class BinanceTraderBot extends TraderCoreRoutines {
                 if(coin.isTradingEnabled()){
                     double free = coin.getQuantity();
                     String asset = coin.getAssetIndex();
-                    double value = free * lastPrices.get(asset + COMPARE_CURRENCY);
-                    if(!currency.equals(COMPARE_CURRENCY)){
+                    double value = free * lastPrices.get(asset + USDT_CURRENCY);
+                    if(!currency.contains(USD_CURRENCY)){
                         try {
-                            value /= binanceMarketManager.getCurrentAveragePriceValue(currency + COMPARE_CURRENCY);
+                            value /= binanceMarketManager.getCurrentAveragePriceValue(currency + USDT_CURRENCY);
                         }catch (Exception ignored){}
                     }
                     assets.add(new Asset(asset,
@@ -313,7 +311,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
             lastPricesRefresh = System.currentTimeMillis();
             for(TickerPriceChange tickerPriceChange : binanceMarketManager.getTickerPriceChangeList()) {
                 String symbol = tickerPriceChange.getSymbol();
-                if(symbol.endsWith(COMPARE_CURRENCY))
+                if(symbol.endsWith(USDT_CURRENCY))
                     lastPrices.put(symbol, tickerPriceChange.getLastPrice());
             }
         }

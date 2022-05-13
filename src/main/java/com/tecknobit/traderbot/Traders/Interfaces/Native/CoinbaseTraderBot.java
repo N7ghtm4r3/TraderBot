@@ -3,6 +3,8 @@ package com.tecknobit.traderbot.Traders.Interfaces.Native;
 import com.tecknobit.coinbasemanager.Managers.ExchangePro.Account.CoinbaseAccountManager;
 import com.tecknobit.coinbasemanager.Managers.ExchangePro.Account.Records.CoinbaseAccount;
 import com.tecknobit.coinbasemanager.Managers.ExchangePro.Currencies.CoinbaseCurrenciesManager;
+import com.tecknobit.coinbasemanager.Managers.ExchangePro.Orders.CoinbaseOrdersManager;
+import com.tecknobit.coinbasemanager.Managers.ExchangePro.Orders.Records.Order;
 import com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.CoinbaseProductsManager;
 import com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.Records.TradingPair;
 import com.tecknobit.traderbot.Records.Asset;
@@ -11,28 +13,35 @@ import com.tecknobit.traderbot.Records.Transaction;
 import com.tecknobit.traderbot.Routines.TraderCoreRoutines;
 import org.json.JSONException;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+
+import static com.tecknobit.coinbasemanager.Managers.ExchangePro.Orders.Records.Order.*;
+import static java.util.List.of;
 
 public class CoinbaseTraderBot extends TraderCoreRoutines {
 
-    protected static final String COMPARE_CURRENCY = "USD";
     private final CoinbaseAccountManager coinbaseAccountManager;
     private final CoinbaseProductsManager coinbaseProductsManager;
     private final CoinbaseCurrenciesManager coinbaseCurrenciesManager;
+    private final CoinbaseOrdersManager coinbaseOrdersManager;
     protected HashMap<String, TradingPair> tradingPairsList;
 
     public CoinbaseTraderBot(String apiKey, String apiSecret, String passphrase, String defaultErrorMessage,
                              int timeout) throws Exception {
-        coinbaseAccountManager = new CoinbaseAccountManager(apiKey, apiSecret, passphrase, defaultErrorMessage, timeout);
-        coinbaseProductsManager = new CoinbaseProductsManager(apiKey, apiSecret, passphrase, defaultErrorMessage, timeout);
-        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, defaultErrorMessage, timeout);
+        coinbaseAccountManager = new CoinbaseAccountManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
+        coinbaseProductsManager = new CoinbaseProductsManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
+        coinbaseOrdersManager = new CoinbaseOrdersManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
         initTrader();
     }
     public CoinbaseTraderBot(String apiKey, String apiSecret, String passphrase, int timeout) throws Exception {
         coinbaseAccountManager = new CoinbaseAccountManager(apiKey, apiSecret, passphrase, timeout);
         coinbaseProductsManager = new CoinbaseProductsManager(apiKey, apiSecret, passphrase, timeout);
         coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, timeout);
+        coinbaseOrdersManager = new CoinbaseOrdersManager(apiKey, apiSecret, passphrase, timeout);
         initTrader();
     }
 
@@ -40,6 +49,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         coinbaseAccountManager = new CoinbaseAccountManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
         coinbaseProductsManager = new CoinbaseProductsManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
         coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
+        coinbaseOrdersManager = new CoinbaseOrdersManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
         initTrader();
     }
 
@@ -47,14 +57,16 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         coinbaseAccountManager = new CoinbaseAccountManager(apiKey, apiSecret, passphrase);
         coinbaseProductsManager = new CoinbaseProductsManager(apiKey, apiSecret, passphrase);
         coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase);
+        coinbaseOrdersManager = new CoinbaseOrdersManager(apiKey, apiSecret, passphrase);
         initTrader();
     }
 
     public CoinbaseTraderBot(String apiKey, String apiSecret, String passphrase, String defaultErrorMessage, int timeout,
                              ArrayList<String> quoteCurrencies) throws Exception {
         coinbaseAccountManager = new CoinbaseAccountManager(apiKey, apiSecret, passphrase, defaultErrorMessage, timeout);
-        coinbaseProductsManager = new CoinbaseProductsManager(apiKey, apiSecret, passphrase, defaultErrorMessage, timeout);
-        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, defaultErrorMessage, timeout);
+        coinbaseProductsManager = new CoinbaseProductsManager(apiKey, apiSecret, defaultErrorMessage, timeout);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, defaultErrorMessage, timeout);
+        coinbaseOrdersManager = new CoinbaseOrdersManager(apiKey, apiSecret, defaultErrorMessage, timeout);
         this.quoteCurrencies = quoteCurrencies;
         initTrader();
     }
@@ -63,6 +75,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         coinbaseAccountManager = new CoinbaseAccountManager(apiKey, apiSecret, passphrase, timeout);
         coinbaseProductsManager = new CoinbaseProductsManager(apiKey, apiSecret, passphrase, timeout);
         coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, timeout);
+        coinbaseOrdersManager = new CoinbaseOrdersManager(apiKey, apiSecret, passphrase, timeout);
         this.quoteCurrencies = quoteCurrencies;
         initTrader();
     }
@@ -72,6 +85,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         coinbaseAccountManager = new CoinbaseAccountManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
         coinbaseProductsManager = new CoinbaseProductsManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
         coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
+        coinbaseOrdersManager = new CoinbaseOrdersManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
         this.quoteCurrencies = quoteCurrencies;
         initTrader();
     }
@@ -81,6 +95,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         coinbaseAccountManager = new CoinbaseAccountManager(apiKey, apiSecret, passphrase);
         coinbaseProductsManager = new CoinbaseProductsManager(apiKey, apiSecret, passphrase);
         coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase);
+        coinbaseOrdersManager = new CoinbaseOrdersManager(apiKey, apiSecret, passphrase);
         this.quoteCurrencies = quoteCurrencies;
         initTrader();
     }
@@ -123,9 +138,9 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
             for (Coin coin : coins.values())
                 if(coin.isTradingEnabled())
                     balance += coin.getQuantity() * lastPrices.get(coin.getAssetIndex());
-            if(!lastBalanceCurrency.equals(COMPARE_CURRENCY)){
+            if(!lastBalanceCurrency.contains(USD_CURRENCY)){
                 try {
-                    balance /= coinbaseProductsManager.getProductTickerObject(currency + COMPARE_CURRENCY).getPrice();
+                    balance *= coinbaseProductsManager.getProductTickerObject(getSymbol(currency)).getPrice();
                 }catch (Exception ignored){
                 }
             }
@@ -148,12 +163,10 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
                 String index = coin.getAssetIndex();
                 double quantity = coin.getQuantity();
                 double balance = quantity * lastPrices.get(index);
-                if(!currency.equals(COMPARE_CURRENCY)){
+                if(!currency.contains(USD_CURRENCY)){
                     try {
-                        balance /= coinbaseProductsManager.getProductTickerObject(BinanceTraderBot.COMPARE_CURRENCY
-                                + "-" + currency).getPrice();
+                        balance *= coinbaseProductsManager.getProductTickerObject(getSymbol(currency)).getPrice();
                     }catch (Exception ignored){
-                        
                     }
                 }
                 assets.add(new Asset(index,
@@ -169,22 +182,58 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
 
     @Override
     public ArrayList<Transaction> getAllTransactions(boolean forceRefresh) throws Exception {
-        return null;
+        return getAllTransactions(null, forceRefresh);
     }
 
     @Override
     public ArrayList<Transaction> getAllTransactions(String dateFormat, boolean forceRefresh) throws Exception {
-        return null;
+        if(isRefreshTime() || forceRefresh){
+            allTransactions.clear();
+            for (String quoteCurrency : quoteCurrencies)
+                allTransactions.addAll(getTransactionsList(quoteCurrency, dateFormat, forceRefresh));
+            transactions.clear();
+        }
+        return allTransactions;
     }
 
     @Override
     public ArrayList<Transaction> getTransactionsList(String quoteCurrency, boolean forceRefresh) throws Exception {
-        return null;
+        return getTransactionsList(quoteCurrency, null, forceRefresh);
     }
 
     @Override
     public ArrayList<Transaction> getTransactionsList(String quoteCurrency, String dateFormat, boolean forceRefresh) throws Exception {
-        return null;
+        if(isRefreshTime() || !lastTransactionCurrency.equals(quoteCurrency) || forceRefresh){
+            transactions.clear();
+            lastTransactionCurrency = quoteCurrency;
+            System.out.println(coinbaseOrdersManager.getAllOrders(1000, CREATED_AT_SORTER, ASC_SORTING_ORDER,
+                    new ArrayList<>(of(STATUS_DONE))));
+            ArrayList<Order> orders = coinbaseOrdersManager.getAllOrdersList(1000, CREATED_AT_SORTER, ASC_SORTING_ORDER,
+                    new ArrayList<>(of(STATUS_DONE)));
+            String date;
+            for (Coin coin : coins.values()){
+                if(coin.isTradingEnabled()){
+                    String symbol = coin.getAssetIndex() + "-" + lastTransactionCurrency;
+                    for (Order order : orders){
+                        if(order.getId().equals(symbol)){
+                            String createdAt = order.getCreatedAt();
+                            if(dateFormat != null) {
+                                long timestamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse((createdAt)).getTime();
+                                date = new SimpleDateFormat(dateFormat).format(new Date(timestamp));
+                            } else
+                                date = createdAt;
+                            transactions.add(new Transaction(symbol,
+                                    order.getSide(),
+                                    date,
+                                    order.getPrice(),
+                                    order.getSize()
+                            ));
+                        }
+                    }
+                }
+            }
+        }
+        return transactions;
     }
 
     @Override
@@ -219,7 +268,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
             for (String productId : tradingPairsList.keySet()) {
                 String[] productIds = productId.split("-");
                 try {
-                    if(productIds[1].equals(COMPARE_CURRENCY))
+                    if(productIds[1].equals(USD_CURRENCY))
                         lastPrices.put(productIds[0], coinbaseProductsManager.getProductTickerObject(productId).getPrice());
                 }catch (JSONException ignored){
                 }
@@ -250,6 +299,10 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
     @Override
     public ArrayList<String> getQuoteCurrencies() {
         return super.getQuoteCurrencies();
+    }
+
+    protected String getSymbol(String currency){
+        return USDT_CURRENCY + "-" + currency;
     }
 
 }
