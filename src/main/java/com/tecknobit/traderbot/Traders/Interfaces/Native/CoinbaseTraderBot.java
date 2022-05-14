@@ -19,7 +19,6 @@ import java.util.Date;
 import java.util.HashMap;
 
 import static com.tecknobit.coinbasemanager.Managers.ExchangePro.Orders.Records.Order.*;
-import static java.util.List.of;
 
 public class CoinbaseTraderBot extends TraderCoreRoutines {
 
@@ -206,10 +205,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         if(isRefreshTime() || !lastTransactionCurrency.equals(quoteCurrency) || forceRefresh){
             transactions.clear();
             lastTransactionCurrency = quoteCurrency;
-            System.out.println(coinbaseOrdersManager.getAllOrders(1000, CREATED_AT_SORTER, ASC_SORTING_ORDER,
-                    new ArrayList<>(of(STATUS_DONE))));
-            ArrayList<Order> orders = coinbaseOrdersManager.getAllOrdersList(1000, CREATED_AT_SORTER, ASC_SORTING_ORDER,
-                    new ArrayList<>(of(STATUS_DONE)));
+            ArrayList<Order> orders = coinbaseOrdersManager.getAllOrdersList(1000, CREATED_AT_SORTER, ASC_SORTING_ORDER, STATUS_DONE);
             String date;
             for (Coin coin : coins.values()){
                 if(coin.isTradingEnabled()){
