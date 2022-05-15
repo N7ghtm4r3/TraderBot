@@ -16,7 +16,8 @@ public class Transaction {
         if(symbol == null || symbol.isBlank())
             throw new IllegalArgumentException("Symbol must contains characters");
         this.symbol = symbol;
-        if(!symbol.equals(BUY) && !symbol.equals(SELL))
+        side = side.toUpperCase();
+        if(!side.equals(BUY) && !side.equals(SELL))
             throw new IllegalArgumentException("Side can be only value BUY or SELL");
         this.side = side;
         if(transactionDate == null || transactionDate.isBlank())

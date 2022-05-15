@@ -113,4 +113,6 @@ public abstract class TraderCoreRoutines {
         return (System.currentTimeMillis() - lastPricesRefresh) >= REFRESH_PRICES_TIME;
     }
 
+    protected abstract void insertCoin(String symbol, String name, double quantity) throws Exception;
+
 }

@@ -205,23 +205,25 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         if(isRefreshTime() || !lastTransactionCurrency.equals(quoteCurrency) || forceRefresh){
             transactions.clear();
             lastTransactionCurrency = quoteCurrency;
-            ArrayList<Order> orders = coinbaseOrdersManager.getAllOrdersList(1000, CREATED_AT_SORTER, ASC_SORTING_ORDER, STATUS_DONE);
+            ArrayList<Order> orders = coinbaseOrdersManager.getAllOrdersList(1000, CREATED_AT_SORTER, ASC_SORTING_ORDER,
+                    STATUS_DONE);
             String date;
             for (Coin coin : coins.values()){
                 if(coin.isTradingEnabled()){
                     String symbol = coin.getAssetIndex() + "-" + lastTransactionCurrency;
                     for (Order order : orders){
-                        if(order.getId().equals(symbol)){
+                        if(order.getProductId().equals(symbol)){
                             String createdAt = order.getCreatedAt();
                             if(dateFormat != null) {
-                                long timestamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse((createdAt)).getTime();
+                                long timestamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+                                        .parse((createdAt)).getTime();
                                 date = new SimpleDateFormat(dateFormat).format(new Date(timestamp));
                             } else
                                 date = createdAt;
                             transactions.add(new Transaction(symbol,
                                     order.getSide(),
                                     date,
-                                    order.getPrice(),
+                                    order.getExecutedValue(),
                                     order.getSize()
                             ));
                         }
@@ -234,17 +236,71 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
 
     @Override
     public void buyMarket(String symbol, double quantity) throws Exception {
-
+        if(!symbol.contains("-"))
+            symbol = getOrderSymbol(symbol);
+        placeAnOrder(symbol, quantity, BUY_SIDE);
+        int statusCode = coinbaseOrdersManager.getStatusResponse();
+        if(statusCode == 200){
+            String[] index = symbol.split("-");
+            Coin coin = coins.get(index[0]);
+            if(coin != null)
+                insertCoin(index[0], coin.getAssetName(), coin.getQuantity() + quantity);
+            else {
+                insertCoin(index[0], null, quantity);
+                insertQuoteCurrency(index[1]);
+            }
+        }else{
+            throw new Exception("Error during buy order status code: [" + statusCode + "]" +
+                    " error message: [" + coinbaseOrdersManager.getErrorResponse() + "]");
+        }
     }
 
     @Override
     public void sellMarket(String symbol, double quantity) throws Exception {
+        if(!symbol.contains("-"))
+            symbol = getOrderSymbol(symbol);
+        String[] index = symbol.split("-");
+        Coin coin = coins.get(index[0]);
+        if(coin != null){
+            placeAnOrder(symbol, quantity, SELL_SIDE);
+            int statusCode = coinbaseOrdersManager.getStatusResponse();
+            if(statusCode == 200){
+                double newQuantity = coin.getQuantity() - quantity;
+                if(newQuantity == 0)
+                    coins.remove(index[0]);
+                else
+                    insertCoin(index[0], null, newQuantity);
+            }else{
+                throw new Exception("Error during sell order status code: [" + statusCode + "]" +
+                        " error message: [" + coinbaseOrdersManager.getErrorResponse() + "]");
+            }
+        }else
+            throw new Exception("Your wallet doesn't have this coin to sell [" + symbol + "]");
+    }
 
+    private String getOrderSymbol(String actualSymbol){
+        for (TradingPair tradingPair : tradingPairsList.values()) {
+            String id = tradingPair.getId();
+            if(id.replace("-", "").equals(actualSymbol))
+                return id;
+        }
+        return actualSymbol;
     }
 
     @Override
     public void placeAnOrder(String symbol, double quantity, String side) throws Exception {
+        coinbaseOrdersManager.createMarketOrderSize(side, symbol, quantity);
+    }
 
+    @Override
+    protected void insertCoin(String symbol, String name, double quantity) throws Exception {
+        if(name == null)
+            name = coinbaseCurrenciesManager.getCurrencyObject(symbol).getName();
+        coins.put(symbol, new Coin(symbol,
+                name,
+                quantity,
+                true
+        ));
     }
 
     @Override
@@ -264,7 +320,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
             for (String productId : tradingPairsList.keySet()) {
                 String[] productIds = productId.split("-");
                 try {
-                    if(productIds[1].equals(USD_CURRENCY))
+                    if(productIds[1].equals(USD_CURRENCY) && coins.containsKey(productIds[0]))
                         lastPrices.put(productIds[0], coinbaseProductsManager.getProductTickerObject(productId).getPrice());
                 }catch (JSONException ignored){
                 }

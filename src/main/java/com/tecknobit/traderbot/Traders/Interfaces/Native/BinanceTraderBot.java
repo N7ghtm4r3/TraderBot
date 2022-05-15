@@ -121,7 +121,6 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         lastPrices = new HashMap<>();
         assets = new ArrayList<>();
         coins = new HashMap<>();
-        refreshLatestPrice();
         for (CoinInformation coin : binanceWalletManager.getAllCoinsList()){
             double free = coin.getFree();
             if(free > 0){
@@ -133,6 +132,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
                 ));
             }
         }
+        refreshLatestPrice();
         for (Symbol symbol : binanceMarketManager.getObjectExchangeInformation().getSymbols())
             tradingPairsList.put(symbol.getSymbol(), symbol);
     }
@@ -250,34 +250,40 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         int statusCode = binanceSpotManager.getStatusResponse();
         if(statusCode == 200) {
             Symbol coinSymbol = tradingPairsList.get(symbol);
-            insertQuoteCurrency(coinSymbol.getQuoteAsset());
             String baseAsset = coinSymbol.getBaseAsset();
             Coin coin = coins.get(baseAsset);
             if(coin != null)
-                insertCoin(baseAsset, coin.getQuantity() + quantity);
-            else
-                insertCoin(baseAsset, quantity);
-        }else
+                insertCoin(baseAsset, coin.getAssetName(), coin.getQuantity() + quantity);
+            else {
+                insertQuoteCurrency(coinSymbol.getQuoteAsset());
+                insertCoin(baseAsset, null, quantity);
+            }
+        }else {
             throw new Exception("Error during buy order status code: [" + statusCode + "]" +
                     " error message: [" + binanceSpotManager.getErrorResponse() + "]");
+        }
     }
 
     @Override
     public void sellMarket(String symbol, double quantity) throws Exception {
-        placeAnOrder(symbol, quantity, SELL_SIDE);
-        int statusCode = binanceSpotManager.getStatusResponse();
-        if(statusCode == 200) {
-            Symbol coinSymbol = tradingPairsList.get(symbol);
-            String baseAsset = coinSymbol.getBaseAsset();
-            Coin coin = coins.get(baseAsset);
-            double newQuantity = coin.getQuantity() - quantity;
-            if(newQuantity == 0)
-                coins.remove(baseAsset);
-            else
-                insertCoin(baseAsset, newQuantity);
+        Symbol coinSymbol = tradingPairsList.get(symbol);
+        String baseAsset = coinSymbol.getBaseAsset();
+        Coin coin = coins.get(baseAsset);
+        if(coin != null){
+            placeAnOrder(symbol, quantity, SELL_SIDE);
+            int statusCode = binanceSpotManager.getStatusResponse();
+            if(statusCode == 200) {
+                double newQuantity = coin.getQuantity() - quantity;
+                if(newQuantity == 0)
+                    coins.remove(baseAsset);
+                else
+                    insertCoin(baseAsset, coin.getAssetName(), newQuantity);
+            }else {
+                throw new Exception("Error during sell order status code: [" + statusCode + "]" +
+                        " error message: [" + binanceSpotManager.getErrorResponse() + "]");
+            }
         }else
-            throw new Exception("Error during sell order status code: [" + statusCode + "]" +
-                    " error message: [" + binanceSpotManager.getErrorResponse() + "]");
+            throw new Exception("Your wallet doesn't have this coin to sell [" + symbol + "]");
     }
 
     @Override
@@ -287,9 +293,12 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         orderStatus = binanceSpotManager.testNewOrder(symbol, side, MARKET_TYPE, quantityParam);
     }
 
-    private void insertCoin(String symbol, double quantity) throws Exception {
+    @Override
+    protected void insertCoin(String symbol, String name, double quantity) throws Exception {
+        if(name == null)
+            name = binanceWalletManager.getSingleCoinObject(symbol).getName();
         coins.put(symbol, new Coin(symbol,
-                binanceWalletManager.getSingleCoinObject(symbol).getName(),
+                name,
                 quantity,
                 true
         ));
@@ -311,7 +320,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
             lastPricesRefresh = System.currentTimeMillis();
             for(TickerPriceChange tickerPriceChange : binanceMarketManager.getTickerPriceChangeList()) {
                 String symbol = tickerPriceChange.getSymbol();
-                if(symbol.endsWith(USDT_CURRENCY))
+                if(symbol.endsWith(USDT_CURRENCY) && coins.containsKey(symbol.replace(USDT_CURRENCY,"")))
                     lastPrices.put(symbol, tickerPriceChange.getLastPrice());
             }
         }
