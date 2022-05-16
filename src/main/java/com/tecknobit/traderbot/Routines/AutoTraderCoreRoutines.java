@@ -14,7 +14,7 @@ public interface AutoTraderCoreRoutines {
                 ## declare that you are aware that the bot developed by us may not reach your   ##\s
                 ## expectations in terms of earnings and that you are solely responsible for    ##\s
                 ## the decision to use this bot for your investments and that, therefore,       ##\s
-                ## Tecknobit is the product of your choice to use, are excluded from all        ##\s
+                ## Tecknobit and the product that you have choose to use, are excluded from all ##\s
                 ## liability arising from such investments. If you do not want to accept these  ##\s
                 ## terms, even in the case of a long time from its start, you are free to       ##\s
                 ## terminate the operation of the bot without being attributed any fee and      ##\s
