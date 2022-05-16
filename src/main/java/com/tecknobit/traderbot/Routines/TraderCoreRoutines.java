@@ -15,14 +15,66 @@ import java.util.HashMap;
 import static com.tecknobit.traderbot.Routines.TraderCoreRoutines.FormatResponseType.String;
 import static com.tecknobit.traderbot.Routines.TraderCoreRoutines.FormatResponseType.*;
 
+/**
+ * The {@code TraderCoreRoutines} class defines base routines methods for all traders. <br>
+ * These routines allow the different traders to do some operation about wallet info and make trading operations.
+ * @author Tecknobit N7ghtm4r3
+ * **/
+
 public abstract class TraderCoreRoutines {
 
+    /**
+     * {@code TradingTools} is an instance to use everywhere also out from traders
+     * **/
     public static TradingTools tradingTools = new TradingTools();
+
+    /**
+     * {@code USD_CURRENCY} is the identifier of USD currency used by traders to get default prices
+     * **/
     protected static final String USD_CURRENCY = "USD";
+
+    /**
+     * {@code USDT_CURRENCY} is the identifier of USDT cryptocurrency used by traders to get default prices
+     * **/
     protected static final String USDT_CURRENCY = "USDT";
+
+    /**
+     * {@code transactions} is a list of transactions made by user account plus transactions made by a
+     * trader on a single symbol.
+     * @implNote every time that is call {@link #getTransactionsList(java.lang.String, boolean)}
+     * or {@link #getTransactionsList(java.lang.String, java.lang.String, boolean)} {@code transactions}
+     * instance will be clear only if currency used is different from previous time or is time to refresh different
+     * data or user force refresh of this list. <br>
+     * This list is {@link ArrayList} of custom object {@link Transaction} give by {@code TraderBot} library.
+     * **/
     protected ArrayList<Transaction> transactions;
+
+    /**
+     * {@code allTransactions} is a list of all transactions made by user account plus transactions made by a
+     * trader.
+     * @implNote every time that is call {@link #getAllTransactions(boolean)} <br>
+     * or {@link #getTransactionsList(java.lang.String, boolean)} {@code allTransactions}
+     * instance will be clear only if currency used is different from previous time or is time to refresh different
+     * data or user force refresh of this list. <br>
+     * This list is {@link ArrayList} of custom object {@link Transaction} give by {@code TraderBot} library.
+     * **/
     protected ArrayList<Transaction> allTransactions;
+
+    /**
+     * {@code lastPrices} is a map that contains asset index (es. BTC) as key {@link String} and last price in
+     * {@link #USD_CURRENCY} or {@link #USDT_CURRENCY} of that cryptocurrency as {@link Double}.
+     * @apiNote prices inserted in this map are only prices of coins inserted in {@link #coins} list
+     * @implNote refresh of last prices, by default, is every 10 seconds, but you can set programmatically
+     * {@link #REFRESH_PRICES_TIME} to customize refresh time.
+     * **/
     protected HashMap<String, Double> lastPrices;
+
+    /**
+     * {@code coins} is a map that contains assets of base user wallet and all assets that a trader will trade
+     * during his operation.
+     * @implSpec this map has as key the asset index (es. BTC) as {@link String} and has as value custom object
+     * {@link Coin} give by {@code TraderBot} library.
+     * **/
     protected HashMap<String, Coin> coins;
     protected ArrayList<String> quoteCurrencies;
     protected String lastTransactionCurrency;

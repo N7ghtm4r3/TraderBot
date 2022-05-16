@@ -290,7 +290,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     protected void placeAnOrder(String symbol, double quantity, String side) throws Exception {
         HashMap<String, Object> quantityParam = new HashMap<>();
         quantityParam.put("quantity", quantity);
-        orderStatus = binanceSpotManager.testNewOrder(symbol, side, MARKET_TYPE, quantityParam);
+        orderStatus = binanceSpotManager.sendNewOrder(symbol, side, MARKET_TYPE, quantityParam);
     }
 
     @Override

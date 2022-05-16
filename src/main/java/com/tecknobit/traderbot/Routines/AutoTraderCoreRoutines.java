@@ -1,8 +1,12 @@
 package com.tecknobit.traderbot.Routines;
 
+import java.io.IOException;
+
 public interface AutoTraderCoreRoutines {
 
     void start();
+
+    void checkCryptocurrencies() throws IOException;
 
     default void printDisclaimer(){
         System.out.println("""
@@ -32,6 +36,11 @@ public interface AutoTraderCoreRoutines {
                 ##                         Copyright © 2022 Tecknobit                           ##\s
                 ##################################################################################
                 """);
+    }
+
+    default void sendStatsReport(){
+        System.out.println("gagagagag");
+        //send data in some methods
     }
 
 }
