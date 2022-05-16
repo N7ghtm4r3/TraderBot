@@ -76,16 +76,69 @@ public abstract class TraderCoreRoutines {
      * {@link Coin} give by {@code TraderBot} library.
      * **/
     protected HashMap<String, Coin> coins;
+
+    /**
+     * {@code quoteCurrencies} is a list of quote currencies used in past orders es (USD or EUR).
+     * @implNote methods that allow to operate on list are: {@link #setQuoteCurrencies(ArrayList)},
+     * {@link #insertQuoteCurrency(java.lang.String)}, {@link #removeQuoteCurrency(java.lang.String)} and
+     * {@link #insertQuoteCurrency(java.lang.String)}
+     * **/
     protected ArrayList<String> quoteCurrencies;
+
+    /**
+     * {@code lastTransactionCurrency} is instance that memorize currency used in transactions list methods. <br>
+     * Every time that those methods are called if is different from new currency inserted will be replaced with that new currency.
+     * **/
     protected String lastTransactionCurrency;
+
+    /**
+     * {@code assets} is a list of custom object {@link Asset} give by {@code TraderBot} library.
+     * @implNote is used for fetch user wallet and its cryptocurrencies.
+     * **/
     protected ArrayList<Asset> assets;
+
+    /**
+     * {@code lastBalanceCurrency} is instance that memorize currency used in balance methods. <br>
+     * Every time that those methods are called if is different from new currency inserted will be replaced with that new currency.
+     * **/
     protected String lastBalanceCurrency;
+
+    /**
+     * {@code lastAssetCurrency} is instance that memorize currency used in asset methods. <br>
+     * Every time that those methods are called if is different from new currency inserted will be replaced with that new currency.
+     * **/
     protected String lastAssetCurrency;
+
+    /**
+     * {@code REFRESH_PRICES_TIME} is instance that memorize time for refresh last prices.
+     * @implNote this param can customize with {@link #setRefreshPricesTime(int)}
+     * @implSpec valid values are from 5 second to 3600 seconds other will generate an {@link Exception}
+     * **/
     protected long REFRESH_PRICES_TIME;
+
+    /**
+     * {@code lastPricesRefresh} is instance that memorize last time that prices are updated.
+     * @implNote when is called {@link #isRefreshTime()} if timestamp of the call minus
+     * {@code lastPricesRefresh} is bigger or equal than {@link #REFRESH_PRICES_TIME} execute refresh.
+     * **/
     protected long lastPricesRefresh;
+
+    /**
+     * {@code balance} is instance that memorize balance of all cryptocurrencies of the user and all cryptocurrencies
+     * traded by bot.
+     * **/
     protected double balance;
+
+    /**
+     * {@code orderStatus} is instance that memorize response and result of an order.
+     * @implNote it is obtained calling {@link #getOrderStatus(FormatResponseType)} method
+     * **/
     protected String orderStatus;
 
+    /**
+     * {@code FormatResponseType} is enum list to format order in different formats.
+     * @implSpec format type are {@link String}, JSON type {@link JSONArray} or {@link JSONObject}, CustomObject 
+     * **/
     public enum FormatResponseType{
         String,
         JSON,
