@@ -20,6 +20,8 @@ import java.util.HashMap;
 
 import static com.tecknobit.coinbasemanager.Managers.ExchangePro.Orders.Records.Order.*;
 
+// TODO: 11/05/2022 ADD DIFFERENT ORDER METHOD
+
 public class CoinbaseTraderBot extends TraderCoreRoutines {
 
     private final CoinbaseAccountManager coinbaseAccountManager;
