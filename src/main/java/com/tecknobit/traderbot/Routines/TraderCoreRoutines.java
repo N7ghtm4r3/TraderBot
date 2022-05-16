@@ -137,7 +137,7 @@ public abstract class TraderCoreRoutines {
 
     /**
      * {@code FormatResponseType} is enum list to format order in different formats.
-     * @implSpec format type are {@link String}, JSON type {@link JSONArray} or {@link JSONObject}, CustomObject 
+     * @implSpec format type are {@link String}, JSON type {@link JSONArray} or {@link JSONObject}, CustomObject
      * **/
     public enum FormatResponseType{
         String,
@@ -181,7 +181,6 @@ public abstract class TraderCoreRoutines {
                     return null;
                 }
             }
-
         }
         return null;
     }
