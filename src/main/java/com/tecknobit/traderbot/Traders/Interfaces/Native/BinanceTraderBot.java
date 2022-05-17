@@ -456,7 +456,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     }
 
     /**
-     * This method is used fetch details of an Binance's order request<br>
+     * This method is used fetch details of a Binance's order request<br>
      * @implNote you must call it when is placed an order before, so when {@link #buyMarket(java.lang.String, double)}
      * or {@link #sellMarket(java.lang.String, double)} is being called.
      * @param formatResponseType: this indicates the format of order status that have to return.
@@ -492,57 +492,6 @@ public class BinanceTraderBot extends TraderCoreRoutines {
                     lastPrices.put(symbol, tickerPriceChange.getLastPrice());
             }
         }
-    }
-
-    /**
-     * This method is used to set time to refresh the latest prices <br>
-     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices.
-     * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
-     * **/
-    @Override
-    public void setRefreshPricesTime(int refreshPricesTime) {
-        super.setRefreshPricesTime(refreshPricesTime);
-    }
-
-    /**
-     * This method is used to set new list of {@link #quoteCurrencies} overwritten the past list<br>
-     * @param quoteCurrencies: list of quote currencies to insert.
-     * **/
-    @Override
-    public void setQuoteCurrencies(ArrayList<String> quoteCurrencies) {
-        super.setQuoteCurrencies(quoteCurrencies);
-    }
-
-    /**
-     * This method is used to insert a new quote currency in {@link #quoteCurrencies} list<br>
-     * If this value is already inserted in list will be not inserted to avoid duplicate values.
-     * @param newQuote: quote currency to insert es. SOL
-     * **/
-    @Override
-    public void insertQuoteCurrency(String newQuote) {
-        super.insertQuoteCurrency(newQuote);
-    }
-
-    /**
-     * This method is used to remove a quote currency from {@link #quoteCurrencies} list<br>
-     * If this value is not inserted in list will be not removed and will be returned false.
-     * @param quoteToRemove: quote currency to remove es. SOL
-     * @return status of deletion for {@code quoteToRemove}, will be true only if that value exists in list and can
-     * be removed
-     * **/
-    @Override
-    public boolean removeQuoteCurrency(String quoteToRemove) {
-        return super.removeQuoteCurrency(quoteToRemove);
-    }
-
-    /**
-     * This method is used to get {@link #quoteCurrencies} list<br>
-     * Any params required.
-     * @return {@link #quoteCurrencies} list as {@link ArrayList} of {@link String}
-     * **/
-    @Override
-    public ArrayList<String> getQuoteCurrencies() {
-        return super.getQuoteCurrencies();
     }
 
 }

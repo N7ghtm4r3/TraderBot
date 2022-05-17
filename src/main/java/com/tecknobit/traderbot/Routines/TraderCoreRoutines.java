@@ -281,7 +281,7 @@ public abstract class TraderCoreRoutines {
      * @param refreshPricesTime: is time in seconds to set for refresh the latest prices.
      * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
      * **/
-    protected void setRefreshPricesTime(int refreshPricesTime) {
+    public void setRefreshPricesTime(int refreshPricesTime) {
         if(refreshPricesTime >= 5 && refreshPricesTime <= 3600)
             REFRESH_PRICES_TIME = refreshPricesTime * 1000L;
         else
@@ -292,7 +292,7 @@ public abstract class TraderCoreRoutines {
      * This method is used to set new list of {@link #quoteCurrencies} overwritten the past list<br>
      * @param quoteCurrencies: list of quote currencies to insert.
      * **/
-    protected void setQuoteCurrencies(ArrayList<String> quoteCurrencies) {
+    public void setQuoteCurrencies(ArrayList<String> quoteCurrencies) {
         this.quoteCurrencies = quoteCurrencies;
     }
 
@@ -301,7 +301,7 @@ public abstract class TraderCoreRoutines {
      * If this value is already inserted in list will be not inserted to avoid duplicate values.
      * @param newQuote: quote currency to insert es. SOL
      * **/
-    protected void insertQuoteCurrency(String newQuote){
+    public void insertQuoteCurrency(String newQuote){
         if(!quoteCurrencies.contains(newQuote))
             quoteCurrencies.add(newQuote);
     }
@@ -313,7 +313,7 @@ public abstract class TraderCoreRoutines {
      * @return status of deletion for {@code quoteToRemove}, will be true only if that value exists in list and can
      * be removed
      * **/
-    protected boolean removeQuoteCurrency(String quoteToRemove){
+    public boolean removeQuoteCurrency(String quoteToRemove){
         return quoteCurrencies.remove(quoteToRemove);
     }
 
@@ -322,7 +322,7 @@ public abstract class TraderCoreRoutines {
      * Any params required.
      * @return {@link #quoteCurrencies} list as {@link ArrayList} of {@link String}
      * **/
-    protected ArrayList<String> getQuoteCurrencies() {
+    public ArrayList<String> getQuoteCurrencies() {
         return quoteCurrencies;
     }
 
