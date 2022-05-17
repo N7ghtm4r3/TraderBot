@@ -10,7 +10,6 @@ import java.util.HashMap;
 
 public final class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTraderCoreRoutines {
 
-
     private final HashMap<String, Ticker> checkingList;
     private boolean sendStatsReport;
     private boolean runningBot;

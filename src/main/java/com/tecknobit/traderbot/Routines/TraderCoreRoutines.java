@@ -145,29 +145,108 @@ public abstract class TraderCoreRoutines {
         CustomObject
     }
 
+    /**
+     * This method is used by traders to init all instances that routine need. <br>
+     * Any params required <br>
+     * **/
     protected abstract void initTrader() throws Exception;
 
+    /**
+     * This method is used by traders to get user wallet balance. <br>
+     * @param currency: currency of balance value es. EUR will return balance in EUR currency.
+     * @param forceRefresh: this flag when is set to true will refresh prices also if is not time to refresh it.
+     * @return wallet balance in currency value
+     * **/
     protected abstract double getWalletBalance(String currency, boolean forceRefresh) throws Exception;
 
+    /**
+     * This method is used by traders to get user wallet balance. <br>
+     * @param currency: currency of balance value es. EUR will return balance in EUR currency.
+     * @param forceRefresh: this flag when is set to true will refresh prices also if is not time to refresh it.
+     * @param decimals: this indicates number of decimal number after comma es. 3 -> xx,yyy.
+     * @return wallet balance in currency value
+     * **/
     protected abstract double getWalletBalance(String currency, boolean forceRefresh, int decimals) throws Exception;
 
+    /**
+     * This method is used to get asset list of user wallet.<br>
+     * @param currency: currency of asset balance value es. EUR will return asset balance in EUR currency.
+     * @param forceRefresh: this flag when is set to true will refresh prices also if is not time to refresh it.
+     * @return list of custom object {@link Asset} as {@link ArrayList}
+     * **/
     protected abstract ArrayList<Asset> getAssetsList(String currency, boolean forceRefresh) throws Exception;
 
-    protected abstract ArrayList<Transaction> getAllTransactions(boolean forceRefresh) throws Exception;
-
+    /**
+     * This method is used to get all transactions from all {@link #quoteCurrencies} inserted.<br>
+     * @param dateFormat: this indicates the format of date that you want to have es. HH:mm:ss -> 21:22:08
+     * @param forceRefresh: this flag when is set to true will refresh prices also if is not time to refresh it.
+     * @return list of custom object {@link Transaction} as {@link ArrayList}
+     * **/
     protected abstract ArrayList<Transaction> getAllTransactions(String dateFormat, boolean forceRefresh) throws Exception;
 
-    protected abstract ArrayList<Transaction> getTransactionsList(String quoteCurrency, boolean forceRefresh) throws Exception;
+    /**
+     * This method is used to get all transactions from all {@link #quoteCurrencies} inserted.<br>
+     * @param forceRefresh: this flag when is set to true will refresh prices also if is not time to refresh it.
+     * @return list of custom object {@link Transaction} as {@link ArrayList}
+     * **/
+    protected abstract ArrayList<Transaction> getAllTransactions(boolean forceRefresh) throws Exception;
 
+    /**
+     * This method is used to get all transactions from a single symbol<br>
+     * @param quoteCurrency: this indicates the symbol from fetch details es. BTC will fetch all transactions on Bitcoin
+     * @param dateFormat: this indicates the format of date that you want to have es. HH:mm:ss -> 21:22:08
+     * @param forceRefresh: this flag when is set to true will refresh prices also if is not time to refresh it.
+     * @return list of custom object {@link Transaction} as {@link ArrayList}
+     * **/
     protected abstract ArrayList<Transaction> getTransactionsList(String quoteCurrency, String dateFormat,
                                                                   boolean forceRefresh) throws Exception;
+    /**
+     * This method is used to get all transactions from a single symbol<br>
+     * @param quoteCurrency: this indicates the symbol from fetch details es. BTC will fetch all transactions on Bitcoin
+     * @param forceRefresh: this flag when is set to true will refresh prices also if is not time to refresh it.
+     * @return list of custom object {@link Transaction} as {@link ArrayList}
+     * **/
+    protected abstract ArrayList<Transaction> getTransactionsList(String quoteCurrency, boolean forceRefresh) throws Exception;
 
+    /**
+     * This method is used to send a buy market order<br>
+     * @param symbol: this indicates the symbol for the order es. (BTCBUSD or BTC-USDT)
+     * @param quantity: this indicates quantity of that symbol is wanted to buy es. 10
+     * **/
     protected abstract void buyMarket(String symbol, double quantity) throws Exception;
 
+    /**
+     * This method is used to send a sell market order<br>
+     * @param symbol: this indicates the symbol for the order es. (BTCBUSD or BTC-USDT)
+     * @param quantity: this indicates quantity of that symbol is wanted to sell es. 10
+     * **/
     protected abstract void sellMarket(String symbol, double quantity) throws Exception;
 
+    /**
+     * This method is used to place an order<br>
+     * @param symbol: this indicates the symbol for the order es. (BTCBUSD or BTC-USDT)
+     * @param quantity: this indicates quantity of that symbol is wanted to sell es. 10
+     * @param side: this indicates the side of the order (BUY or SELL)
+     * **/
     protected abstract void placeAnOrder(String symbol, double quantity, String side) throws Exception;
 
+    /**
+     * This method is used to insert or update a coin in {@link #coins} list.
+     * @param symbol: symbol of the coin es. BTC
+     * @param name: name of the coin es Bitcoin
+     * @param quantity: quantity of that coin es. 0.28
+     * **/
+    protected abstract void insertCoin(String symbol, String name, double quantity) throws Exception;
+
+    /**
+     * This method is used fetch details of an order request<br>
+     * @implNote you must call it when is placed an order before, so when {@link #buyMarket(java.lang.String, double)}
+     * or {@link #sellMarket(java.lang.String, double)} is being called.
+     * @param formatResponseType: this indicates the format of order status that have to return.
+     * @implSpec if {@code formatResponseType} is equal to {@code String} order status will be returned as {@link String} <br>
+     * if {@code formatResponseType} is equal to {@code JSON} order status will be returned as {@link JSONObject} or {@link JSONArray} <br>
+     * if {@code formatResponseType} is equal to {@code CustomObject} order status will be returned as custom object given by libraries<br>
+     * **/
     protected <T> T getOrderStatus(FormatResponseType formatResponseType) {
         if(formatResponseType.equals(String) || formatResponseType.equals(CustomObject)){
             return (T) orderStatus;
@@ -185,10 +264,23 @@ public abstract class TraderCoreRoutines {
         return null;
     }
 
+    /**
+     * This method is used to get error of any requests<br>
+     * Any params required
+     * **/
     protected abstract String getErrorResponse();
 
+    /**
+     * This method is used to refresh latest prices<br>
+     * Any params required
+     * **/
     protected abstract void refreshLatestPrice() throws Exception;
 
+    /**
+     * This method is used to set time to refresh the latest prices <br>
+     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices.
+     * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
+     * **/
     protected void setRefreshPricesTime(int refreshPricesTime) {
         if(refreshPricesTime >= 5 && refreshPricesTime <= 3600)
             REFRESH_PRICES_TIME = refreshPricesTime * 1000L;
@@ -196,27 +288,52 @@ public abstract class TraderCoreRoutines {
             throw new IllegalArgumentException("Refresh prices time must be more than 5 (5s) and less than 3600 (1h)");
     }
 
+    /**
+     * This method is used to set new list of {@link #quoteCurrencies} overwritten the past list<br>
+     * @param quoteCurrencies: list of quote currencies to insert.
+     * **/
     protected void setQuoteCurrencies(ArrayList<String> quoteCurrencies) {
         this.quoteCurrencies = quoteCurrencies;
     }
 
+    /**
+     * This method is used to insert a new quote currency in {@link #quoteCurrencies} list<br>
+     * If this value is already inserted in list will be not inserted to avoid duplicate values.
+     * @param newQuote: quote currency to insert es. SOL
+     * **/
     protected void insertQuoteCurrency(String newQuote){
         if(!quoteCurrencies.contains(newQuote))
             quoteCurrencies.add(newQuote);
     }
 
+    /**
+     * This method is used to remove a quote currency from {@link #quoteCurrencies} list<br>
+     * If this value is not inserted in list will be not removed and will be returned false.
+     * @param quoteToRemove: quote currency to remove es. SOL
+     * @return status of deletion for {@code quoteToRemove}, will be true only if that value exists in list and can
+     * be removed
+     * **/
     protected boolean removeQuoteCurrency(String quoteToRemove){
         return quoteCurrencies.remove(quoteToRemove);
     }
 
+    /**
+     * This method is used to get {@link #quoteCurrencies} list<br>
+     * Any params required.
+     * @return {@link #quoteCurrencies} list as {@link ArrayList} of {@link String}
+     * **/
     protected ArrayList<String> getQuoteCurrencies() {
         return quoteCurrencies;
     }
 
+    /**
+     * This method is used check if is refreshing time <br>
+     * Any params required.
+     * @return true only if current timestamp when this method is called minus last timestamp when this method is called,
+     * it is memorized in {@link #lastPricesRefresh}, is bigger or equal than {@link #REFRESH_PRICES_TIME}
+     * **/
     protected boolean isRefreshTime(){
         return (System.currentTimeMillis() - lastPricesRefresh) >= REFRESH_PRICES_TIME;
     }
-
-    protected abstract void insertCoin(String symbol, String name, double quantity) throws Exception;
 
 }
