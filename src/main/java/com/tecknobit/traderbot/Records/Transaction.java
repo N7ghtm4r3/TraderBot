@@ -13,14 +13,14 @@ public class Transaction {
     private final double quantity;
 
     public Transaction(String symbol, String side, String transactionDate, double value, double quantity) {
-        if(symbol == null || symbol.isBlank())
+        if(symbol == null || symbol.isEmpty())
             throw new IllegalArgumentException("Symbol must contains characters");
         this.symbol = symbol;
         side = side.toUpperCase();
         if(!side.equals(BUY) && !side.equals(SELL))
             throw new IllegalArgumentException("Side can be only value BUY or SELL");
         this.side = side;
-        if(transactionDate == null || transactionDate.isBlank())
+        if(transactionDate == null || transactionDate.isEmpty())
             throw new IllegalArgumentException("Transaction date must contains characters");
         this.transactionDate = transactionDate;
         if(value < 0)

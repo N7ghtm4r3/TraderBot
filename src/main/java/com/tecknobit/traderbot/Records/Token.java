@@ -7,10 +7,10 @@ public class Token {
     private double quantity;
 
     public Token(String assetIndex, String assetName, double quantity) {
-        if(assetIndex == null || assetIndex.isBlank())
+        if(assetIndex == null || assetIndex.isEmpty())
             throw new IllegalArgumentException("Asset index must contains characters");
         this.assetIndex = assetIndex;
-        if(assetName == null || assetName.isBlank())
+        if(assetName == null || assetName.isEmpty())
             throw new IllegalArgumentException("Asset name must contains characters");
         this.assetName = assetName;
         if(quantity < 0)

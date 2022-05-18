@@ -2,11 +2,16 @@ package com.tecknobit.traderbot.Routines;
 
 import java.io.IOException;
 
+import static com.tecknobit.traderbot.Routines.AutoTraderCoreRoutines.TradingConfig.*;
+
 public interface AutoTraderCoreRoutines {
 
-    void start();
-
-    void checkCryptocurrencies() throws IOException;
+    class TradingConfig{
+        public static double TREND_PERCENTAGE;
+        public static int DAYS_GAP;
+        public static double GAIN_FOR_ORDER;
+        public static double TPTOP_INDEX;
+    }
 
     default void printDisclaimer(){
         System.out.println("""
@@ -26,10 +31,10 @@ public interface AutoTraderCoreRoutines {
                 ## operation of that bot, neither from launch neither to its termination.       ##\s
                 ## If you accept to send results data of investments you will contribute to     ##\s
                 ## make grew up this A.I for automatic investments and make it more efficiently ##\s
-                ## The data that will be sent will be only about the price, trend percentage,   ##\s
-                ## time gap from buy to sell and gain or loss percentage when that asset sold,  ##\s
-                ## but ANY personal data that you inserted and ANY data about assets that bot   ##\s
-                ## bought during his operations will be sent.                                   ##\s
+                ## The data that will be sent will be only about trend percentage, time gap     ##\s
+                ## from buy to sell and gain or loss percentage when that asset sold and some   ##\s
+                ## market indexes, but ANY personal data that you inserted and ANY data about   ##\s
+                ## assets that bot bought during his operations will be sent.                   ##\s
                 ## You will be able to enable or disable this stats report anytime during all   ##\s
                 ## lifecycle of the bot like as you want.                                       ##\s
                 ##                                 Good use!                                    ##\s
@@ -38,9 +43,25 @@ public interface AutoTraderCoreRoutines {
                 """);
     }
 
+    default void fetchTradingConfig(){
+        //request to server for trading confing
+        TREND_PERCENTAGE = 1;
+        DAYS_GAP = 14;
+        GAIN_FOR_ORDER = 3;
+        TPTOP_INDEX = 1;
+    }
+
     default void sendStatsReport(){
         System.out.println("gagagagag");
         //send data in some methods
     }
+
+    void start();
+
+    void checkCryptocurrencies() throws IOException;
+
+    void buyCryptocurrencies() throws IOException;
+
+    void updateCryptocurrencies();
 
 }

@@ -9,7 +9,7 @@ public final class Asset extends Token {
         if(balance < 0)
             throw new IllegalArgumentException("Value cannot be less than 0");
         this.balance = balance;
-        if(currency == null || currency.isBlank())
+        if(currency == null || currency.isEmpty())
             throw new IllegalArgumentException("Currency must contains characters");
         this.currency = currency;
     }
