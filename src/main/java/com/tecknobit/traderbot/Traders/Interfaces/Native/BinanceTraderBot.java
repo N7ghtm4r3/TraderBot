@@ -483,8 +483,11 @@ public class BinanceTraderBot extends TraderCoreRoutines {
             lastPricesRefresh = System.currentTimeMillis();
             for(TickerPriceChange tickerPriceChange : binanceMarketManager.getTickerPriceChangeList()) {
                 String symbol = tickerPriceChange.getSymbol();
-                if(symbol.endsWith(USDT_CURRENCY) && coins.containsKey(symbol.replace(USDT_CURRENCY,"")))
-                    lastPrices.put(symbol, tickerPriceChange.getLastPrice());
+                try {
+                    if(symbol.endsWith(USDT_CURRENCY) && coins.get(symbol.replace(USDT_CURRENCY,"")).isTradingEnabled())
+                        lastPrices.put(symbol, tickerPriceChange.getLastPrice());
+                }catch (NullPointerException ignored){
+                }
             }
         }
     }

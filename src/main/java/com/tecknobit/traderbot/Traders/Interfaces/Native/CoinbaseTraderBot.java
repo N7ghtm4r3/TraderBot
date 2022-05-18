@@ -679,7 +679,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
             for (String productId : tradingPairsList.keySet()) {
                 String[] productIds = productId.split("-");
                 try {
-                    if(productIds[1].equals(USD_CURRENCY) && coins.containsKey(productIds[0]))
+                    if(productIds[1].equals(USD_CURRENCY) && coins.get(productIds[0]).isTradingEnabled())
                         lastPrices.put(productIds[0], coinbaseProductsManager.getProductTickerObject(productId).getPrice());
                 }catch (JSONException ignored){
                 }
