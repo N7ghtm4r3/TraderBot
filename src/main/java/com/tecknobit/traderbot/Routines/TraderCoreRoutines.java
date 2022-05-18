@@ -236,7 +236,7 @@ public abstract class TraderCoreRoutines {
      * @param name: name of the coin es Bitcoin
      * @param quantity: quantity of that coin es. 0.28
      * **/
-    protected abstract void insertCoin(String symbol, String name, double quantity) throws Exception;
+    protected abstract void insertCoin(String symbol, String name, double quantity);
 
     /**
      * This method is used fetch details of an order request<br>

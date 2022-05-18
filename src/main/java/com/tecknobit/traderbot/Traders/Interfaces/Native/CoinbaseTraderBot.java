@@ -390,14 +390,13 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         coins = new HashMap<>();
         for (CoinbaseAccount coin : coinbaseAccountManager.getCoinbaseWalletsList()){
             double balance = coin.getBalance();
-            if(balance > 0){
-                String symbol = coin.getCurrency();
-                coins.put(symbol, new Coin(symbol,
-                        coinbaseCurrenciesManager.getCurrencyObject(symbol).getName(),
-                        balance,
-                        true
-                ));
-            }
+            String symbol = coin.getCurrency();
+            boolean isTradingEnabled = balance != 0;
+            coins.put(symbol, new Coin(symbol,
+                    coinbaseCurrenciesManager.getCurrencyObject(symbol).getName(),
+                    balance,
+                    isTradingEnabled
+            ));
         }
         for (TradingPair tradingPair : coinbaseProductsManager.getAllTradingPairsList())
             tradingPairsList.put(tradingPair.getId(), tradingPair);
@@ -454,21 +453,23 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
             lastAssetCurrency = currency;
             assets.clear();
             for (Coin coin : coins.values()) {
-                String index = coin.getAssetIndex();
-                double quantity = coin.getQuantity();
-                double balance = quantity * lastPrices.get(index);
-                if(!currency.contains(USD_CURRENCY)){
-                    try {
-                        balance *= coinbaseProductsManager.getProductTickerObject(getSymbol(currency)).getPrice();
-                    }catch (Exception ignored){
+                if(coin.isTradingEnabled()){
+                    String index = coin.getAssetIndex();
+                    double quantity = coin.getQuantity();
+                    double balance = quantity * lastPrices.get(index);
+                    if(!currency.contains(USD_CURRENCY)){
+                        try {
+                            balance *= coinbaseProductsManager.getProductTickerObject(getSymbol(currency)).getPrice();
+                        }catch (Exception ignored){
+                        }
                     }
+                    assets.add(new Asset(index,
+                            coin.getAssetName(),
+                            quantity,
+                            balance,
+                            currency
+                    ));
                 }
-                assets.add(new Asset(index,
-                        coin.getAssetName(),
-                        quantity,
-                        balance,
-                        currency
-                ));
             }
         }
         return assets;
@@ -567,12 +568,8 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         if(statusCode == 200){
             String[] index = symbol.split("-");
             Coin coin = coins.get(index[0]);
-            if(coin != null)
-                insertCoin(index[0], coin.getAssetName(), coin.getQuantity() + quantity);
-            else {
-                insertCoin(index[0], null, quantity);
-                insertQuoteCurrency(index[1]);
-            }
+            insertQuoteCurrency(index[1]);
+            insertCoin(index[0], coin.getAssetName(), coin.getQuantity() + quantity);
         }else{
             throw new Exception("Error during buy order status code: [" + statusCode + "]" +
                     " error message: [" + coinbaseOrdersManager.getErrorResponse() + "]");
@@ -598,7 +595,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
                 if(newQuantity == 0)
                     coins.remove(index[0]);
                 else
-                    insertCoin(index[0], null, newQuantity);
+                    insertCoin(index[0], coin.getAssetName(), newQuantity);
             }else{
                 throw new Exception("Error during sell order status code: [" + statusCode + "]" +
                         " error message: [" + coinbaseOrdersManager.getErrorResponse() + "]");
@@ -640,9 +637,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * @param quantity: quantity of that coin es. 0.28
      * **/
     @Override
-    protected void insertCoin(String symbol, String name, double quantity) throws Exception {
-        if(name == null)
-            name = coinbaseCurrenciesManager.getCurrencyObject(symbol).getName();
+    protected void insertCoin(String symbol, String name, double quantity) {
         coins.put(symbol, new Coin(symbol,
                 name,
                 quantity,

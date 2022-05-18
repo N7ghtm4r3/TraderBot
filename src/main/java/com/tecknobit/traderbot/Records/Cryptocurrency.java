@@ -2,23 +2,20 @@ package com.tecknobit.traderbot.Records;
 
 import com.tecknobit.traderbot.Routines.AutoTraderCoreRoutines.TradingConfig;
 
-public class Cryptocurrency {
+public final class Cryptocurrency extends Token{
 
     private final String symbol;
     private final double lastPrice;
     private final double tptopIndex;
-    private double quantity;
     private final Object candleGap;
     private final TradingConfig tradingConfig;
 
-    public Cryptocurrency(String symbol, double lastPrice, double tptopIndex, double quantity, Object candleGap,
-                          TradingConfig tradingConfig) {
+    public Cryptocurrency(String assetIndex, String assetName, double quantity, String symbol,
+                          double lastPrice, double tptopIndex, Object candleGap, TradingConfig tradingConfig) {
+        super(assetIndex, assetName, quantity);
         this.symbol = symbol;
         this.lastPrice = lastPrice;
         this.tptopIndex = tptopIndex;
-        if(quantity < 0)
-            throw new IllegalArgumentException("Quantity value cannot be less than 0");
-        this.quantity = quantity;
         this.candleGap = candleGap;
         this.tradingConfig = tradingConfig;
     }
@@ -33,16 +30,6 @@ public class Cryptocurrency {
 
     public double getTptopIndex() {
         return tptopIndex;
-    }
-
-    public double getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(double quantity) {
-        if(quantity < 0)
-            throw new IllegalArgumentException("Quantity value cannot be less than 0");
-        this.quantity = quantity;
     }
 
     public Object getCandleGap() {

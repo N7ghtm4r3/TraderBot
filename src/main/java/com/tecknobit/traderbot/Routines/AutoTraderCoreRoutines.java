@@ -82,7 +82,7 @@ public interface AutoTraderCoreRoutines {
 
     void start();
 
-    void checkCryptocurrencies() throws IOException;
+    void checkCryptocurrencies() throws Exception;
 
     void buyCryptocurrencies() throws Exception;
 

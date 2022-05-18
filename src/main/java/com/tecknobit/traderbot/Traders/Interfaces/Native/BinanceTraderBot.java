@@ -209,14 +209,15 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         coins = new HashMap<>();
         for (CoinInformation coin : binanceWalletManager.getAllCoinsList()){
             double free = coin.getFree();
-            if(free > 0){
-                String symbol = coin.getCoin();
-                coins.put(symbol, new Coin(symbol,
-                        coin.getName(),
-                        free,
-                        coin.isTrading()
-                ));
-            }
+            boolean isTradingEnable = true;
+            String symbol = coin.getCoin();
+            if(free == 0 || !coin.isTrading())
+                isTradingEnable = false;
+            coins.put(symbol, new Coin(symbol,
+                    coin.getName(),
+                    free,
+                    isTradingEnable
+            ));
         }
         refreshLatestPrice();
         for (Symbol symbol : binanceMarketManager.getObjectExchangeInformation().getSymbols())
@@ -384,14 +385,10 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         int statusCode = binanceSpotManager.getStatusResponse();
         if(statusCode == 200) {
             Symbol coinSymbol = tradingPairsList.get(symbol);
+            insertQuoteCurrency(coinSymbol.getQuoteAsset());
             String baseAsset = coinSymbol.getBaseAsset();
             Coin coin = coins.get(baseAsset);
-            if(coin != null)
-                insertCoin(baseAsset, coin.getAssetName(), coin.getQuantity() + quantity);
-            else {
-                insertQuoteCurrency(coinSymbol.getQuoteAsset());
-                insertCoin(baseAsset, null, quantity);
-            }
+            insertCoin(baseAsset, coin.getAssetName(), coin.getQuantity() + quantity);
         }else {
             throw new Exception("Error during buy order status code: [" + statusCode + "]" +
                     " error message: [" + binanceSpotManager.getErrorResponse() + "]");
@@ -445,9 +442,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
      * @param quantity: quantity of that coin es. 0.28
      * **/
     @Override
-    protected void insertCoin(String symbol, String name, double quantity) throws Exception {
-        if(name == null)
-            name = binanceWalletManager.getSingleCoinObject(symbol).getName();
+    protected void insertCoin(String symbol, String name, double quantity) {
         coins.put(symbol, new Coin(symbol,
                 name,
                 quantity,

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.tecknobit.binancemanager.Managers.Market.Records.Stats.Candlestick.*;
+import static com.tecknobit.binancemanager.Managers.Market.Records.Stats.ExchangeInformation.Symbol;
 import static java.lang.Math.abs;
 
 public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTraderCoreRoutines {
@@ -124,7 +125,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     }
 
     @Override
-    public void checkCryptocurrencies() throws IOException {
+    public void checkCryptocurrencies() throws Exception {
         tradingConfig = fetchTradingConfig();
         String candleInterval = INTERVAL_1d;
         int daysGap = tradingConfig.getDaysGap();
@@ -133,14 +134,17 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         else if(daysGap > 28)
             candleInterval = INTERVAL_1M;
         for (TickerPriceChange ticker : binanceMarketManager.getTickerPriceChangeList()){
-            String index = ticker.getSymbol();
-            if(coins.get(tradingPairsList.get(index).getBaseAsset()) != null && !walletList.containsKey(index)){
-                double tptop = isTradable(index, tradingConfig, candleInterval, ticker.getPriceChangePercent());
+            String symbol = ticker.getSymbol();
+            if(coins.get(tradingPairsList.get(symbol).getBaseAsset()) != null && !walletList.containsKey(symbol)){
+                double tptop = isTradable(symbol, tradingConfig, candleInterval, ticker.getPriceChangePercent());
                 if(tptop != -1) {
-                    checkingList.put(index, new Cryptocurrency(index,
+                    Symbol tradingPair = tradingPairsList.get(symbol);
+                    checkingList.put(symbol, new Cryptocurrency(tradingPair.getBaseAsset(),
+                            coins.get(symbol).getAssetName(),
+                            0,
+                            symbol,
                             ticker.getLastPrice(),
                             tptop,
-                            0,
                             candleInterval,
                             tradingConfig)
                     );
