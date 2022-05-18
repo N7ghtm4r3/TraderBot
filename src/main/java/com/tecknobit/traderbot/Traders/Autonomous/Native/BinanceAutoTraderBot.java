@@ -23,9 +23,9 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
     public BinanceAutoTraderBot(String apiKey, String secretKey, boolean sendStatsReport) throws Exception {
         super(apiKey, secretKey);
         this.sendStatsReport = sendStatsReport;
-        runningBot = true;
         checkingList = new HashMap<>();
         walletList = new HashMap<>();
+        runningBot = true;
         printDisclaimer();
     }
 
@@ -33,9 +33,9 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
                                 boolean sendStatsReport) throws Exception {
         super(apiKey, secretKey, baseEndpoint);
         this.sendStatsReport = sendStatsReport;
-        runningBot = true;
         checkingList = new HashMap<>();
         walletList = new HashMap<>();
+        runningBot = true;
         printDisclaimer();
     }
 
@@ -43,9 +43,9 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
                                 boolean sendStatsReport) throws Exception {
         super(apiKey, secretKey, refreshPricesTime);
         this.sendStatsReport = sendStatsReport;
-        runningBot = true;
         checkingList = new HashMap<>();
         walletList = new HashMap<>();
+        runningBot = true;
         printDisclaimer();
     }
 
@@ -53,9 +53,9 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
                                 int refreshPricesTime, boolean sendStatsReport) throws Exception {
         super(apiKey, secretKey, baseEndpoint, refreshPricesTime);
         this.sendStatsReport = sendStatsReport;
-        runningBot = true;
         checkingList = new HashMap<>();
         walletList = new HashMap<>();
+        runningBot = true;
         printDisclaimer();
     }
 
@@ -63,9 +63,9 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
                                 int refreshPricesTime, boolean sendStatsReport) throws Exception {
         super(apiKey, secretKey, quoteCurrencies, refreshPricesTime);
         this.sendStatsReport = sendStatsReport;
-        runningBot = true;
         checkingList = new HashMap<>();
         walletList = new HashMap<>();
+        runningBot = true;
         printDisclaimer();
     }
 
@@ -73,9 +73,9 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
                                 int refreshPricesTime, boolean sendStatsReport) throws Exception {
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies, refreshPricesTime);
         this.sendStatsReport = sendStatsReport;
-        runningBot = true;
         checkingList = new HashMap<>();
         walletList = new HashMap<>();
+        runningBot = true;
         printDisclaimer();
     }
 
@@ -83,9 +83,9 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
                                 boolean sendStatsReport) throws Exception {
         super(apiKey, secretKey, quoteCurrencies);
         this.sendStatsReport = sendStatsReport;
-        runningBot = true;
         checkingList = new HashMap<>();
         walletList = new HashMap<>();
+        runningBot = true;
         printDisclaimer();
     }
 
@@ -93,9 +93,9 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
                                 ArrayList<String> quoteCurrencies, boolean sendStatsReport) throws Exception {
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies);
         this.sendStatsReport = sendStatsReport;
-        runningBot = true;
         checkingList = new HashMap<>();
         walletList = new HashMap<>();
+        runningBot = true;
         printDisclaimer();
     }
 
