@@ -2,6 +2,7 @@ package com.tecknobit.traderbot.Traders.Autonomous.Native;
 
 import com.tecknobit.binancemanager.Managers.Market.Records.Tickers.TickerPriceChange;
 import com.tecknobit.traderbot.Records.Coin;
+import com.tecknobit.traderbot.Records.Cryptocurrency;
 import com.tecknobit.traderbot.Routines.AutoTraderCoreRoutines;
 import com.tecknobit.traderbot.Traders.Interfaces.Native.BinanceTraderBot;
 
@@ -10,14 +11,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.tecknobit.binancemanager.Managers.Market.Records.Stats.Candlestick.*;
-import static com.tecknobit.traderbot.Routines.AutoTraderCoreRoutines.TradingConfig.*;
+import static java.lang.Math.abs;
 
 public final class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTraderCoreRoutines {
 
-    private final HashMap<String, TickerPriceChange> checkingList;
-    private final HashMap<String, TickerPriceChange> walletList;
-    private String candleInterval;
+    private final HashMap<String, Cryptocurrency> checkingList;
+    private final HashMap<String, Cryptocurrency> walletList;
     private boolean sendStatsReport;
+    private TradingConfig tradingConfig;
     private boolean runningBot;
 
     public BinanceAutoTraderBot(String apiKey, String secretKey, boolean sendStatsReport) throws Exception {
@@ -101,7 +102,7 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
 
     @Override
     public void start() {
-        fetchTradingConfig();
+        tradingConfig = fetchTradingConfig();
         new Thread(){
             @Override
             public void run() {
@@ -125,30 +126,39 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
 
     @Override
     public void checkCryptocurrencies() throws IOException {
-        fetchTradingConfig();
-        candleInterval = INTERVAL_1d;
-        if(DAYS_GAP > 2 && DAYS_GAP <= 6)
+        tradingConfig = fetchTradingConfig();
+        String candleInterval = INTERVAL_1d;
+        int daysGap = tradingConfig.getDaysGap();
+        if(daysGap > 2 && daysGap <= 6)
             candleInterval = INTERVAL_3d;
-        else if(DAYS_GAP > 28)
+        else if(daysGap > 28)
             candleInterval = INTERVAL_1M;
         for (TickerPriceChange ticker : binanceMarketManager.getTickerPriceChangeList()){
             String index = ticker.getSymbol();
             Coin coin = coins.get(tradingPairsList.get(index).getBaseAsset());
             if(coin != null && !walletList.containsKey(index)){
-                double tptop = binanceMarketManager.getSymbolForecast(index, candleInterval, DAYS_GAP, (int) TREND_PERCENTAGE);
-                if(tptop >= TPTOP_INDEX)
-                    checkingList.put(index, ticker);
+                double tptop = isTradable(index, tradingConfig, candleInterval, ticker.getPriceChangePercent());
+                if(tptop != -1) {
+                    checkingList.put(index, new Cryptocurrency(index,
+                            ticker.getLastPrice(),
+                            tptop,
+                            0,
+                            candleInterval,
+                            tradingConfig)
+                    );
+                }
             }
         }
     }
 
     @Override
-    public void buyCryptocurrencies() throws IOException {
-        for (TickerPriceChange ticker : checkingList.values()){
-            double tptop = binanceMarketManager.getSymbolForecast(ticker.getSymbol(), candleInterval, DAYS_GAP,
-                    (int) TREND_PERCENTAGE);
-            if(tptop >= TPTOP_INDEX){
-
+    public void buyCryptocurrencies() throws Exception {
+        for (Cryptocurrency cryptocurrency : checkingList.values()){
+            String symbol = cryptocurrency.getSymbol();
+            double tptop = isTradable(symbol, cryptocurrency.getTradingConfig(), cryptocurrency.getCandleGap(),
+                    cryptocurrency.getLastPrice());
+            if(tptop != -1){
+                buyMarket(symbol, 0);
             }
         }
     }
@@ -156,6 +166,17 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
     @Override
     public void updateCryptocurrencies() {
 
+    }
+
+    @Override
+    public double isTradable(String index, TradingConfig tradingConfig, Object candleInterval,
+                              double lastPricePercent) throws IOException {
+        double wasteRange = tradingConfig.getWasteRange();
+        double tptop = binanceMarketManager.getSymbolForecast(index, (String) candleInterval, tradingConfig.getDaysGap(),
+                (int) wasteRange);
+        if(tptop >= tradingConfig.getGainForOrder() && abs(lastPricePercent - tradingConfig.getMarketPhase()) <= abs(wasteRange))
+            return tptop;
+        return -1;
     }
 
     @Override

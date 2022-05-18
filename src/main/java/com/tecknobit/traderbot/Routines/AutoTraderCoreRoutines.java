@@ -2,15 +2,38 @@ package com.tecknobit.traderbot.Routines;
 
 import java.io.IOException;
 
-import static com.tecknobit.traderbot.Routines.AutoTraderCoreRoutines.TradingConfig.*;
-
 public interface AutoTraderCoreRoutines {
 
     class TradingConfig{
-        public static double TREND_PERCENTAGE;
-        public static int DAYS_GAP;
-        public static double GAIN_FOR_ORDER;
-        public static double TPTOP_INDEX;
+
+        private final double marketPhase;
+        private final double wasteRange;
+        private final int daysGap;
+        private final double gainForOrder;
+
+        public TradingConfig(double marketPhase, double wasteRange, int daysGap, double gainForOrder) {
+            this.marketPhase = marketPhase;
+            this.wasteRange = wasteRange;
+            this.daysGap = daysGap;
+            this.gainForOrder = gainForOrder;
+        }
+
+        public double getMarketPhase() {
+            return marketPhase;
+        }
+
+        public double getWasteRange() {
+            return wasteRange;
+        }
+
+        public int getDaysGap() {
+            return daysGap;
+        }
+
+        public double getGainForOrder() {
+            return gainForOrder;
+        }
+
     }
 
     default void printDisclaimer(){
@@ -43,12 +66,13 @@ public interface AutoTraderCoreRoutines {
                 """);
     }
 
-    default void fetchTradingConfig(){
+    default TradingConfig fetchTradingConfig(){
         //request to server for trading confing
-        TREND_PERCENTAGE = 1;
-        DAYS_GAP = 14;
-        GAIN_FOR_ORDER = 3;
-        TPTOP_INDEX = 1;
+        return new TradingConfig(1,
+                2,
+                29,
+                1
+        );
     }
 
     default void sendStatsReport(){
@@ -60,8 +84,10 @@ public interface AutoTraderCoreRoutines {
 
     void checkCryptocurrencies() throws IOException;
 
-    void buyCryptocurrencies() throws IOException;
+    void buyCryptocurrencies() throws Exception;
 
     void updateCryptocurrencies();
+
+    double isTradable(String index, TradingConfig tradingConfig, Object candleInterval, double lastPricePercent) throws IOException;
 
 }
