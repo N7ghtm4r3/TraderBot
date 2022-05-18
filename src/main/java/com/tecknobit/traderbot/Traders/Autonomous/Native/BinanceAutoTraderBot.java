@@ -16,7 +16,6 @@ import static java.lang.Math.abs;
 public final class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTraderCoreRoutines {
 
     private final HashMap<String, Cryptocurrency> checkingList;
-    private final HashMap<String, Cryptocurrency> walletList;
     private boolean sendStatsReport;
     private TradingConfig tradingConfig;
     private boolean runningBot;
@@ -25,7 +24,6 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
         super(apiKey, secretKey);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
-        walletList = new HashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -35,7 +33,6 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
         super(apiKey, secretKey, baseEndpoint);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
-        walletList = new HashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -45,7 +42,6 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
         super(apiKey, secretKey, refreshPricesTime);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
-        walletList = new HashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -55,7 +51,6 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
         super(apiKey, secretKey, baseEndpoint, refreshPricesTime);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
-        walletList = new HashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -65,7 +60,6 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
         super(apiKey, secretKey, quoteCurrencies, refreshPricesTime);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
-        walletList = new HashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -75,7 +69,6 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies, refreshPricesTime);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
-        walletList = new HashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -85,7 +78,6 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
         super(apiKey, secretKey, quoteCurrencies);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
-        walletList = new HashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -95,7 +87,6 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
-        walletList = new HashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -136,7 +127,7 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
         for (TickerPriceChange ticker : binanceMarketManager.getTickerPriceChangeList()){
             String index = ticker.getSymbol();
             Coin coin = coins.get(tradingPairsList.get(index).getBaseAsset());
-            if(coin != null && !walletList.containsKey(index)){
+            if(coin != null && !coins.containsKey(index)){
                 double tptop = isTradable(index, tradingConfig, candleInterval, ticker.getPriceChangePercent());
                 if(tptop != -1) {
                     checkingList.put(index, new Cryptocurrency(index,
@@ -157,9 +148,9 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
             String symbol = cryptocurrency.getSymbol();
             double tptop = isTradable(symbol, cryptocurrency.getTradingConfig(), cryptocurrency.getCandleGap(),
                     cryptocurrency.getLastPrice());
-            if(tptop != -1){
+            if(tptop != -1)
                 buyMarket(symbol, 0);
-            }
+            checkingList.remove(symbol);
         }
     }
 

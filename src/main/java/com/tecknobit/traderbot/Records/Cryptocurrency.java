@@ -7,7 +7,7 @@ public class Cryptocurrency {
     private final String symbol;
     private final double lastPrice;
     private final double tptopIndex;
-    private final double quantity;
+    private double quantity;
     private final Object candleGap;
     private final TradingConfig tradingConfig;
 
@@ -16,6 +16,8 @@ public class Cryptocurrency {
         this.symbol = symbol;
         this.lastPrice = lastPrice;
         this.tptopIndex = tptopIndex;
+        if(quantity < 0)
+            throw new IllegalArgumentException("Quantity value cannot be less than 0");
         this.quantity = quantity;
         this.candleGap = candleGap;
         this.tradingConfig = tradingConfig;
@@ -35,6 +37,12 @@ public class Cryptocurrency {
 
     public double getQuantity() {
         return quantity;
+    }
+
+    public void setQuantity(double quantity) {
+        if(quantity < 0)
+            throw new IllegalArgumentException("Quantity value cannot be less than 0");
+        this.quantity = quantity;
     }
 
     public Object getCandleGap() {
