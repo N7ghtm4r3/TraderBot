@@ -1,7 +1,6 @@
 package com.tecknobit.traderbot.Traders.Autonomous.Native;
 
 import com.tecknobit.binancemanager.Managers.Market.Records.Tickers.TickerPriceChange;
-import com.tecknobit.traderbot.Records.Coin;
 import com.tecknobit.traderbot.Records.Cryptocurrency;
 import com.tecknobit.traderbot.Routines.AutoTraderCoreRoutines;
 import com.tecknobit.traderbot.Traders.Interfaces.Native.BinanceTraderBot;
@@ -13,9 +12,10 @@ import java.util.HashMap;
 import static com.tecknobit.binancemanager.Managers.Market.Records.Stats.Candlestick.*;
 import static java.lang.Math.abs;
 
-public final class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTraderCoreRoutines {
+public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTraderCoreRoutines {
 
     private final HashMap<String, Cryptocurrency> checkingList;
+    private final HashMap<String, Cryptocurrency> walletList;
     private boolean sendStatsReport;
     private TradingConfig tradingConfig;
     private boolean runningBot;
@@ -24,6 +24,7 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
         super(apiKey, secretKey);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
+        walletList = new HashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -33,6 +34,7 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
         super(apiKey, secretKey, baseEndpoint);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
+        walletList = new HashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -42,6 +44,7 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
         super(apiKey, secretKey, refreshPricesTime);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
+        walletList = new HashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -51,6 +54,7 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
         super(apiKey, secretKey, baseEndpoint, refreshPricesTime);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
+        walletList = new HashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -60,6 +64,7 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
         super(apiKey, secretKey, quoteCurrencies, refreshPricesTime);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
+        walletList = new HashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -69,6 +74,7 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies, refreshPricesTime);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
+        walletList = new HashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -78,6 +84,7 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
         super(apiKey, secretKey, quoteCurrencies);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
+        walletList = new HashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -87,6 +94,7 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
+        walletList = new HashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -126,8 +134,7 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
             candleInterval = INTERVAL_1M;
         for (TickerPriceChange ticker : binanceMarketManager.getTickerPriceChangeList()){
             String index = ticker.getSymbol();
-            Coin coin = coins.get(tradingPairsList.get(index).getBaseAsset());
-            if(coin != null && !coins.containsKey(index)){
+            if(coins.get(tradingPairsList.get(index).getBaseAsset()) != null && !walletList.containsKey(index)){
                 double tptop = isTradable(index, tradingConfig, candleInterval, ticker.getPriceChangePercent());
                 if(tptop != -1) {
                     checkingList.put(index, new Cryptocurrency(index,
@@ -148,8 +155,11 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
             String symbol = cryptocurrency.getSymbol();
             double tptop = isTradable(symbol, cryptocurrency.getTradingConfig(), cryptocurrency.getCandleGap(),
                     cryptocurrency.getLastPrice());
-            if(tptop != -1)
+            if(tptop != -1) {
                 buyMarket(symbol, 0);
+                cryptocurrency.setQuantity(0);
+                walletList.put(symbol, cryptocurrency);
+            }
             checkingList.remove(symbol);
         }
     }
@@ -184,22 +194,27 @@ public final class BinanceAutoTraderBot extends BinanceTraderBot implements Auto
             sendStatsReport(/*params for report*/);
     }
 
+    @Override
     public void setSendStatsReport(boolean sendStatsReport) {
         this.sendStatsReport = sendStatsReport;
     }
 
+    @Override
     public boolean canSendStatsReport() {
         return sendStatsReport;
     }
 
+    @Override
     public boolean isRunningBot() {
         return runningBot;
     }
 
+    @Override
     public void disableBot() {
         runningBot = false;
     }
 
+    @Override
     public void enableBot(){
         runningBot = true;
     }

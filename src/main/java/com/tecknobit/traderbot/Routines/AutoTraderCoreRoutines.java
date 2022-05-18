@@ -90,4 +90,14 @@ public interface AutoTraderCoreRoutines {
 
     double isTradable(String index, TradingConfig tradingConfig, Object candleInterval, double lastPricePercent) throws IOException;
 
+    void setSendStatsReport(boolean sendStatsReport);
+
+    boolean canSendStatsReport();
+
+    boolean isRunningBot();
+
+    void disableBot();
+
+    void enableBot();
+
 }
