@@ -88,7 +88,11 @@ public interface AutoTraderCoreRoutines {
 
     void updateCryptocurrencies();
 
-    double isTradable(String index, TradingConfig tradingConfig, Object candleInterval, double lastPricePercent) throws IOException;
+    double isTradable(String index, TradingConfig tradingConfig, Object candleInterval, double lastPricePercent)
+            throws IOException;
+
+    double computeTPTOPIndex(String index, TradingConfig tradingConfig, Object candleInterval, double wasteRange)
+            throws IOException;
 
     void setSendStatsReport(boolean sendStatsReport);
 

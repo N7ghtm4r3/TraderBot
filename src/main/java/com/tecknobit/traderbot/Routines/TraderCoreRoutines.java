@@ -78,7 +78,8 @@ public abstract class TraderCoreRoutines {
     protected HashMap<String, Coin> coins;
 
     /**
-     * {@code quoteCurrencies} is a list of quote currencies used in past orders es (USD or EUR).
+     * {@code quoteCurrencies} is a list of quote currencies used in past orders and current active
+     * user wallets ready to make order es (USD or EUR).
      * @implNote methods that allow to operate on list are: {@link #setQuoteCurrencies(ArrayList)},
      * {@link #insertQuoteCurrency(java.lang.String)}, {@link #removeQuoteCurrency(java.lang.String)} and
      * {@link #insertQuoteCurrency(java.lang.String)}
@@ -324,6 +325,18 @@ public abstract class TraderCoreRoutines {
      * **/
     public ArrayList<String> getQuoteCurrencies() {
         return quoteCurrencies;
+    }
+
+    /**
+     * This method is used to check if any quote is inserted in {@link #quoteCurrencies} list
+     * @param compareQuote: quote to compare and check if is inserted
+     * @return true if is inserted o false if not
+     * **/
+    protected boolean quoteContained(String compareQuote){
+        for (String quote : quoteCurrencies)
+            if(compareQuote.equals(quote))
+                return true;
+        return false;
     }
 
     /**
