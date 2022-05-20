@@ -1,6 +1,9 @@
 package com.tecknobit.traderbot.Traders.Autonomous.Native;
 
+import com.tecknobit.binancemanager.Managers.Market.Records.Filter;
+import com.tecknobit.binancemanager.Managers.Market.Records.Stats.ExchangeInformation;
 import com.tecknobit.binancemanager.Managers.Market.Records.Tickers.TickerPriceChange;
+import com.tecknobit.traderbot.Helpers.Orders.MarketOrder;
 import com.tecknobit.traderbot.Records.Coin;
 import com.tecknobit.traderbot.Records.Cryptocurrency;
 import com.tecknobit.traderbot.Routines.AutoTraderCoreRoutines;
@@ -14,7 +17,7 @@ import static com.tecknobit.binancemanager.Managers.Market.Records.Stats.Candles
 import static com.tecknobit.binancemanager.Managers.Market.Records.Stats.ExchangeInformation.Symbol;
 import static java.lang.Math.abs;
 
-public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTraderCoreRoutines {
+public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTraderCoreRoutines, MarketOrder {
 
     private final HashMap<String, Cryptocurrency> checkingList;
     private final HashMap<String, Cryptocurrency> walletList;
@@ -141,15 +144,18 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                 String baseAsset = tradingPair.getBaseAsset();
                 Coin coin = coins.get(baseAsset);
                 if(coin != null && !walletList.containsKey(symbol)){
-                    double tptop = isTradable(symbol, tradingConfig, candleInterval, ticker.getPriceChangePercent());
-                    if(tptop != -1) {
+                    double lastPrice = ticker.getLastPrice();
+                    double priceChangePercent = ticker.getPriceChangePercent();
+                    double tptop = isTradable(symbol, tradingConfig, candleInterval, lastPrice, priceChangePercent);
+                    if(tptop != NOT_ASSET_TRADABLE) {
                         checkingList.put(symbol, new Cryptocurrency(baseAsset,
                                 coin.getAssetName(),
                                 0,
                                 symbol,
-                                ticker.getLastPrice(),
+                                lastPrice,
                                 tptop,
                                 candleInterval,
+                                priceChangePercent,
                                 tradingConfig)
                         );
                     }
@@ -163,10 +169,11 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         for (Cryptocurrency cryptocurrency : checkingList.values()){
             String symbol = cryptocurrency.getSymbol();
             double tptop = isTradable(symbol, cryptocurrency.getTradingConfig(), cryptocurrency.getCandleGap(),
-                    cryptocurrency.getLastPrice());
-            if(tptop != -1) {
-                buyMarket(symbol, 0);
-                cryptocurrency.setQuantity(0);
+                    cryptocurrency.getLastPrice(), cryptocurrency.getPriceChangePercent());
+            if(tptop != NOT_ASSET_TRADABLE) {
+                double quantity = getMarketOrderQuantity(symbol);
+                buyMarket(symbol, quantity);
+                cryptocurrency.setQuantity(quantity);
                 walletList.put(symbol, cryptocurrency);
             }
             checkingList.remove(symbol);
@@ -179,13 +186,16 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     }
 
     @Override
-    public double isTradable(String index, TradingConfig tradingConfig, Object candleInterval,
-                              double lastPricePercent) throws IOException {
+    public double isTradable(String index, TradingConfig tradingConfig, Object candleInterval, double lastPrice,
+                             double priceChangePercent) throws IOException {
         double wasteRange = tradingConfig.getWasteRange();
-        double tptop = computeTPTOPIndex(index, tradingConfig, candleInterval, lastPricePercent);
-        if(tptop >= tradingConfig.getGainForOrder() && abs(lastPricePercent - tradingConfig.getMarketPhase()) <= abs(wasteRange))
-            return tptop;
-        return -1;
+        if((abs(priceChangePercent - tradingConfig.getMarketPhase()) <= abs(wasteRange)) ||
+            (priceChangePercent >= tradingConfig.getMaxLoss() && priceChangePercent <= tradingConfig.getMaxGain())){
+            double tptop = computeTPTOPIndex(index, tradingConfig, candleInterval, wasteRange);
+            if(tptop >= tradingConfig.getGainForOrder())
+                return tptop;
+        }
+        return NOT_ASSET_TRADABLE;
     }
 
     @Override
@@ -232,6 +242,14 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     @Override
     public void enableBot(){
         runningBot = true;
+    }
+
+    @Override
+    public double getMarketOrderQuantity(String index) throws Exception {
+        ExchangeInformation exchangeInformation = binanceMarketManager.getObjectExchangeInformation(index);
+        for (Filter filter : exchangeInformation.getExchangeFilters())
+            System.out.println(filter.getFilterType());
+        return 1000;
     }
 
 }

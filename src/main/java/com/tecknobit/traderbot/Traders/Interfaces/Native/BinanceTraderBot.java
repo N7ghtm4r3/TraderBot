@@ -428,11 +428,11 @@ public class BinanceTraderBot extends TraderCoreRoutines {
      * @param quantity: this indicates quantity of that symbol is wanted to sell es. 10
      * @param side: this indicates the side of the order (BUY or SELL)
      * **/
-    @Override
+    @Override // TODO: 20/05/2022 SET TO NEW ORDER
     protected void placeAnOrder(String symbol, double quantity, String side) throws Exception {
         HashMap<String, Object> quantityParam = new HashMap<>();
         quantityParam.put("quantity", quantity);
-        orderStatus = binanceSpotManager.sendNewOrder(symbol, side, MARKET_TYPE, quantityParam);
+        orderStatus = binanceSpotManager.testNewOrder(symbol, side, MARKET_TYPE, quantityParam);
     }
 
     /**

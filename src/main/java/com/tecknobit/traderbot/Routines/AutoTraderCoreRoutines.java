@@ -4,18 +4,25 @@ import java.io.IOException;
 
 public interface AutoTraderCoreRoutines {
 
+    int NOT_ASSET_TRADABLE = -999;
+
     class TradingConfig{
 
         private final double marketPhase;
         private final double wasteRange;
         private final int daysGap;
         private final double gainForOrder;
+        private final double maxLoss;
+        private final double maxGain;
 
-        public TradingConfig(double marketPhase, double wasteRange, int daysGap, double gainForOrder) {
+        public TradingConfig(double marketPhase, double wasteRange, int daysGap, double gainForOrder, double maxLoss,
+                             double maxGain) {
             this.marketPhase = marketPhase;
             this.wasteRange = wasteRange;
             this.daysGap = daysGap;
             this.gainForOrder = gainForOrder;
+            this.maxLoss = maxLoss;
+            this.maxGain = maxGain;
         }
 
         public double getMarketPhase() {
@@ -32,6 +39,14 @@ public interface AutoTraderCoreRoutines {
 
         public double getGainForOrder() {
             return gainForOrder;
+        }
+
+        public double getMaxLoss() {
+            return maxLoss;
+        }
+
+        public double getMaxGain() {
+            return maxGain;
         }
 
     }
@@ -69,9 +84,11 @@ public interface AutoTraderCoreRoutines {
     default TradingConfig fetchTradingConfig(){
         //request to server for trading confing
         return new TradingConfig(1,
-                2,
+                3,
                 29,
-                1
+                1,
+                4,
+                2
         );
     }
 
@@ -88,8 +105,8 @@ public interface AutoTraderCoreRoutines {
 
     void updateCryptocurrencies();
 
-    double isTradable(String index, TradingConfig tradingConfig, Object candleInterval, double lastPricePercent)
-            throws IOException;
+    double isTradable(String index, TradingConfig tradingConfig, Object candleInterval, double lastPrice,
+                      double priceChangePercent) throws IOException;
 
     double computeTPTOPIndex(String index, TradingConfig tradingConfig, Object candleInterval, double wasteRange)
             throws IOException;
