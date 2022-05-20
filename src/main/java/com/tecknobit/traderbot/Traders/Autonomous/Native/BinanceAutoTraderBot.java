@@ -1,7 +1,6 @@
 package com.tecknobit.traderbot.Traders.Autonomous.Native;
 
 import com.tecknobit.binancemanager.Managers.Market.Records.Filter;
-import com.tecknobit.binancemanager.Managers.Market.Records.Stats.ExchangeInformation;
 import com.tecknobit.binancemanager.Managers.Market.Records.Tickers.TickerPriceChange;
 import com.tecknobit.traderbot.Helpers.Orders.MarketOrder;
 import com.tecknobit.traderbot.Records.Coin;
@@ -246,8 +245,8 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
 
     @Override
     public double getMarketOrderQuantity(String index) throws Exception {
-        ExchangeInformation exchangeInformation = binanceMarketManager.getObjectExchangeInformation(index);
-        for (Filter filter : exchangeInformation.getExchangeFilters())
+        Symbol exchangeInformation = binanceMarketManager.getObjectExchangeInformation(index).getSymbols().get(0);
+        for (Filter filter : exchangeInformation.getFiltersList())
             System.out.println(filter.getFilterType());
         return 1000;
     }
