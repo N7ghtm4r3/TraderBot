@@ -180,7 +180,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
             if(tptop != NOT_ASSET_TRADABLE) {
                 double quantity = getMarketOrderQuantity(cryptocurrency);
                 if(quantity != -1) {
-                    System.out.println(quantity + symbol);
                     buyMarket(symbol, quantity);
                     cryptocurrency.setQuantity(quantity);
                     walletList.put(cryptocurrency.getAssetIndex(), cryptocurrency);
@@ -195,7 +194,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         System.out.println("## UPDATING WALLET CRYPTOCURRENCIES ##");
         refreshLatestPrice();
         for (Cryptocurrency cryptocurrency : walletList.values()){
-            System.out.println(cryptocurrency.getSymbol());
             System.out.println(binanceMarketManager.getTrendPercent(cryptocurrency.getLastPrice(), lastPrices.get(cryptocurrency.getSymbol())));
         }
     }

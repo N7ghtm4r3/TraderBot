@@ -13,7 +13,6 @@ import com.tecknobit.traderbot.Records.Coin;
 import com.tecknobit.traderbot.Records.Transaction;
 import com.tecknobit.traderbot.Routines.TraderCoreRoutines;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -410,14 +409,14 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * @return wallet balance in currency value
      * **/
     @Override
-    public double getWalletBalance(String currency, boolean forceRefresh) throws Exception {
+    public double getWalletBalance(String currency, boolean forceRefresh) {
         if(isRefreshTime() || !lastBalanceCurrency.equals(currency) || forceRefresh){
             refreshLatestPrice();
             lastBalanceCurrency = currency;
             balance = 0;
             for (Coin coin : coins.values())
                 if(coin.isTradingEnabled())
-                    balance += coin.getQuantity() * lastPrices.get(coin.getAssetIndex());
+                    balance += coin.getQuantity() * lastPrices.get(coin.getAssetIndex() + "-" + USD_CURRENCY);
             if(!lastBalanceCurrency.contains(USD_CURRENCY)){
                 try {
                     balance *= coinbaseProductsManager.getProductTickerObject(getSymbol(currency)).getPrice();
@@ -436,7 +435,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * @return wallet balance in currency value
      * **/
     @Override
-    public double getWalletBalance(String currency, boolean forceRefresh, int decimals) throws Exception {
+    public double getWalletBalance(String currency, boolean forceRefresh, int decimals) {
         return coinbaseProductsManager.roundValue(getWalletBalance(currency, forceRefresh), decimals);
     }
 
@@ -447,7 +446,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * @return list of custom object {@link Asset} as {@link ArrayList}
      * **/
     @Override
-    public ArrayList<Asset> getAssetsList(String currency, boolean forceRefresh) throws Exception {
+    public ArrayList<Asset> getAssetsList(String currency, boolean forceRefresh) {
         if(isRefreshTime() || !lastAssetCurrency.equals(currency) || forceRefresh){
             refreshLatestPrice();
             lastAssetCurrency = currency;
@@ -673,14 +672,13 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * Any params required
      * **/
     @Override
-    protected void refreshLatestPrice() throws Exception {
+    protected void refreshLatestPrice() {
         lastPricesRefresh = System.currentTimeMillis();
         for (String productId : tradingPairsList.keySet()) {
-            String[] productIds = productId.split("-");
             try {
-                if(productIds[1].equals(USD_CURRENCY) && coins.get(productIds[0]).isTradingEnabled())
-                    lastPrices.put(productIds[0], coinbaseProductsManager.getProductTickerObject(productId).getPrice());
-            }catch (JSONException ignored){
+                if(coins.get(productId.split("-")[0]).isTradingEnabled() || productId.endsWith(USD_CURRENCY))
+                    lastPrices.put(productId, coinbaseProductsManager.getProductTickerObject(productId).getPrice());
+            }catch (Exception ignored){
             }
         }
     }
