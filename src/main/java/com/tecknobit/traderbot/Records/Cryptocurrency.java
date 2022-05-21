@@ -7,7 +7,6 @@ import static com.tecknobit.traderbot.Routines.TraderCoreRoutines.tradingTools;
 public final class Cryptocurrency extends Token{
 
     private final String symbol;
-
     private double firstPrice;
     private double lastPrice;
     private final double tptopIndex;
@@ -88,20 +87,6 @@ public final class Cryptocurrency extends Token{
 
     public TradingConfig getTradingConfig() {
         return tradingConfig;
-    }
-
-    @Override
-    public String toString() {
-        return "Cryptocurrency{" +
-                "symbol='" + symbol + '\'' +
-                ", lastPrice=" + lastPrice +
-                ", tptopIndex=" + tptopIndex +
-                ", candleGap=" + candleGap +
-                ", priceChangePercent=" + priceChangePercent +
-                ", quoteAsset='" + quoteAsset + '\'' +
-                ", tradingConfig=" + tradingConfig +
-                ", quantity= " + getQuantity() +
-                '}';
     }
 
 }
