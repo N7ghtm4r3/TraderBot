@@ -1,10 +1,15 @@
 package com.tecknobit.traderbot.Routines;
 
+import com.tecknobit.traderbot.Records.Cryptocurrency;
+
 import java.io.IOException;
 
 public interface AutoTraderCoreRoutines {
 
     int NOT_ASSET_TRADABLE = -999;
+    int LOSS_SELL = 0;
+    int GAIN_SELL = 1;
+    int PAIR_SELL = 2;
 
     class TradingConfig{
 
@@ -103,13 +108,15 @@ public interface AutoTraderCoreRoutines {
 
     void buyCryptocurrencies() throws Exception;
 
-    void updateCryptocurrencies() throws Exception;
-
     double isTradable(String index, TradingConfig tradingConfig, Object candleInterval, double lastPrice,
                       double priceChangePercent) throws IOException;
 
     double computeTPTOPIndex(String index, TradingConfig tradingConfig, Object candleInterval, double wasteRange)
             throws IOException;
+
+    void updateWallet() throws Exception;
+
+    void incrementSellsSale(Cryptocurrency cryptocurrency, int codeOpe) throws Exception;
 
     void setSendStatsReport(boolean sendStatsReport);
 
@@ -122,5 +129,13 @@ public interface AutoTraderCoreRoutines {
     void enableBot();
 
     double getCoinBalance(double lastPrice, String quote);
+
+    double getSellsAtLoss();
+
+    double getSellsAtGain();
+
+    double getSellsInPair();
+
+    double getTotalSells();
 
 }
