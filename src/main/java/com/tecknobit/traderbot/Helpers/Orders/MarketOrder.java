@@ -1,7 +1,9 @@
 package com.tecknobit.traderbot.Helpers.Orders;
 
+import com.tecknobit.traderbot.Records.Cryptocurrency;
+
 public interface MarketOrder {
 
-    double getMarketOrderQuantity(String index) throws Exception;
+    double getMarketOrderQuantity(Cryptocurrency cryptocurrency) throws Exception;
 
 }

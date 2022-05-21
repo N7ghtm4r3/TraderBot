@@ -9,16 +9,19 @@ public final class Cryptocurrency extends Token{
     private final double tptopIndex;
     private final Object candleGap;
     private final double priceChangePercent;
+    private final String quoteAsset;
     private final TradingConfig tradingConfig;
 
     public Cryptocurrency(String assetIndex, String assetName, double quantity, String symbol, double lastPrice,
-                          double tptopIndex, Object candleGap, double priceChangePercent, TradingConfig tradingConfig) {
+                          double tptopIndex, Object candleGap, double priceChangePercent, String quoteAsset,
+                          TradingConfig tradingConfig) {
         super(assetIndex, assetName, quantity);
         this.symbol = symbol;
         this.lastPrice = lastPrice;
         this.tptopIndex = tptopIndex;
         this.candleGap = candleGap;
         this.priceChangePercent = priceChangePercent;
+        this.quoteAsset = quoteAsset;
         this.tradingConfig = tradingConfig;
     }
 
@@ -42,6 +45,10 @@ public final class Cryptocurrency extends Token{
         return priceChangePercent;
     }
 
+    public String getQuoteAsset() {
+        return quoteAsset;
+    }
+
     public TradingConfig getTradingConfig() {
         return tradingConfig;
     }
@@ -54,8 +61,10 @@ public final class Cryptocurrency extends Token{
                 ", tptopIndex=" + tptopIndex +
                 ", candleGap=" + candleGap +
                 ", priceChangePercent=" + priceChangePercent +
+                ", quoteAsset='" + quoteAsset + '\'' +
                 ", tradingConfig=" + tradingConfig +
-                ", quantity=" + getQuantity() +
+                ", quantity= " + getQuantity() +
                 '}';
     }
+
 }

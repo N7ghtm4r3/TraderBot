@@ -7,6 +7,7 @@ import com.tecknobit.traderbot.Records.Coin;
 import com.tecknobit.traderbot.Records.Cryptocurrency;
 import com.tecknobit.traderbot.Routines.AutoTraderCoreRoutines;
 import com.tecknobit.traderbot.Traders.Interfaces.Native.BinanceTraderBot;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,9 +16,12 @@ import java.util.HashMap;
 import static com.tecknobit.binancemanager.Managers.Market.Records.Stats.Candlestick.*;
 import static com.tecknobit.binancemanager.Managers.Market.Records.Stats.ExchangeInformation.Symbol;
 import static java.lang.Math.abs;
+import static java.lang.Math.ceil;
 
 public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTraderCoreRoutines, MarketOrder {
 
+    public static final String LOT_SIZE_FILTER = "LOT_SIZE";
+    public static final String MIN_NOTIONAL_FILTER = "MIN_NOTIONAL";
     private final HashMap<String, Cryptocurrency> checkingList;
     private final HashMap<String, Cryptocurrency> walletList;
     private boolean sendStatsReport;
@@ -139,7 +143,8 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         for (TickerPriceChange ticker : binanceMarketManager.getTickerPriceChangeList()){
             String symbol = ticker.getSymbol();
             Symbol tradingPair = tradingPairsList.get(symbol);
-            if(quoteCurrencies.isEmpty() || quoteContained(tradingPair.getQuoteAsset())){
+            String quoteAsset = tradingPair.getQuoteAsset();
+            if(quoteCurrencies.isEmpty() || quoteContained(quoteAsset)){
                 String baseAsset = tradingPair.getBaseAsset();
                 Coin coin = coins.get(baseAsset);
                 if(coin != null && !walletList.containsKey(symbol)){
@@ -155,6 +160,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                                 tptop,
                                 candleInterval,
                                 priceChangePercent,
+                                quoteAsset,
                                 tradingConfig)
                         );
                     }
@@ -170,13 +176,15 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
             double tptop = isTradable(symbol, cryptocurrency.getTradingConfig(), cryptocurrency.getCandleGap(),
                     cryptocurrency.getLastPrice(), cryptocurrency.getPriceChangePercent());
             if(tptop != NOT_ASSET_TRADABLE) {
-                double quantity = getMarketOrderQuantity(symbol);
-                buyMarket(symbol, quantity);
-                cryptocurrency.setQuantity(quantity);
-                walletList.put(symbol, cryptocurrency);
+                double quantity = getMarketOrderQuantity(cryptocurrency);
+                if(quantity != -1) {
+                    buyMarket(symbol, quantity);
+                    cryptocurrency.setQuantity(quantity);
+                    walletList.put(symbol, cryptocurrency);
+                }
             }
-            checkingList.remove(symbol);
         }
+        checkingList.clear();
     }
 
     @Override
@@ -244,11 +252,45 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     }
 
     @Override
-    public double getMarketOrderQuantity(String index) throws Exception {
-        Symbol exchangeInformation = binanceMarketManager.getObjectExchangeInformation(index).getSymbols().get(0);
-        for (Filter filter : exchangeInformation.getFiltersList())
-            System.out.println(filter.getFilterType());
-        return 1000;
+    public double getMarketOrderQuantity(Cryptocurrency cryptocurrency) throws Exception {
+        String symbol = cryptocurrency.getSymbol();
+        Symbol exchangeInformation = binanceMarketManager.getObjectExchangeInformation(symbol).getSymbols().get(0);
+        double stepSize = 0, maxQty = 0, minQty = 0, minNotional = 0, quantity = -1;
+        double lastPrice = cryptocurrency.getLastPrice();
+        double coinBalance = getCoinBalance(lastPrice, cryptocurrency.getQuoteAsset());
+        for (Filter filter : exchangeInformation.getFiltersList()) {;
+            if(filter.getFilterType().equals(LOT_SIZE_FILTER)){
+                JSONObject lotSize = filter.getFilterDetails().getJSONObject(LOT_SIZE_FILTER);
+                stepSize = lotSize.getDouble("stepSize");
+                maxQty = lotSize.getDouble("maxQty");
+                minQty = lotSize.getDouble("minQty");
+            }else if(filter.getFilterType().equals(MIN_NOTIONAL_FILTER)) {
+                minNotional = filter.getFilterDetails().getJSONObject(MIN_NOTIONAL_FILTER)
+                        .getDouble("minNotional");
+                break;
+            }
+        }
+        if(coinBalance == minNotional)
+            quantity = ceil(minNotional / lastPrice);
+        else if(coinBalance > minNotional){
+            double difference = coinBalance - minNotional;
+            quantity = difference * cryptocurrency.getTptopIndex() / 100;
+            if(quantity < minQty)
+                quantity = minQty;
+            else if(quantity > maxQty)
+                quantity = maxQty;
+            else
+                if((quantity - minQty) % stepSize != 0)
+                    quantity = ceil(quantity);
+        }
+        return quantity;
+    }
+
+    @Override
+    public double getCoinBalance(double lastPrice, String quote) {
+        Coin coin = coins.get(quote);
+        return binanceMarketManager.roundValue(coin.getQuantity() *
+                lastPrices.get(coin.getAssetIndex() + USDT_CURRENCY), 8);
     }
 
 }

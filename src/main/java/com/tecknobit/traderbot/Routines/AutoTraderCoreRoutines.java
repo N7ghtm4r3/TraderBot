@@ -121,4 +121,6 @@ public interface AutoTraderCoreRoutines {
 
     void enableBot();
 
+    double getCoinBalance(double lastPrice, String quote);
+
 }
