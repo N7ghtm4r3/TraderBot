@@ -674,15 +674,13 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * **/
     @Override
     protected void refreshLatestPrice() throws Exception {
-        if(isRefreshTime()){
-            lastPricesRefresh = System.currentTimeMillis();
-            for (String productId : tradingPairsList.keySet()) {
-                String[] productIds = productId.split("-");
-                try {
-                    if(productIds[1].equals(USD_CURRENCY) && coins.get(productIds[0]).isTradingEnabled())
-                        lastPrices.put(productIds[0], coinbaseProductsManager.getProductTickerObject(productId).getPrice());
-                }catch (JSONException ignored){
-                }
+        lastPricesRefresh = System.currentTimeMillis();
+        for (String productId : tradingPairsList.keySet()) {
+            String[] productIds = productId.split("-");
+            try {
+                if(productIds[1].equals(USD_CURRENCY) && coins.get(productIds[0]).isTradingEnabled())
+                    lastPrices.put(productIds[0], coinbaseProductsManager.getProductTickerObject(productId).getPrice());
+            }catch (JSONException ignored){
             }
         }
     }

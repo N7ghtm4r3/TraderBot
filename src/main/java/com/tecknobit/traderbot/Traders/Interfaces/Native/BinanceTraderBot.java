@@ -479,15 +479,13 @@ public class BinanceTraderBot extends TraderCoreRoutines {
      * **/
     @Override
     protected void refreshLatestPrice() throws Exception {
-        if(isRefreshTime()){
-            lastPricesRefresh = System.currentTimeMillis();
-            for(TickerPriceChange tickerPriceChange : binanceMarketManager.getTickerPriceChangeList()) {
-                String symbol = tickerPriceChange.getSymbol();
-                try {
-                    if(symbol.endsWith(USDT_CURRENCY) && coins.get(symbol.replace(USDT_CURRENCY,"")).isTradingEnabled())
-                        lastPrices.put(symbol, tickerPriceChange.getLastPrice());
-                }catch (NullPointerException ignored){
-                }
+        lastPricesRefresh = System.currentTimeMillis();
+        for(TickerPriceChange tickerPriceChange : binanceMarketManager.getTickerPriceChangeList()) {
+            String symbol = tickerPriceChange.getSymbol();
+            try {
+                if(symbol.endsWith(USDT_CURRENCY) && coins.get(symbol.replace(USDT_CURRENCY,"")).isTradingEnabled())
+                    lastPrices.put(symbol, tickerPriceChange.getLastPrice());
+            }catch (NullPointerException ignored){
             }
         }
     }
