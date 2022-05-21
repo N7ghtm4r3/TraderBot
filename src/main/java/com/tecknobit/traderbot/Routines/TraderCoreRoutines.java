@@ -233,11 +233,11 @@ public abstract class TraderCoreRoutines {
 
     /**
      * This method is used to insert or update a coin in {@link #coins} list.
-     * @param symbol: symbol of the coin es. BTC
+     * @param index: index of the coin es. BTC
      * @param name: name of the coin es Bitcoin
      * @param quantity: quantity of that coin es. 0.28
      * **/
-    protected abstract void insertCoin(String symbol, String name, double quantity);
+    protected abstract void insertCoin(String index, String name, double quantity);
 
     /**
      * This method is used fetch details of an order request<br>

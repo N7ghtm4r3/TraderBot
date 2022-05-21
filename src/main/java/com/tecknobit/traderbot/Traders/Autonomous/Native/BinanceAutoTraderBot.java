@@ -133,6 +133,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
 
     @Override
     public void checkCryptocurrencies() throws Exception {
+        System.out.println("## CHECKING NEW CRYPTOCURRENCIES ##");
         tradingConfig = fetchTradingConfig();
         String candleInterval = INTERVAL_1d;
         int daysGap = tradingConfig.getDaysGap();
@@ -152,7 +153,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                     double priceChangePercent = ticker.getPriceChangePercent();
                     double tptop = isTradable(symbol, tradingConfig, candleInterval, lastPrice, priceChangePercent);
                     if(tptop != NOT_ASSET_TRADABLE) {
-                        checkingList.put(symbol, new Cryptocurrency(baseAsset,
+                        checkingList.put(baseAsset, new Cryptocurrency(baseAsset,
                                 coin.getAssetName(),
                                 0,
                                 symbol,
@@ -171,6 +172,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
 
     @Override
     public void buyCryptocurrencies() throws Exception {
+        System.out.println("## BUYING NEW CRYPTOCURRENCIES ##");
         for (Cryptocurrency cryptocurrency : checkingList.values()){
             String symbol = cryptocurrency.getSymbol();
             double tptop = isTradable(symbol, cryptocurrency.getTradingConfig(), cryptocurrency.getCandleGap(),
@@ -178,9 +180,10 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
             if(tptop != NOT_ASSET_TRADABLE) {
                 double quantity = getMarketOrderQuantity(cryptocurrency);
                 if(quantity != -1) {
+                    System.out.println(quantity + symbol);
                     buyMarket(symbol, quantity);
                     cryptocurrency.setQuantity(quantity);
-                    walletList.put(symbol, cryptocurrency);
+                    walletList.put(cryptocurrency.getAssetIndex(), cryptocurrency);
                 }
             }
         }
@@ -188,8 +191,13 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     }
 
     @Override
-    public void updateCryptocurrencies() {
-
+    public void updateCryptocurrencies() throws Exception {
+        System.out.println("## UPDATING WALLET CRYPTOCURRENCIES ##");
+        refreshLatestPrice();
+        for (Cryptocurrency cryptocurrency : walletList.values()){
+            System.out.println(cryptocurrency.getSymbol());
+            System.out.println(binanceMarketManager.getTrendPercent(cryptocurrency.getLastPrice(), lastPrices.get(cryptocurrency.getSymbol())));
+        }
     }
 
     @Override
@@ -270,8 +278,9 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                 break;
             }
         }
+        double minNotionalQty = minNotional / lastPrice;
         if(coinBalance == minNotional)
-            quantity = ceil(minNotional / lastPrice);
+            quantity = ceil(minNotional);
         else if(coinBalance > minNotional){
             double difference = coinBalance - minNotional;
             quantity = difference * cryptocurrency.getTptopIndex() / 100;
@@ -279,18 +288,23 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                 quantity = minQty;
             else if(quantity > maxQty)
                 quantity = maxQty;
-            else
-                if((quantity - minQty) % stepSize != 0)
+            else {
+                if ((quantity - minQty) % stepSize != 0)
                     quantity = ceil(quantity);
+                if(quantity < (minNotionalQty))
+                    quantity = ceil(minNotionalQty);
+            }
         }
         return quantity;
     }
 
+    // TODO: 21/05/2022 SET NORMAL METHOD ROUTINE
     @Override
     public double getCoinBalance(double lastPrice, String quote) {
-        Coin coin = coins.get(quote);
+        /*Coin coin = coins.get(quote);
         return binanceMarketManager.roundValue(coin.getQuantity() *
-                lastPrices.get(coin.getAssetIndex() + USDT_CURRENCY), 8);
+                lastPrices.get(coin.getAssetIndex() + USDT_CURRENCY), 8);*/
+        return 100;
     }
 
 }

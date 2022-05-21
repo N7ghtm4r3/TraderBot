@@ -210,10 +210,10 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         for (CoinInformation coin : binanceWalletManager.getAllCoinsList()){
             double free = coin.getFree();
             boolean isTradingEnable = true;
-            String symbol = coin.getCoin();
+            String index = coin.getCoin();
             if(free == 0 || !coin.isTrading())
                 isTradingEnable = false;
-            coins.put(symbol, new Coin(symbol,
+            coins.put(index, new Coin(index,
                     coin.getName(),
                     free,
                     isTradingEnable
@@ -437,13 +437,13 @@ public class BinanceTraderBot extends TraderCoreRoutines {
 
     /**
      * This method is used to insert or update a coin in {@link #coins} list.
-     * @param symbol: symbol of the coin es. BTC
+     * @param index: index of the coin es. BTC
      * @param name: name of the coin es Bitcoin
      * @param quantity: quantity of that coin es. 0.28
      * **/
     @Override
-    protected void insertCoin(String symbol, String name, double quantity) {
-        coins.put(symbol, new Coin(symbol,
+    protected void insertCoin(String index, String name, double quantity) {
+        coins.put(index, new Coin(index,
                 name,
                 quantity,
                 true

@@ -390,10 +390,10 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         coins = new HashMap<>();
         for (CoinbaseAccount coin : coinbaseAccountManager.getCoinbaseWalletsList()){
             double balance = coin.getBalance();
-            String symbol = coin.getCurrency();
+            String index = coin.getCurrency();
             boolean isTradingEnabled = balance != 0;
-            coins.put(symbol, new Coin(symbol,
-                    coinbaseCurrenciesManager.getCurrencyObject(symbol).getName(),
+            coins.put(index, new Coin(index,
+                    coinbaseCurrenciesManager.getCurrencyObject(index).getName(),
                     balance,
                     isTradingEnabled
             ));
@@ -632,13 +632,13 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
 
     /**
      * This method is used to insert or update a coin in {@link #coins} list.
-     * @param symbol: symbol of the coin es. BTC
+     * @param index: index of the coin es. BTC
      * @param name: name of the coin es Bitcoin
      * @param quantity: quantity of that coin es. 0.28
      * **/
     @Override
-    protected void insertCoin(String symbol, String name, double quantity) {
-        coins.put(symbol, new Coin(symbol,
+    protected void insertCoin(String index, String name, double quantity) {
+        coins.put(index, new Coin(index,
                 name,
                 quantity,
                 true

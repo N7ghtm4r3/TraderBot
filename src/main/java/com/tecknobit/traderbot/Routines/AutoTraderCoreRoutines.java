@@ -103,7 +103,7 @@ public interface AutoTraderCoreRoutines {
 
     void buyCryptocurrencies() throws Exception;
 
-    void updateCryptocurrencies();
+    void updateCryptocurrencies() throws Exception;
 
     double isTradable(String index, TradingConfig tradingConfig, Object candleInterval, double lastPrice,
                       double priceChangePercent) throws IOException;
