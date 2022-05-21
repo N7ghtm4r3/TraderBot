@@ -332,10 +332,9 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     // TODO: 21/05/2022 SET NORMAL METHOD ROUTINE
     @Override
     public double getCoinBalance(double lastPrice, String quote) {
-        /*Coin coin = coins.get(quote);
+        Coin coin = coins.get(quote);
         return binanceMarketManager.roundValue(coin.getQuantity() *
-                lastPrices.get(coin.getAssetIndex() + USDT_CURRENCY), 8);*/
-        return 100;
+                lastPrices.get(coin.getAssetIndex() + USDT_CURRENCY), 8);
     }
 
     @Override
