@@ -10,6 +10,7 @@ public interface AutoTraderCoreRoutines {
     long BUYING_GAP_TIME = 15000;//1800*1000L;
     long UPDATING_GAP_TIME = 10000L;
     int ASSET_NOT_TRADABLE = -999;
+
     int LOSS_SELL = 0;
     int GAIN_SELL = 1;
     int PAIR_SELL = 2;
@@ -100,12 +101,6 @@ public interface AutoTraderCoreRoutines {
         );
     }
 
-    default void sendStatsReport(){
-        // TODO: 22/05/2022 request to send report
-        System.out.println("gagagagag");
-        //send data in some methods
-    }
-
     default boolean makeRoutine(long previousGap, long gap){
         return (System.currentTimeMillis() - previousGap) >= gap;
     }
@@ -116,6 +111,12 @@ public interface AutoTraderCoreRoutines {
 
     void buyCryptocurrencies() throws Exception;
 
+    default void sendStatsReport(){
+        // TODO: 22/05/2022 request to send report
+        System.out.println("gagagagag");
+        //send data in some methods
+    }
+
     double isTradable(String index, TradingConfig tradingConfig, Object candleInterval, double lastPrice,
                       double priceChangePercent) throws IOException;
 
@@ -125,6 +126,11 @@ public interface AutoTraderCoreRoutines {
     void updateWallet() throws Exception;
 
     void incrementSellsSale(Cryptocurrency cryptocurrency, int codeOpe) throws Exception;
+
+    default void refreshCryptoDetails(Cryptocurrency cryptocurrency, double trendPercent, double lastPrice){
+        cryptocurrency.setTrendPercent(trendPercent);
+        cryptocurrency.setLastPrice(lastPrice);
+    }
 
     void setSendStatsReport(boolean sendStatsReport);
 

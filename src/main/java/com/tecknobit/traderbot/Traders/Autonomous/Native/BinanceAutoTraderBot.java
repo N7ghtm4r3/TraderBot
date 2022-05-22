@@ -18,8 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static com.tecknobit.binancemanager.Managers.Market.Records.Stats.Candlestick.*;
 import static com.tecknobit.binancemanager.Managers.Market.Records.Stats.ExchangeInformation.Symbol;
-import static java.lang.Math.abs;
-import static java.lang.Math.ceil;
+import static java.lang.Math.*;
 
 public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTraderCoreRoutines, MarketOrder {
 
@@ -218,10 +217,17 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
             if(tptop != ASSET_NOT_TRADABLE) {
                 double quantity = getMarketOrderQuantity(cryptocurrency);
                 if(quantity != -1) {
-                    buyMarket(symbol, quantity);
-                    cryptocurrency.setQuantity(quantity);
-                    cryptocurrency.setFirstPrice(lastPrice);
-                    walletList.put(cryptocurrency.getAssetIndex(), cryptocurrency);
+                    try {
+                        buyMarket(symbol, quantity);
+                        cryptocurrency.setQuantity(quantity);
+                        cryptocurrency.setFirstPrice(lastPrice);
+                        walletList.put(cryptocurrency.getAssetIndex(), cryptocurrency);
+                        if(printRoutineMessages)
+                            System.out.println("Buying [" + symbol + "], quantity: " + quantity);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        System.out.println(getErrorResponse());
+                    }
                 }
             }
         }
@@ -256,18 +262,26 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         System.out.println("## UPDATING WALLET CRYPTOCURRENCIES");
         refreshLatestPrice();
         for (Cryptocurrency cryptocurrency : walletList.values()) {
+            String symbol = cryptocurrency.getSymbol();
             TradingConfig tradingConfig = cryptocurrency.getTradingConfig();
-            double lastPrice = lastPrices.get(cryptocurrency.getSymbol());
+            double lastPrice = lastPrices.get(symbol);
             double trendPercent = binanceMarketManager.getTrendPercent(cryptocurrency.getFirstPrice(), lastPrice);
-            if(trendPercent < tradingConfig.getGainForOrder() && trendPercent < cryptocurrency.getTptopIndex()){
-                cryptocurrency.setTrendPercent(trendPercent);
-                cryptocurrency.setLastPrice(lastPrice);
-            }else if(trendPercent <= tradingConfig.getMaxLoss())
-                incrementSellsSale(cryptocurrency, LOSS_SELL);
-            else if(trendPercent >= tradingConfig.getGainForOrder() || trendPercent >= cryptocurrency.getTptopIndex())
-                incrementSellsSale(cryptocurrency, GAIN_SELL);
-            else
-                incrementSellsSale(cryptocurrency, PAIR_SELL);
+            try {
+                if(trendPercent < tradingConfig.getGainForOrder() && trendPercent < cryptocurrency.getTptopIndex()){
+                    refreshCryptoDetails(cryptocurrency, trendPercent, lastPrice);
+                    if(printRoutineMessages)
+                        System.out.println("Refreshing [" + symbol + "]");
+                }else if(trendPercent <= tradingConfig.getMaxLoss())
+                    incrementSellsSale(cryptocurrency, LOSS_SELL);
+                else if(trendPercent >= tradingConfig.getGainForOrder() || trendPercent >= cryptocurrency.getTptopIndex())
+                    incrementSellsSale(cryptocurrency, GAIN_SELL);
+                else
+                    incrementSellsSale(cryptocurrency, PAIR_SELL);
+            }catch (Exception e){
+                e.printStackTrace();
+                System.out.println(getErrorResponse());
+                refreshCryptoDetails(cryptocurrency, trendPercent, lastPrice);
+            }
         }
         if(printRoutineMessages){
             for (Cryptocurrency cryptocurrency : walletList.values())
@@ -291,6 +305,8 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
             default:
                 autoTraderBotAccount.addPair();
         }
+        if(printRoutineMessages)
+            System.out.println("");
     }
 
     @Override

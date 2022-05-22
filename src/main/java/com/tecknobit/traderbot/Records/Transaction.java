@@ -61,11 +61,17 @@ public final class Transaction implements RoutineMessages {
     @Override
     public void printDetails() {
         out.println("## [" + symbol + "]\n" +
-                "## Side: " + side + "\n" +
+                getSideInfoLine() +
                 "## Date: " + transactionDate + "\n" +
                 "## Amount value: " + value + "\n" +
                 "## Quantity: " + quantity + "\n" +
                 "######################");
+    }
+
+    private String getSideInfoLine(){
+        if(side.equals(BUY))
+            return "## Side: " + ANSI_GREEN + side + ANSI_RESET + "\n";
+        return "## Side: " + ANSI_RED + side + ANSI_RESET + "\n";
     }
 
 }

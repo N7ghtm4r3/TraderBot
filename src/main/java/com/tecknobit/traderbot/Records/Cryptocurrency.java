@@ -8,9 +8,6 @@ import static java.lang.System.out;
 
 public final class Cryptocurrency extends Token implements RoutineMessages {
 
-    private static final String ANSI_RESET = "\u001B[0m";
-    private static final String ANSI_RED = "\033[0;31m";
-    private static final String ANSI_GREEN = "\033[0;32m";
     private final String symbol;
     private double firstPrice;
     private double lastPrice;
@@ -111,6 +108,7 @@ public final class Cryptocurrency extends Token implements RoutineMessages {
         out.println("## [" + symbol + "]\n" +
                 getANSIText("## Trend: ", getTextTrendPercent(2)) +
                 "## Last: " + lastPrice + "\n" +
+                "## Quantity: " + getQuantity() + "\n" +
                 getANSIText("## Estimated forecast: ", getTextTptopIndex(2)) +
                 "######################");
     }
