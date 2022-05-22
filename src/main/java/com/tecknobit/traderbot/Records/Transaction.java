@@ -1,10 +1,13 @@
 package com.tecknobit.traderbot.Records;
 
+import com.tecknobit.traderbot.Routines.RoutineMessages;
+
 import static com.tecknobit.binancemanager.Managers.SignedManagers.Trade.Common.TradeConstants.BUY;
 import static com.tecknobit.binancemanager.Managers.SignedManagers.Trade.Common.TradeConstants.SELL;
 import static com.tecknobit.traderbot.Routines.TraderCoreRoutines.tradingTools;
+import static java.lang.System.out;
 
-public class Transaction {
+public final class Transaction implements RoutineMessages {
 
     private final String symbol;
     private final String side;
@@ -53,6 +56,16 @@ public class Transaction {
 
     public double getQuantity() {
         return quantity;
+    }
+
+    @Override
+    public void printDetails() {
+        out.println("## [" + symbol + "]\n" +
+                "## Side: " + side + "\n" +
+                "## Date: " + transactionDate + "\n" +
+                "## Amount value: " + value + "\n" +
+                "## Quantity: " + quantity + "\n" +
+                "######################");
     }
 
 }

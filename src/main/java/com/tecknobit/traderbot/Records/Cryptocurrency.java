@@ -1,11 +1,16 @@
 package com.tecknobit.traderbot.Records;
 
+import com.tecknobit.traderbot.Routines.RoutineMessages;
 import com.tecknobit.traderbot.Routines.AutoTraderCoreRoutines.TradingConfig;
 
 import static com.tecknobit.traderbot.Routines.TraderCoreRoutines.tradingTools;
+import static java.lang.System.out;
 
-public final class Cryptocurrency extends Token{
+public final class Cryptocurrency extends Token implements RoutineMessages {
 
+    private static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_RED = "\033[0;31m";
+    private static final String ANSI_GREEN = "\033[0;32m";
     private final String symbol;
     private double firstPrice;
     private double lastPrice;
@@ -79,6 +84,18 @@ public final class Cryptocurrency extends Token{
         return tradingTools.textualizeAssetPercent(trendPercent);
     }
 
+    public String getTextTrendPercent(int decimals){
+        return tradingTools.textualizeAssetPercent(tradingTools.roundValue(trendPercent, decimals));
+    }
+
+    public String getTextTptopIndex(){
+        return tradingTools.textualizeAssetPercent(tptopIndex);
+    }
+
+    public String getTextTptopIndex(int decimals){
+        return tradingTools.textualizeAssetPercent(tradingTools.roundValue(tptopIndex, decimals));
+    }
+
     public void setTrendPercent(double trendPercent) {
         if(trendPercent < -100)
             throw new IllegalArgumentException("Trend percent cannot be less than -100");
@@ -87,6 +104,24 @@ public final class Cryptocurrency extends Token{
 
     public TradingConfig getTradingConfig() {
         return tradingConfig;
+    }
+
+    @Override
+    public void printDetails() {
+        out.println("## [" + symbol + "]\n" +
+                getANSIText("## Trend: ", getTextTrendPercent(2)) +
+                "## Last: " + lastPrice + "\n" +
+                getANSIText("## Estimated forecast: ", getTextTptopIndex(2)) +
+                "######################");
+    }
+
+    private String getANSIText(String tail, String percent){
+        if(percent.contains("+"))
+            return tail + ANSI_GREEN + percent + ANSI_RESET + "\n";
+        else if (percent.contains("-"))
+            return tail + ANSI_RED + percent + ANSI_RESET + "\n";
+        else
+            return tail + percent + "\n";
     }
 
 }

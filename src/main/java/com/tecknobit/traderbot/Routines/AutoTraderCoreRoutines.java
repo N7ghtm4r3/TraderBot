@@ -7,7 +7,7 @@ import java.io.IOException;
 public interface AutoTraderCoreRoutines {
 
     long CHECKING_GAP_TIME = 60000*5L;
-    long BUYING_GAP_TIME = 1800*1000L;
+    long BUYING_GAP_TIME = 15000;//1800*1000L;
     long UPDATING_GAP_TIME = 10000L;
     int ASSET_NOT_TRADABLE = -999;
     int LOSS_SELL = 0;
@@ -90,7 +90,7 @@ public interface AutoTraderCoreRoutines {
     }
 
     default TradingConfig fetchTradingConfig(){
-        //request to server for trading confing
+        // TODO: 22/05/2022 request to fetch trading
         return new TradingConfig(1,
                 3,
                 29,
@@ -101,6 +101,7 @@ public interface AutoTraderCoreRoutines {
     }
 
     default void sendStatsReport(){
+        // TODO: 22/05/2022 request to send report
         System.out.println("gagagagag");
         //send data in some methods
     }
@@ -129,6 +130,10 @@ public interface AutoTraderCoreRoutines {
 
     boolean canSendStatsReport();
 
+    void setPrintRoutineMessages(boolean printRoutineMessages);
+
+    boolean canPrintRoutineMessages();
+
     boolean isRunningBot();
 
     void disableBot();
@@ -144,5 +149,9 @@ public interface AutoTraderCoreRoutines {
     double getSellsInPair();
 
     double getTotalSells();
+
+    void setBaseCurrency(String baseCurrency);
+
+    String getBaseCurrency();
 
 }

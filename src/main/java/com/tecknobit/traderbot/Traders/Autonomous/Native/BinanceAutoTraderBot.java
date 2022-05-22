@@ -5,6 +5,7 @@ import com.tecknobit.binancemanager.Managers.Market.Records.Tickers.TickerPriceC
 import com.tecknobit.traderbot.Helpers.Orders.MarketOrder;
 import com.tecknobit.traderbot.Records.Coin;
 import com.tecknobit.traderbot.Records.Cryptocurrency;
+import com.tecknobit.traderbot.Records.Transaction;
 import com.tecknobit.traderbot.Routines.AutoTraderCoreRoutines;
 import com.tecknobit.traderbot.Traders.Autonomous.Utils.AutoTraderBotAccount;
 import com.tecknobit.traderbot.Traders.Interfaces.Native.BinanceTraderBot;
@@ -29,54 +30,67 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     private final HashMap<String, Cryptocurrency> checkingList;
     private TradingConfig tradingConfig;
     private boolean sendStatsReport;
+    private boolean printRoutineMessages;
     private boolean runningBot;
     private long previousChecking;
     private long previousBuying;
     private long previousUpdating;
+    private String baseCurrency;
 
-    public BinanceAutoTraderBot(String apiKey, String secretKey, boolean sendStatsReport) throws Exception {
+    public BinanceAutoTraderBot(String apiKey, String secretKey, boolean sendStatsReport, boolean printRoutineMessages,
+                                String baseCurrency) throws Exception {
         super(apiKey, secretKey);
         this.sendStatsReport = sendStatsReport;
+        this.printRoutineMessages = printRoutineMessages;
+        this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
         printDisclaimer();
     }
 
-    public BinanceAutoTraderBot(String apiKey, String secretKey, String baseEndpoint,
-                                boolean sendStatsReport) throws Exception {
+    public BinanceAutoTraderBot(String apiKey, String secretKey, String baseEndpoint, boolean sendStatsReport,
+                                boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, secretKey, baseEndpoint);
         this.sendStatsReport = sendStatsReport;
+        this.printRoutineMessages = printRoutineMessages;
+        this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
         printDisclaimer();
     }
 
-    public BinanceAutoTraderBot(String apiKey, String secretKey, int refreshPricesTime,
-                                boolean sendStatsReport) throws Exception {
+    public BinanceAutoTraderBot(String apiKey, String secretKey, int refreshPricesTime, boolean sendStatsReport,
+                                boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, secretKey, refreshPricesTime);
         this.sendStatsReport = sendStatsReport;
+        this.printRoutineMessages = printRoutineMessages;
+        this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
         printDisclaimer();
     }
 
-    public BinanceAutoTraderBot(String apiKey, String secretKey, String baseEndpoint,
-                                int refreshPricesTime, boolean sendStatsReport) throws Exception {
+    public BinanceAutoTraderBot(String apiKey, String secretKey, String baseEndpoint, int refreshPricesTime,
+                                boolean sendStatsReport, boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, secretKey, baseEndpoint, refreshPricesTime);
         this.sendStatsReport = sendStatsReport;
+        this.printRoutineMessages = printRoutineMessages;
+        this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
         printDisclaimer();
     }
 
-    public BinanceAutoTraderBot(String apiKey, String secretKey, ArrayList<String> quoteCurrencies,
-                                int refreshPricesTime, boolean sendStatsReport) throws Exception {
+    public BinanceAutoTraderBot(String apiKey, String secretKey, ArrayList<String> quoteCurrencies, int refreshPricesTime,
+                                boolean sendStatsReport, boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, secretKey, quoteCurrencies, refreshPricesTime);
         this.sendStatsReport = sendStatsReport;
+        this.printRoutineMessages = printRoutineMessages;
+        this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
@@ -84,29 +98,36 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     }
 
     public BinanceAutoTraderBot(String apiKey, String secretKey, String baseEndpoint, ArrayList<String> quoteCurrencies,
-                                int refreshPricesTime, boolean sendStatsReport) throws Exception {
+                                int refreshPricesTime, boolean sendStatsReport, boolean printRoutineMessages,
+                                String baseCurrency) throws Exception {
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies, refreshPricesTime);
         this.sendStatsReport = sendStatsReport;
+        this.printRoutineMessages = printRoutineMessages;
+        this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
         printDisclaimer();
     }
 
-    public BinanceAutoTraderBot(String apiKey, String secretKey, ArrayList<String> quoteCurrencies,
-                                boolean sendStatsReport) throws Exception {
+    public BinanceAutoTraderBot(String apiKey, String secretKey, ArrayList<String> quoteCurrencies, boolean sendStatsReport,
+                                boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, secretKey, quoteCurrencies);
         this.sendStatsReport = sendStatsReport;
+        this.printRoutineMessages = printRoutineMessages;
+        this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
         printDisclaimer();
     }
 
-    public BinanceAutoTraderBot(String apiKey, String secretKey, String baseEndpoint,
-                                ArrayList<String> quoteCurrencies, boolean sendStatsReport) throws Exception {
+    public BinanceAutoTraderBot(String apiKey, String secretKey, String baseEndpoint, ArrayList<String> quoteCurrencies,
+                                boolean sendStatsReport, boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies);
         this.sendStatsReport = sendStatsReport;
+        this.printRoutineMessages = printRoutineMessages;
+        this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
@@ -149,7 +170,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
 
     @Override
     public void checkCryptocurrencies() throws Exception {
-        System.out.println("## CHECKING NEW CRYPTOCURRENCIES ##");
+        System.out.println("## CHECKING NEW CRYPTOCURRENCIES");
         tradingConfig = fetchTradingConfig();
         String candleInterval = INTERVAL_1d;
         int daysGap = tradingConfig.getDaysGap();
@@ -188,7 +209,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
 
     @Override
     public void buyCryptocurrencies() throws Exception {
-        System.out.println("## BUYING NEW CRYPTOCURRENCIES ##");
+        System.out.println("## BUYING NEW CRYPTOCURRENCIES");
         for (Cryptocurrency cryptocurrency : checkingList.values()){
             String symbol = cryptocurrency.getSymbol();
             double lastPrice = cryptocurrency.getLastPrice();
@@ -205,6 +226,9 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
             }
         }
         checkingList.clear();
+        if(printRoutineMessages)
+            for (Transaction transaction : getAllTransactions(true))
+                transaction.printDetails();
     }
 
     @Override
@@ -229,15 +253,13 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
 
     @Override
     public void updateWallet() throws Exception {
-        System.out.println("## UPDATING WALLET CRYPTOCURRENCIES ##");
+        System.out.println("## UPDATING WALLET CRYPTOCURRENCIES");
         refreshLatestPrice();
         for (Cryptocurrency cryptocurrency : walletList.values()) {
             TradingConfig tradingConfig = cryptocurrency.getTradingConfig();
             double lastPrice = lastPrices.get(cryptocurrency.getSymbol());
             double trendPercent = binanceMarketManager.getTrendPercent(cryptocurrency.getFirstPrice(), lastPrice);
-            System.out.println(cryptocurrency.getSymbol() + cryptocurrency.getLastPrice() + " " + cryptocurrency.getTptopIndex() + " " + cryptocurrency.getTrendPercent());
             if(trendPercent < tradingConfig.getGainForOrder() && trendPercent < cryptocurrency.getTptopIndex()){
-                System.out.println("a");
                 cryptocurrency.setTrendPercent(trendPercent);
                 cryptocurrency.setLastPrice(lastPrice);
             }else if(trendPercent <= tradingConfig.getMaxLoss())
@@ -246,7 +268,12 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                 incrementSellsSale(cryptocurrency, GAIN_SELL);
             else
                 incrementSellsSale(cryptocurrency, PAIR_SELL);
-            System.out.println(cryptocurrency.getSymbol() + lastPrice + " " + cryptocurrency.getTptopIndex() + " " + trendPercent);
+        }
+        if(printRoutineMessages){
+            for (Cryptocurrency cryptocurrency : walletList.values())
+                cryptocurrency.printDetails();
+            System.out.println("## Balance amount: " + getWalletBalance(baseCurrency, true, 2)
+                    + " " + baseCurrency);
         }
     }
 
@@ -256,19 +283,13 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         walletList.remove(cryptocurrency.getAssetIndex());
         switch (codeOpe){
             case LOSS_SELL:
-                System.out.println("L" + autoTraderBotAccount.getSellsAtLoss());
                 autoTraderBotAccount.addLoss();
-                System.out.println("L" + autoTraderBotAccount.getSellsAtLoss());
                 break;
             case GAIN_SELL:
-                System.out.println("G" + autoTraderBotAccount.getSellsAtGain());
                 autoTraderBotAccount.addGain();
-                System.out.println("G" + autoTraderBotAccount.getSellsAtGain());
                 break;
             default:
-                System.out.println("P" + autoTraderBotAccount.getSellsAtPair());
                 autoTraderBotAccount.addPair();
-                System.out.println("P" + autoTraderBotAccount.getSellsAtPair());
         }
     }
 
@@ -294,6 +315,16 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     @Override
     public boolean canSendStatsReport() {
         return sendStatsReport;
+    }
+
+    @Override
+    public void setPrintRoutineMessages(boolean printRoutineMessages) {
+        this.printRoutineMessages = printRoutineMessages;
+    }
+
+    @Override
+    public boolean canPrintRoutineMessages() {
+        return printRoutineMessages;
     }
 
     @Override
@@ -379,6 +410,18 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     @Override
     public double getTotalSells() {
         return autoTraderBotAccount.getTotalSells();
+    }
+
+    @Override
+    public void setBaseCurrency(String baseCurrency) {
+        if(baseCurrency == null || baseCurrency.isEmpty())
+            throw new IllegalArgumentException("Currency cannot be null or empty, but for example EUR or USDT");
+        this.baseCurrency = baseCurrency;
+    }
+
+    @Override
+    public String getBaseCurrency() {
+        return baseCurrency;
     }
 
 }
