@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.tecknobit.binancemanager.Managers.Market.Records.Stats.Candlestick.*;
 import static com.tecknobit.binancemanager.Managers.Market.Records.Stats.ExchangeInformation.Symbol;
@@ -22,19 +23,22 @@ import static java.lang.Math.ceil;
 public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTraderCoreRoutines, MarketOrder {
 
     protected final AutoTraderBotAccount autoTraderBotAccount = new AutoTraderBotAccount();
-    public static final String LOT_SIZE_FILTER = "LOT_SIZE";
     public static final String MIN_NOTIONAL_FILTER = "MIN_NOTIONAL";
+    public static final String LOT_SIZE_FILTER = "LOT_SIZE";
+    private final ConcurrentHashMap<String, Cryptocurrency> walletList;
     private final HashMap<String, Cryptocurrency> checkingList;
-    private final HashMap<String, Cryptocurrency> walletList;
-    private boolean sendStatsReport;
     private TradingConfig tradingConfig;
+    private boolean sendStatsReport;
     private boolean runningBot;
+    private long previousChecking;
+    private long previousBuying;
+    private long previousUpdating;
 
     public BinanceAutoTraderBot(String apiKey, String secretKey, boolean sendStatsReport) throws Exception {
         super(apiKey, secretKey);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
-        walletList = new HashMap<>();
+        walletList = new ConcurrentHashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -44,7 +48,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         super(apiKey, secretKey, baseEndpoint);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
-        walletList = new HashMap<>();
+        walletList = new ConcurrentHashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -54,7 +58,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         super(apiKey, secretKey, refreshPricesTime);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
-        walletList = new HashMap<>();
+        walletList = new ConcurrentHashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -64,7 +68,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         super(apiKey, secretKey, baseEndpoint, refreshPricesTime);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
-        walletList = new HashMap<>();
+        walletList = new ConcurrentHashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -74,7 +78,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         super(apiKey, secretKey, quoteCurrencies, refreshPricesTime);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
-        walletList = new HashMap<>();
+        walletList = new ConcurrentHashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -84,7 +88,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies, refreshPricesTime);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
-        walletList = new HashMap<>();
+        walletList = new ConcurrentHashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -94,7 +98,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         super(apiKey, secretKey, quoteCurrencies);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
-        walletList = new HashMap<>();
+        walletList = new ConcurrentHashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -104,7 +108,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies);
         this.sendStatsReport = sendStatsReport;
         checkingList = new HashMap<>();
-        walletList = new HashMap<>();
+        walletList = new ConcurrentHashMap<>();
         runningBot = true;
         printDisclaimer();
     }
@@ -112,6 +116,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     @Override
     public void start() {
         tradingConfig = fetchTradingConfig();
+        previousBuying = System.currentTimeMillis();
         new Thread(){
             @Override
             public void run() {
@@ -119,9 +124,18 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                 try {
                     while (true){
                         while (runningBot){
-                            checkCryptocurrencies();
-                            buyCryptocurrencies();
-                            updateWallet();
+                            if(makeRoutine(previousChecking, CHECKING_GAP_TIME)) {
+                                previousChecking = System.currentTimeMillis();
+                                checkCryptocurrencies();
+                            }
+                            if(makeRoutine(previousBuying, BUYING_GAP_TIME)){
+                                previousBuying = System.currentTimeMillis();
+                                buyCryptocurrencies();
+                            }
+                            if(makeRoutine(previousUpdating, UPDATING_GAP_TIME)) {
+                                previousUpdating = System.currentTimeMillis();
+                                updateWallet();
+                            }
                         }
                         System.out.println("Bot is stopped, waiting for reactivation");
                         Thread.sleep(5000);
@@ -154,7 +168,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                     double lastPrice = ticker.getLastPrice();
                     double priceChangePercent = ticker.getPriceChangePercent();
                     double tptop = isTradable(symbol, tradingConfig, candleInterval, lastPrice, priceChangePercent);
-                    if(tptop != NOT_ASSET_TRADABLE) {
+                    if(tptop != ASSET_NOT_TRADABLE) {
                         checkingList.put(baseAsset, new Cryptocurrency(baseAsset,
                                 coin.getAssetName(),
                                 0,
@@ -180,7 +194,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
             double lastPrice = cryptocurrency.getLastPrice();
             double tptop = isTradable(symbol, cryptocurrency.getTradingConfig(), cryptocurrency.getCandleGap(),
                     lastPrice, cryptocurrency.getPriceChangePercent());
-            if(tptop != NOT_ASSET_TRADABLE) {
+            if(tptop != ASSET_NOT_TRADABLE) {
                 double quantity = getMarketOrderQuantity(cryptocurrency);
                 if(quantity != -1) {
                     buyMarket(symbol, quantity);
@@ -203,7 +217,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
             if(tptop >= tradingConfig.getGainForOrder())
                 return tptop;
         }
-        return NOT_ASSET_TRADABLE;
+        return ASSET_NOT_TRADABLE;
     }
 
     @Override
@@ -221,7 +235,9 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
             TradingConfig tradingConfig = cryptocurrency.getTradingConfig();
             double lastPrice = lastPrices.get(cryptocurrency.getSymbol());
             double trendPercent = binanceMarketManager.getTrendPercent(cryptocurrency.getFirstPrice(), lastPrice);
+            System.out.println(cryptocurrency.getSymbol() + cryptocurrency.getLastPrice() + " " + cryptocurrency.getTptopIndex() + " " + cryptocurrency.getTrendPercent());
             if(trendPercent < tradingConfig.getGainForOrder() && trendPercent < cryptocurrency.getTptopIndex()){
+                System.out.println("a");
                 cryptocurrency.setTrendPercent(trendPercent);
                 cryptocurrency.setLastPrice(lastPrice);
             }else if(trendPercent <= tradingConfig.getMaxLoss())
@@ -230,6 +246,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                 incrementSellsSale(cryptocurrency, GAIN_SELL);
             else
                 incrementSellsSale(cryptocurrency, PAIR_SELL);
+            System.out.println(cryptocurrency.getSymbol() + lastPrice + " " + cryptocurrency.getTptopIndex() + " " + trendPercent);
         }
     }
 
@@ -239,13 +256,19 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         walletList.remove(cryptocurrency.getAssetIndex());
         switch (codeOpe){
             case LOSS_SELL:
+                System.out.println("L" + autoTraderBotAccount.getSellsAtLoss());
                 autoTraderBotAccount.addLoss();
+                System.out.println("L" + autoTraderBotAccount.getSellsAtLoss());
                 break;
             case GAIN_SELL:
+                System.out.println("G" + autoTraderBotAccount.getSellsAtGain());
                 autoTraderBotAccount.addGain();
+                System.out.println("G" + autoTraderBotAccount.getSellsAtGain());
                 break;
             default:
+                System.out.println("P" + autoTraderBotAccount.getSellsAtPair());
                 autoTraderBotAccount.addPair();
+                System.out.println("P" + autoTraderBotAccount.getSellsAtPair());
         }
     }
 
@@ -332,9 +355,10 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     // TODO: 21/05/2022 SET NORMAL METHOD ROUTINE
     @Override
     public double getCoinBalance(double lastPrice, String quote) {
-        Coin coin = coins.get(quote);
+        /*Coin coin = coins.get(quote);
         return binanceMarketManager.roundValue(coin.getQuantity() *
-                lastPrices.get(coin.getAssetIndex() + USDT_CURRENCY), 8);
+                lastPrices.get(coin.getAssetIndex() + USDT_CURRENCY), 8);*/
+        return 100;
     }
 
     @Override

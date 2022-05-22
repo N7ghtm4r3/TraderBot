@@ -6,12 +6,15 @@ import java.io.IOException;
 
 public interface AutoTraderCoreRoutines {
 
-    int NOT_ASSET_TRADABLE = -999;
+    long CHECKING_GAP_TIME = 60000*5L;
+    long BUYING_GAP_TIME = 1800*1000L;
+    long UPDATING_GAP_TIME = 10000L;
+    int ASSET_NOT_TRADABLE = -999;
     int LOSS_SELL = 0;
     int GAIN_SELL = 1;
     int PAIR_SELL = 2;
 
-    class TradingConfig{
+    final class TradingConfig{
 
         private final double marketPhase;
         private final double wasteRange;
@@ -92,7 +95,7 @@ public interface AutoTraderCoreRoutines {
                 3,
                 29,
                 1,
-                4,
+                -4,
                 2
         );
     }
@@ -100,6 +103,10 @@ public interface AutoTraderCoreRoutines {
     default void sendStatsReport(){
         System.out.println("gagagagag");
         //send data in some methods
+    }
+
+    default boolean makeRoutine(long previousGap, long gap){
+        return (System.currentTimeMillis() - previousGap) >= gap;
     }
 
     void start();
