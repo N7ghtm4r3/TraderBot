@@ -109,7 +109,7 @@ public final class Cryptocurrency extends Token implements RoutineMessages {
                 getANSIText("## Trend: ", getTextTrendPercent(2)) +
                 "## Last: " + lastPrice + "\n" +
                 "## Quantity: " + getQuantity() + "\n" +
-                getANSIText("## Estimated forecast: ", getTextTptopIndex(2)) +
+                getANSIText("## Estimated asset trend: ", getTextTptopIndex(2)) +
                 "######################");
     }
 

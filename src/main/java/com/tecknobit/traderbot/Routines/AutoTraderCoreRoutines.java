@@ -7,7 +7,7 @@ import java.io.IOException;
 public interface AutoTraderCoreRoutines {
 
     long CHECKING_GAP_TIME = 60000*5L;
-    long BUYING_GAP_TIME = 15000;//1800*1000L;
+    long BUYING_GAP_TIME = 1800*1000L;
     long UPDATING_GAP_TIME = 10000L;
     int ASSET_NOT_TRADABLE = -999;
 

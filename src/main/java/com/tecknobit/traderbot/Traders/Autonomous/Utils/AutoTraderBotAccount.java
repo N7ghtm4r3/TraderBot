@@ -1,8 +1,12 @@
 package com.tecknobit.traderbot.Traders.Autonomous.Utils;
 
+import com.tecknobit.traderbot.Routines.RoutineMessages;
+
 import java.util.Date;
 
-public class AutoTraderBotAccount {
+import static java.lang.System.out;
+
+public final class AutoTraderBotAccount implements RoutineMessages {
 
     private int sellsAtLoss;
     private int sellsAtGain;
@@ -55,6 +59,16 @@ public class AutoTraderBotAccount {
     private String fetchActivationDate(){
         // TODO: 22/05/2022 REQUEST TO GET ACTIVATION DATE
         return new Date(System.currentTimeMillis()).toString();
+    }
+
+    @Override
+    public void printDetails() {
+        out.println("## [ SELLS STATUS ]\n" +
+                "## Total: " + getTotalSells() + "\n" +
+                "## At loss: " + ANSI_RED + sellsAtLoss + ANSI_RESET + "\n" +
+                "## At gain: " + ANSI_GREEN + sellsAtGain + ANSI_RESET +"\n" +
+                "## At pair: " + sellsAtPair + "\n" +
+                "######################");
     }
 
 }

@@ -18,7 +18,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static com.tecknobit.binancemanager.Managers.Market.Records.Stats.Candlestick.*;
 import static com.tecknobit.binancemanager.Managers.Market.Records.Stats.ExchangeInformation.Symbol;
-import static java.lang.Math.*;
+import static com.tecknobit.traderbot.Routines.RoutineMessages.*;
+import static java.lang.Math.abs;
+import static java.lang.Math.ceil;
 
 public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTraderCoreRoutines, MarketOrder {
 
@@ -225,8 +227,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                         if(printRoutineMessages)
                             System.out.println("Buying [" + symbol + "], quantity: " + quantity);
                     }catch (Exception e){
-                        e.printStackTrace();
-                        System.out.println(getErrorResponse());
+                        printError(symbol, e);
                     }
                 }
             }
@@ -266,9 +267,9 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
             TradingConfig tradingConfig = cryptocurrency.getTradingConfig();
             double lastPrice = lastPrices.get(symbol);
             double trendPercent = binanceMarketManager.getTrendPercent(cryptocurrency.getFirstPrice(), lastPrice);
+            refreshCryptoDetails(cryptocurrency, trendPercent, lastPrice);
             try {
                 if(trendPercent < tradingConfig.getGainForOrder() && trendPercent < cryptocurrency.getTptopIndex()){
-                    refreshCryptoDetails(cryptocurrency, trendPercent, lastPrice);
                     if(printRoutineMessages)
                         System.out.println("Refreshing [" + symbol + "]");
                 }else if(trendPercent <= tradingConfig.getMaxLoss())
@@ -278,9 +279,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                 else
                     incrementSellsSale(cryptocurrency, PAIR_SELL);
             }catch (Exception e){
-                e.printStackTrace();
-                System.out.println(getErrorResponse());
-                refreshCryptoDetails(cryptocurrency, trendPercent, lastPrice);
+                printError(symbol, e);
             }
         }
         if(printRoutineMessages){
@@ -298,15 +297,27 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         switch (codeOpe){
             case LOSS_SELL:
                 autoTraderBotAccount.addLoss();
+                if(printRoutineMessages) {
+                    System.out.println(ANSI_RED + "## Selling at loss [" + cryptocurrency.getSymbol() + "], " +
+                            "income: [" + cryptocurrency.getTextTrendPercent(2) +  "]" + ANSI_RESET);
+                }
                 break;
             case GAIN_SELL:
                 autoTraderBotAccount.addGain();
+                if(printRoutineMessages) {
+                    System.out.println(ANSI_GREEN + "## Selling at gain [" + cryptocurrency.getSymbol() + "], " +
+                            "income: [" + cryptocurrency.getTextTrendPercent(2) +  "]" + ANSI_RESET);
+                }
                 break;
             default:
                 autoTraderBotAccount.addPair();
+                if(printRoutineMessages) {
+                    System.out.println("## Selling at pair [" + cryptocurrency.getSymbol() + "], " +
+                            "income: [" + cryptocurrency.getTextTrendPercent() +  "]");
+                }
         }
         if(printRoutineMessages)
-            System.out.println("");
+            autoTraderBotAccount.printDetails();
     }
 
     @Override
@@ -438,6 +449,13 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     @Override
     public String getBaseCurrency() {
         return baseCurrency;
+    }
+
+    private void printError(String symbol, Exception e){
+        if(binanceSpotManager.getStatusResponse() != 200)
+            System.out.println(getErrorResponse() + " on [" + symbol + "]");
+        else
+            e.printStackTrace();
     }
 
 }
