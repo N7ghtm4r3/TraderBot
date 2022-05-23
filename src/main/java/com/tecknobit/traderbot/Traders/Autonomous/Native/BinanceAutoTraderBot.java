@@ -316,6 +316,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                             "income: [" + cryptocurrency.getTextTrendPercent() +  "]");
                 }
         }
+        autoTraderBotAccount.addIncome(cryptocurrency.getTrendPercent(2));
         if(printRoutineMessages)
             autoTraderBotAccount.printDetails();
     }

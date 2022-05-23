@@ -51,6 +51,10 @@ public final class Cryptocurrency extends Token implements RoutineMessages {
         return lastPrice;
     }
 
+    public double getLastPrice(int decimals){
+        return tradingTools.roundValue(lastPrice, decimals);
+    }
+
     public void setLastPrice(double lastPrice) {
         if(lastPrice < 0)
             throw new IllegalArgumentException("Last price cannot be less than 0");
@@ -59,6 +63,10 @@ public final class Cryptocurrency extends Token implements RoutineMessages {
 
     public double getTptopIndex() {
         return tptopIndex;
+    }
+
+    public double getTptopIndex(int decimals) {
+        return tradingTools.roundValue(tptopIndex, decimals);
     }
 
     public Object getCandleGap() {
@@ -75,6 +83,10 @@ public final class Cryptocurrency extends Token implements RoutineMessages {
 
     public double getTrendPercent() {
         return trendPercent;
+    }
+
+    public double getTrendPercent(int decimals){
+        return tradingTools.roundValue(trendPercent, decimals);
     }
 
     public String getTextTrendPercent(){
