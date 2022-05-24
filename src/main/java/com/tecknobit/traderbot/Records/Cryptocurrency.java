@@ -6,6 +6,13 @@ import com.tecknobit.traderbot.Routines.AutoTraderCoreRoutines.TradingConfig;
 import static com.tecknobit.traderbot.Routines.TraderCoreRoutines.tradingTools;
 import static java.lang.System.out;
 
+/**
+ * The {@code Cryptocurrency} class defines Cryptocurrency object. <br>
+ * This object is useful for auto trader bot routines and useful also for Android's interfaces, <br>
+ * because allow to interact with specific asset, and it's trading details like trend percent and last price.
+ * @author Tecknobit N7ghtm4r3
+ * **/
+
 public final class Cryptocurrency extends Token implements RoutineMessages {
 
     private final String symbol;
@@ -65,6 +72,11 @@ public final class Cryptocurrency extends Token implements RoutineMessages {
         return tptopIndex;
     }
 
+    /**
+     * This method is used get {@link #tptopIndex} instance
+     * @param decimals: number of decimal digits es. 2
+     * @return {@link #tptopIndex} formatted as 1.65 or -1.65
+     * **/
     public double getTptopIndex(int decimals) {
         return tradingTools.roundValue(tptopIndex, decimals);
     }
@@ -85,22 +97,47 @@ public final class Cryptocurrency extends Token implements RoutineMessages {
         return trendPercent;
     }
 
+    /**
+     * This method is used get {@link #trendPercent} instance
+     * @param decimals: number of decimal digits es. 2
+     * @return {@link #trendPercent} formatted as 1.65 or -1.65
+     * **/
     public double getTrendPercent(int decimals){
         return tradingTools.roundValue(trendPercent, decimals);
     }
 
+    /**
+     * This method is used to format like a {@link String} object {@link #trendPercent}.<br>
+     * Any params required
+     * @return {@link #trendPercent} formatted as +1.653% or -1.6563% as {@link String}
+     * **/
     public String getTextTrendPercent(){
         return tradingTools.textualizeAssetPercent(trendPercent);
     }
 
+    /**
+     * This method is used to format like a {@link String} object {@link #trendPercent}.<br>
+     * @param decimals: number of decimal digits es. 2
+     * @return {@link #trendPercent} formatted as +1.65% or -1.65% as {@link String}
+     * **/
     public String getTextTrendPercent(int decimals){
         return tradingTools.textualizeAssetPercent(tradingTools.roundValue(trendPercent, decimals));
     }
 
+    /**
+     * This method is used to format like a {@link String} object {@link #tptopIndex}.<br>
+     * Any params required
+     * @return {@link #tptopIndex} formatted as +1.653% or -1.6563% as {@link String}
+     * **/
     public String getTextTptopIndex(){
         return tradingTools.textualizeAssetPercent(tptopIndex);
     }
 
+    /**
+     * This method is used to format like a {@link String} object {@link #tptopIndex}.<br>
+     * @param decimals: number of decimal digits es. 2
+     * @return {@link #tptopIndex} formatted as +1.65% or -1.65%
+     * **/
     public String getTextTptopIndex(int decimals){
         return tradingTools.textualizeAssetPercent(tradingTools.roundValue(tptopIndex, decimals));
     }
@@ -115,6 +152,10 @@ public final class Cryptocurrency extends Token implements RoutineMessages {
         return tradingConfig;
     }
 
+    /**
+     * This method is used to print details of {@link Cryptocurrency} object <br>
+     * Any params required
+     * **/
     @Override
     public void printDetails() {
         out.println("## [" + symbol + "]\n" +
@@ -125,6 +166,12 @@ public final class Cryptocurrency extends Token implements RoutineMessages {
                 "######################");
     }
 
+    /**
+     * This method is used to format colored string for percent detail line.<br>
+     * @param tail: text to indicate the info es. Trend:
+     * @param percent: value of percent to color es +8%
+     * @return percent string colored and formatted as {@link String}
+     * **/
     private String getANSIText(String tail, String percent){
         if(percent.contains("+"))
             return tail + ANSI_GREEN + percent + ANSI_RESET + "\n";

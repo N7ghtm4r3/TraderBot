@@ -1,5 +1,11 @@
 package com.tecknobit.traderbot.Records;
 
+/**
+ * The {@code Asset} class defines Asset object. <br>
+ * This object is useful for format user wallet asset.
+ * @author Tecknobit N7ghtm4r3
+ * **/
+
 public final class Asset extends Token {
     private double balance;
     private final String currency;

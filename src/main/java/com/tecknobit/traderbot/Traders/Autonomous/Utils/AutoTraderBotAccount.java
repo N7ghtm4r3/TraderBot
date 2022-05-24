@@ -92,6 +92,10 @@ public final class AutoTraderBotAccount implements RoutineMessages {
         return tradingTools.textualizeAssetPercent(getTotalIncome());
     }
 
+    /**
+     * This method is used to print details of {@link AutoTraderBotAccount} object <br>
+     * Any params required
+     * **/
     @Override
     public void printDetails() {
         out.println("## [ ACCOUNT STATUS ]\n" +
