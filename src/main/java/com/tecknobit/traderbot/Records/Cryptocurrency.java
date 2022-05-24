@@ -15,16 +15,63 @@ import static java.lang.System.out;
 
 public final class Cryptocurrency extends Token implements RoutineMessages {
 
+    /**
+     * {@code symbol} is instance that memorize symbol of cryptocurrency es. BTCBUSD or BTC-USD
+     * **/
     private final String symbol;
+
+    /**
+     * {@code firstPrice} is instance that memorize first inserted price of cryptocurrency and not more changeable.
+     * **/
     private double firstPrice;
+
+    /**
+     * {@code lastPrice} is instance that memorize last inserted price of cryptocurrency and is constantly refreshed.
+     * **/
     private double lastPrice;
+
+    /**
+     * {@code tptopIndex} is instance that memorize forecast trend of cryptocurrency.
+     * **/
     private final double tptopIndex;
+
+    /**
+     * {@code candleGap} is instance that memorize day gap for forecast trend of cryptocurrency.
+     * **/
     private final Object candleGap;
+
+    /**
+     * {@code priceChangePercent} is instance that memorize previous day percent gap of trend of cryptocurrency.
+     * **/
     private final double priceChangePercent;
+
+    /**
+     * {@code quoteAsset} is instance that memorize quote asset to buy this cryptocurrency es. USD
+     * **/
     private final String quoteAsset;
+
+    /**
+     * {@code trendPercent} is instance that memorize trend percent of cryptocurrency and is constantly refreshed.
+     * **/
     private double trendPercent;
+
+    /**
+     * {@code tradingConfig} is instance that memorize model of trading to use for this cryptocurrency.
+     * **/
     private final TradingConfig tradingConfig;
 
+    /** Constructor to init {@link Cryptocurrency}
+     * @param assetIndex: index of cryptocurrency es. BTC
+     * @param assetName: full name of cryptocurrency es Bitcoin
+     * @param quantity: value of quantity bought for this cryptocurrency es 1
+     * @param symbol: symbol of cryptocurrency es. BTCBUSD or BTC-USD
+     * @param lastPrice: last inserted price of cryptocurrency
+     * @param tptopIndex: forecast trend of cryptocurrency
+     * @param candleGap: previous day percent gap of trend of cryptocurrency
+     * @param priceChangePercent: previous day percent gap of trend of cryptocurrency
+     * @param quoteAsset: quote asset to buy this cryptocurrency es. USD
+     * @param tradingConfig: model of trading to use for this cryptocurrency
+     * **/
     public Cryptocurrency(String assetIndex, String assetName, double quantity, String symbol, double lastPrice,
                           double tptopIndex, Object candleGap, double priceChangePercent, String quoteAsset,
                           TradingConfig tradingConfig) {
@@ -58,6 +105,11 @@ public final class Cryptocurrency extends Token implements RoutineMessages {
         return lastPrice;
     }
 
+    /**
+     * This method is used get {@link #lastPrice} instance
+     * @param decimals: number of decimal digits es. 2
+     * @return {@link #lastPrice} formatted as 1.65 or -1.65
+     * **/
     public double getLastPrice(int decimals){
         return tradingTools.roundValue(lastPrice, decimals);
     }

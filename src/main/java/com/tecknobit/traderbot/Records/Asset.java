@@ -7,9 +7,24 @@ package com.tecknobit.traderbot.Records;
  * **/
 
 public final class Asset extends Token {
+
+    /**
+     * {@code balance} is instance that memorize balance for this asset and is constantly refreshed.
+     * **/
     private double balance;
+
+    /**
+     * {@code currency} is instance that memorize currency for balance valuating es. EUR
+     * **/
     private final String currency;
 
+    /** Constructor to init {@link Asset}
+     * @param assetIndex: index of cryptocurrency es. BTC
+     * @param assetName: full name of cryptocurrency es Bitcoin
+     * @param quantity: value of quantity bought for this cryptocurrency es 1
+     * @param balance: balance for this asset
+     * @param currency: currency for balance valuating es. EUR
+     * **/
     public Asset(String assetIndex, String assetName, double quantity, double balance, String currency) {
         super(assetIndex, assetName, quantity);
         if(balance < 0)

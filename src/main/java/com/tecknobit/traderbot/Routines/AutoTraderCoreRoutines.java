@@ -4,15 +4,46 @@ import com.tecknobit.traderbot.Records.Cryptocurrency;
 
 import java.io.IOException;
 
+/**
+ * The {@code AutoTraderCoreRoutines} interface defines base routines methods for auto traders bot.<br>
+ * These routines allow the different auto traders to do some operations about wallet info and make trading operations autonomously.
+ * @author Tecknobit N7ghtm4r3
+ * **/
 public interface AutoTraderCoreRoutines {
 
+    /**
+     * {@code CHECKING_GAP_TIME} is instance that memorize time gap for checking routine
+     * **/
     long CHECKING_GAP_TIME = 60000*5L;
+
+    /**
+     * {@code BUYING_GAP_TIME} is instance that memorize time gap for buying routine
+     * **/
     long BUYING_GAP_TIME = 1800*1000L;
+
+    /**
+     * {@code UPDATING_GAP_TIME} is instance that memorize time gap for updating routine
+     * **/
     long UPDATING_GAP_TIME = 10000L;
+
+    /**
+     * {@code ASSET_NOT_TRADABLE} is code to indicate an asset that is not tradable because is not in parameters range
+     * **/
     int ASSET_NOT_TRADABLE = -999;
 
+    /**
+     * {@code LOSS_SELL} is code to indicate a sell in losing
+     * **/
     int LOSS_SELL = 0;
+
+    /**
+     * {@code GAIN_SELL} is code to indicate a sell in gaining
+     * **/
     int GAIN_SELL = 1;
+
+    /**
+     * {@code GAIN_SELL} is code to indicate a sell in pairing
+     * **/
     int PAIR_SELL = 2;
 
     final class TradingConfig{

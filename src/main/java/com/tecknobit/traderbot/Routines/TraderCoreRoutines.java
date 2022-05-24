@@ -17,7 +17,7 @@ import static com.tecknobit.traderbot.Routines.TraderCoreRoutines.FormatResponse
 
 /**
  * The {@code TraderCoreRoutines} class defines base routines methods for all traders. <br>
- * These routines allow the different traders to do some operation about wallet info and make trading operations.
+ * These routines allow the different traders to do some operations about wallet info and make trading operations.
  * @author Tecknobit N7ghtm4r3
  * **/
 

@@ -8,10 +8,27 @@ package com.tecknobit.traderbot.Records;
 
 public class Token {
 
+    /**
+     * {@code assetIndex} is instance that memorize index of token es. BTC
+     * **/
     private final String assetIndex;
+
+    /**
+     * {@code assetName} is instance that memorize full name of token es Bitcoin
+     * **/
     private final String assetName;
+
+    /**
+     * {@code quantity} is instance that memorize value of quantity bought for this token es 1
+     * **/
     private double quantity;
 
+    /** Constructor to init {@link Cryptocurrency}
+     * @param assetIndex: index of cryptocurrency es. BTC
+     * @param assetName: full name of cryptocurrency es Bitcoin
+     * @param quantity: value of quantity bought for this cryptocurrency es 1
+     * @throws IllegalArgumentException when parameters inserted do not respect right value form.
+     * **/
     public Token(String assetIndex, String assetName, double quantity) {
         if(assetIndex == null || assetIndex.isEmpty())
             throw new IllegalArgumentException("Asset index must contains characters");
