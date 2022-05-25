@@ -684,6 +684,18 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
     }
 
     /**
+     * This method is used print error when request is made, if error is not in request
+     * will print {@link Exception} error message
+     * **/
+    @Override
+    protected void printError(String symbol, Exception e){
+        if(coinbaseOrdersManager.getStatusResponse() != 200)
+            System.out.println(getErrorResponse() + " on [" + symbol + "]");
+        else
+            e.printStackTrace();
+    }
+
+    /**
      * This method is used to assemble right symbol with {@link #USDT_CURRENCY} combination.
      * @param currency: currency for the request es. EUR
      * @return USDT-currency inserted es. USDT-EUR.

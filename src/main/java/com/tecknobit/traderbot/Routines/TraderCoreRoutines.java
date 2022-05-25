@@ -349,4 +349,10 @@ public abstract class TraderCoreRoutines {
         return (System.currentTimeMillis() - lastPricesRefresh) >= REFRESH_PRICES_TIME;
     }
 
+    /**
+     * This method is used print error when request is made, if error is not in request
+     * will print {@link Exception} error message
+     * **/
+    protected abstract void printError(String symbol, Exception e);
+
 }

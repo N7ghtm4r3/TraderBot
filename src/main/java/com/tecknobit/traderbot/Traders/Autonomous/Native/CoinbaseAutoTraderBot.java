@@ -344,16 +344,15 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                 Coin coin = coins.get(baseAsset);
                 if(coin != null && !walletList.containsKey(baseAsset)){
                     double lastPrice = ticker.getPrice();
-                    double previousPrice;
+                    double priceChangePercent = 0;
                     Cryptocurrency cryptocurrency = checkingList.get(baseAsset);
-                    if(cryptocurrency != null)
-                        previousPrice = cryptocurrency.getLastPrice();
-                    else
-                        previousPrice = lastPrice;
-                    double priceChangePercent = coinbaseProductsManager.getTrendPercent(previousPrice, lastPrice);
+                    if(cryptocurrency != null) {
+                        priceChangePercent = coinbaseProductsManager.getTrendPercent(cryptocurrency.getLastPrice(),
+                                lastPrice, 8);
+                    }
                     double tptop = isTradable(symbol, tradingConfig, GRANULARITY_1d, priceChangePercent);
+                    System.out.println(tptop);
                     if(tptop != ASSET_NOT_TRADABLE){
-                        System.out.println(priceChangePercent + symbol);
                         checkingList.put(baseAsset, new Cryptocurrency(baseAsset,
                                 coin.getAssetName(),
                                 0,
@@ -365,7 +364,8 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                                 quoteAsset,
                                 tradingConfig
                         ));
-                    }
+                    }else
+                        checkingList.remove(baseAsset);
                 }
             }
         }
@@ -374,7 +374,23 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     @Override
     public void buyCryptocurrencies() throws Exception {
         System.out.println("## BUYING NEW CRYPTOCURRENCIES");
-
+        for (Cryptocurrency cryptocurrency : checkingList.values()){
+            String symbol = cryptocurrency.getSymbol();
+            double quantity = getMarketOrderQuantity(cryptocurrency);
+            if(quantity != -1) {
+                try {
+                    buyMarket(symbol, quantity);
+                    cryptocurrency.setQuantity(quantity);
+                    cryptocurrency.setFirstPrice(cryptocurrency.getLastPrice());
+                    walletList.put(cryptocurrency.getAssetIndex(), cryptocurrency);
+                    if(printRoutineMessages)
+                        System.out.println("Buying [" + symbol + "], quantity: " + quantity);
+                }catch (Exception e){
+                    printError(symbol, e);
+                }
+            }
+        }
+        checkingList.clear();
     }
 
     @Override
@@ -399,8 +415,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
 
     @Override
     public void updateWallet() throws Exception {
-        //System.out.println("## UPDATING WALLET CRYPTOCURRENCIES");
-
+        System.out.println("## UPDATING WALLET CRYPTOCURRENCIES");
     }
 
     @Override

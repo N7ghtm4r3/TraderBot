@@ -490,4 +490,16 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         }
     }
 
+    /**
+     * This method is used print error when request is made, if error is not in request
+     * will print {@link Exception} error message
+     * **/
+    @Override
+    protected void printError(String symbol, Exception e){
+        if(binanceSpotManager.getStatusResponse() != 200)
+            System.out.println(getErrorResponse() + " on [" + symbol + "]");
+        else
+            e.printStackTrace();
+    }
+
 }

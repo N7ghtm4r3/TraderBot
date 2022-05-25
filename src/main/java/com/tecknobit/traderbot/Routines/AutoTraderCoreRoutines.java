@@ -13,7 +13,7 @@ public interface AutoTraderCoreRoutines {
     /**
      * {@code CHECKING_GAP_TIME} is instance that memorize time gap for checking routine
      * **/
-    long CHECKING_GAP_TIME = 60000*5L;
+    long CHECKING_GAP_TIME = 10000L;//60000*5L;
 
     /**
      * {@code BUYING_GAP_TIME} is instance that memorize time gap for buying routine
@@ -174,7 +174,7 @@ public interface AutoTraderCoreRoutines {
                 3,
                 29,
                 0.00001,
-                -4,
+                -0.01,
                 2
         );
     }

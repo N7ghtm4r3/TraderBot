@@ -352,9 +352,10 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                                 candleInterval,
                                 priceChangePercent,
                                 quoteAsset,
-                                tradingConfig)
-                        );
-                    }
+                                tradingConfig
+                        ));
+                    }else
+                        checkingList.remove(baseAsset);
                 }
             }
         }
@@ -370,22 +371,17 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         System.out.println("## BUYING NEW CRYPTOCURRENCIES");
         for (Cryptocurrency cryptocurrency : checkingList.values()){
             String symbol = cryptocurrency.getSymbol();
-            double lastPrice = cryptocurrency.getLastPrice();
-            double tptop = isTradable(symbol, cryptocurrency.getTradingConfig(), cryptocurrency.getCandleGap(),
-                    cryptocurrency.getPriceChangePercent());
-            if(tptop != ASSET_NOT_TRADABLE) {
-                double quantity = getMarketOrderQuantity(cryptocurrency);
-                if(quantity != -1) {
-                    try {
-                        buyMarket(symbol, quantity);
-                        cryptocurrency.setQuantity(quantity);
-                        cryptocurrency.setFirstPrice(lastPrice);
-                        walletList.put(cryptocurrency.getAssetIndex(), cryptocurrency);
-                        if(printRoutineMessages)
-                            System.out.println("Buying [" + symbol + "], quantity: " + quantity);
-                    }catch (Exception e){
-                        printError(symbol, e);
-                    }
+            double quantity = getMarketOrderQuantity(cryptocurrency);
+            if(quantity != -1) {
+                try {
+                    buyMarket(symbol, quantity);
+                    cryptocurrency.setQuantity(quantity);
+                    cryptocurrency.setFirstPrice(cryptocurrency.getLastPrice());
+                    walletList.put(cryptocurrency.getAssetIndex(), cryptocurrency);
+                    if(printRoutineMessages)
+                        System.out.println("Buying [" + symbol + "], quantity: " + quantity);
+                }catch (Exception e){
+                    printError(symbol, e);
                 }
             }
         }
@@ -704,17 +700,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     @Override
     public String getBaseCurrency() {
         return baseCurrency;
-    }
-
-    /**
-     * This method is used print error when request is made, if error is not in request
-     * will print {@link Exception} error message
-     * **/
-    private void printError(String symbol, Exception e){
-        if(binanceSpotManager.getStatusResponse() != 200)
-            System.out.println(getErrorResponse() + " on [" + symbol + "]");
-        else
-            e.printStackTrace();
     }
 
 }
