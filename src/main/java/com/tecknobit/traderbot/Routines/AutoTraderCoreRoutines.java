@@ -9,6 +9,7 @@ import java.io.IOException;
  * These routines allow the different auto traders to do some operations about wallet info and make trading operations autonomously.
  * @author Tecknobit N7ghtm4r3
  * **/
+
 public interface AutoTraderCoreRoutines {
 
     /**
@@ -46,21 +47,59 @@ public interface AutoTraderCoreRoutines {
      * **/
     int PAIR_SELL = 2;
 
+    /**
+     * The {@code TradingConfig} class is useful for trading operation.<br>
+     * Represent model to use for a {@link Cryptocurrency} in trading phases. (BUY and SELL)
+     * @author Tecknobit N7ghtm4r3
+     * **/
     final class TradingConfig{
 
+        /**
+         * {@code marketPhase} is instance that memorize market phase when buy a {@link Cryptocurrency}
+         * **/
         private final double marketPhase;
+
+        /**
+         * {@code wasteRange} is instance that memorize waste range gap to buy and to make forecast for {@link Cryptocurrency}
+         * **/
         private final double wasteRange;
+
+        /**
+         * {@code daysGap} is instance that memorize days gap to make forecast for {@link Cryptocurrency}
+         * **/
         private final int daysGap;
-        private final double gainForOrder;
+
+        /**
+         * {@code minGainForOrder} is instance that memorize minimum gain to obtain by an order. This is used in sell phase.
+         * **/
+        private final double minGainForOrder;
+
+        /**
+         * {@code maxLoss} is instance that memorize maximum loss for a {@link Cryptocurrency} and is used in buy phase to check <br>
+         * if a cryptocurrency is in correct range to be bought, and is used in sell phase to sell when cryptocurrency is dropping.
+         * **/
         private final double maxLoss;
+
+        /**
+         * {@code maxGain} is instance that memorize maximum gain for a {@link Cryptocurrency} and is used in buy phase to check
+         * if a cryptocurrency is in correct range to be bought.
+         * **/
         private final double maxGain;
 
-        public TradingConfig(double marketPhase, double wasteRange, int daysGap, double gainForOrder, double maxLoss,
+        /** Constructor to init {@link TradingConfig}
+         * @param marketPhase: market phase when buy a {@link Cryptocurrency}
+         * @param wasteRange: waste range gap to buy and to make forecast for {@link Cryptocurrency}
+         * @param daysGap: days gap to make forecast for {@link Cryptocurrency}
+         * @param minGainForOrder: minimum gain to obtain by an order. This is used in sell phase.
+         * @param maxLoss: maximum loss for a {@link Cryptocurrency}
+         * @param maxGain: maximum gain for a {@link Cryptocurrency} in checking phase
+         * **/
+        public TradingConfig(double marketPhase, double wasteRange, int daysGap, double minGainForOrder, double maxLoss,
                              double maxGain) {
             this.marketPhase = marketPhase;
             this.wasteRange = wasteRange;
             this.daysGap = daysGap;
-            this.gainForOrder = gainForOrder;
+            this.minGainForOrder = minGainForOrder;
             this.maxLoss = maxLoss;
             this.maxGain = maxGain;
         }
@@ -77,8 +116,8 @@ public interface AutoTraderCoreRoutines {
             return daysGap;
         }
 
-        public double getGainForOrder() {
-            return gainForOrder;
+        public double getMinGainForOrder() {
+            return minGainForOrder;
         }
 
         public double getMaxLoss() {
@@ -91,6 +130,11 @@ public interface AutoTraderCoreRoutines {
 
     }
 
+    /**
+     * This method is used to print disclaimer alert to warn user of terms and conditions using our services.
+     * Is used in autonomous traders and in Android's interfaces. <br>
+     * Any params required
+     * **/
     default void printDisclaimer(){
         System.out.println("""
                 ############################### DISCLAIMER ALERT #################################\s
@@ -121,6 +165,11 @@ public interface AutoTraderCoreRoutines {
                 """);
     }
 
+    /**
+     * This method is used to obtain model of trading from server.
+     * Any params required
+     * @return model of trading as {@link TradingConfig} object
+     * **/
     default TradingConfig fetchTradingConfig(){
         // TODO: 22/05/2022 request to fetch trading
         return new TradingConfig(1,
@@ -132,28 +181,79 @@ public interface AutoTraderCoreRoutines {
         );
     }
 
+    /**
+     * This method is used to check if is time to do some routine. <br>
+     * Routines that have to check time are: {@link #checkCryptocurrencies()}, {@link #buyCryptocurrencies()}
+     * and {@link #updateWallet()}
+     * @param previousGap: past timestamp when routine is made
+     * @param gap: time gap of routine
+     * @return true if is time to make a routine of autonomous trader.
+     * **/
     default boolean makeRoutine(long previousGap, long gap){
         return (System.currentTimeMillis() - previousGap) >= gap;
     }
 
+    /**
+     * This method is used to start autonomous trader<br>
+     * Any params required
+     * **/
     void start();
 
+    /**
+     * This method is used to check list of possible new cryptocurrencies to buy using {@link TradingConfig} model.
+     * Any params required
+     * **/
     void checkCryptocurrencies() throws Exception;
 
+    /**
+     * This method is used to buy new cryptocurrencies from list loaded from {@link #checkCryptocurrencies()} routine
+     * using {@link TradingConfig} model. <br>
+     * Any params required
+     * **/
     void buyCryptocurrencies() throws Exception;
 
-    default void sendStatsReport(){
-        // TODO: 22/05/2022 request to send report
+    /**
+     * This method is used to send stats report of trading using {@link TradingConfig} fetched.
+     * This is very helpful to make A.I. for automatic trader better and more efficiently.
+     * @implNote any personal data will be sent in this method and any personal data will be saved in our systems anywhere. Data that will be passed are
+     * only data contained in {@link TradingConfig} model.
+     * **/
+    default void sendStatsReport(/*params*/){
+        // TODO: 22/05/2022 request to send report and add to docu
         System.out.println("gagagagag");
         //send data in some methods
     }
 
-    double isTradable(String index, TradingConfig tradingConfig, Object candleInterval, double lastPrice,
+    /**
+     * This method is used to check if a {@link Cryptocurrency} when this method is called is respecting correct range gap
+     * to be bought using {@link TradingConfig} model.
+     * @param symbol: symbol used in checking phase es. BTCBUSD or BTC-USD
+     * @param tradingConfig: model of trading to use as {@link TradingConfig}
+     * @param candleInterval: interval gap to make forecast
+     * @param lastPrice: last price of the symbol
+     * @param priceChangePercent: percent gap of the symbol from previous day and day when the symbol is checked
+     * @return value of {@link #computeTPTOPIndex(String, TradingConfig, Object, double)} if is correct and return
+     * {@link #ASSET_NOT_TRADABLE} if is not respect {@link TradingConfig} model.
+     * **/
+    double isTradable(String symbol, TradingConfig tradingConfig, Object candleInterval, double lastPrice,
                       double priceChangePercent) throws IOException;
 
-    double computeTPTOPIndex(String index, TradingConfig tradingConfig, Object candleInterval, double wasteRange)
+    /**
+     * This method is used to check if a {@link Cryptocurrency} when this method is called is respecting correct range gap
+     * to be bought using {@link TradingConfig} model.
+     * @param symbol: symbol used in checking phase es. BTCBUSD or BTC-USD
+     * @param tradingConfig: model of trading to use as {@link TradingConfig}
+     * @param candleInterval: interval gap to make forecast
+     * @return value of tptop index if is correct and return {@link #ASSET_NOT_TRADABLE} if is not respect {@link TradingConfig} model.
+     * **/
+    double computeTPTOPIndex(String symbol, TradingConfig tradingConfig, Object candleInterval, double wasteRange)
             throws IOException;
 
+    /**
+     * This method is used to routine of update wallet of cryptocurrencies bought by auto trader. If {@link Cryptocurrency}
+     * respect {@link TradingConfig} model that {@link Cryptocurrency} will be sold. <br>
+     * Any params required
+     * **/
     void updateWallet() throws Exception;
 
     void incrementSellsSale(Cryptocurrency cryptocurrency, int codeOpe) throws Exception;

@@ -239,22 +239,22 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     }
 
     @Override
-    public double isTradable(String index, TradingConfig tradingConfig, Object candleInterval, double lastPrice,
+    public double isTradable(String symbol, TradingConfig tradingConfig, Object candleInterval, double lastPrice,
                              double priceChangePercent) throws IOException {
         double wasteRange = tradingConfig.getWasteRange();
         if((abs(priceChangePercent - tradingConfig.getMarketPhase()) <= abs(wasteRange)) ||
                 (priceChangePercent >= tradingConfig.getMaxLoss() && priceChangePercent <= tradingConfig.getMaxGain())){
-            double tptop = computeTPTOPIndex(index, tradingConfig, candleInterval, wasteRange);
-            if(tptop >= tradingConfig.getGainForOrder())
+            double tptop = computeTPTOPIndex(symbol, tradingConfig, candleInterval, wasteRange);
+            if(tptop >= tradingConfig.getMinGainForOrder())
                 return tptop;
         }
         return ASSET_NOT_TRADABLE;
     }
 
     @Override
-    public double computeTPTOPIndex(String index, TradingConfig tradingConfig, Object candleInterval,
+    public double computeTPTOPIndex(String symbol, TradingConfig tradingConfig, Object candleInterval,
                                     double wasteRange) throws IOException {
-        return binanceMarketManager.getSymbolForecast(index, (String) candleInterval, tradingConfig.getDaysGap(),
+        return binanceMarketManager.getSymbolForecast(symbol, (String) candleInterval, tradingConfig.getDaysGap(),
                 (int) wasteRange);
     }
 
@@ -269,12 +269,12 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
             double trendPercent = binanceMarketManager.getTrendPercent(cryptocurrency.getFirstPrice(), lastPrice);
             refreshCryptoDetails(cryptocurrency, trendPercent, lastPrice);
             try {
-                if(trendPercent < tradingConfig.getGainForOrder() && trendPercent < cryptocurrency.getTptopIndex()){
+                if(trendPercent < tradingConfig.getMinGainForOrder() && trendPercent < cryptocurrency.getTptopIndex()){
                     if(printRoutineMessages)
                         System.out.println("Refreshing [" + symbol + "]");
                 }else if(trendPercent <= tradingConfig.getMaxLoss())
                     incrementSellsSale(cryptocurrency, LOSS_SELL);
-                else if(trendPercent >= tradingConfig.getGainForOrder() || trendPercent >= cryptocurrency.getTptopIndex())
+                else if(trendPercent >= tradingConfig.getMinGainForOrder() || trendPercent >= cryptocurrency.getTptopIndex())
                     incrementSellsSale(cryptocurrency, GAIN_SELL);
                 else
                     incrementSellsSale(cryptocurrency, PAIR_SELL);
