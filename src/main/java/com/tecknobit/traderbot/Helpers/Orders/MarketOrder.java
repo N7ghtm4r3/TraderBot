@@ -12,6 +12,7 @@ public interface MarketOrder {
     /**
      * This method is used to get quantity for market order type <br>
      * @param cryptocurrency: cryptocurrency as {@link Cryptocurrency} used in the order
+     * @return quantity for the market order es. 1
      * **/
     double getMarketOrderQuantity(Cryptocurrency cryptocurrency) throws Exception;
 
