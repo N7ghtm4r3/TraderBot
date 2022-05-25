@@ -10,7 +10,7 @@ import com.tecknobit.traderbot.Records.Cryptocurrency;
 public interface MarketOrder {
 
     /**
-     * This method is used to print details of an object <br>
+     * This method is used to get quantity for market order type <br>
      * @param cryptocurrency: cryptocurrency as {@link Cryptocurrency} used in the order
      * **/
     double getMarketOrderQuantity(Cryptocurrency cryptocurrency) throws Exception;

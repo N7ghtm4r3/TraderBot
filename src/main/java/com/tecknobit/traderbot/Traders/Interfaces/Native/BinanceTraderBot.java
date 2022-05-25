@@ -54,7 +54,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
      * **/
     protected HashMap<String, Symbol> tradingPairsList;
 
-    /** Constructor to init BinanceTraderBot
+    /** Constructor to init {@link BinanceTraderBot}
      * @param apiKey: your Binance's api key
      * @param secretKey: your Binance's secret key
      * @implNote these keys will NOT store by libray anywhere.
@@ -67,7 +67,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         initTrader();
     }
 
-    /** Constructor to init BinanceTraderBot
+    /** Constructor to init {@link BinanceTraderBot}
      * @param apiKey: your Binance's api key
      * @param secretKey: your Binance's secret key
      * @param baseEndpoint: base endpoint choose from BinanceManager.BASE_ENDPOINTS array
@@ -81,7 +81,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         initTrader();
     }
 
-    /** Constructor to init BinanceTraderBot
+    /** Constructor to init {@link BinanceTraderBot}
      * @param apiKey: your Binance's api key
      * @param secretKey: your Binance's secret key
      * @param refreshPricesTime: is time in seconds to set for refresh the latest prices.
@@ -99,7 +99,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         initTrader();
     }
 
-    /** Constructor to init BinanceTraderBot
+    /** Constructor to init {@link BinanceTraderBot}
      * @param apiKey: your Binance's api key
      * @param secretKey: your Binance's secret key
      * @param refreshPricesTime: is time in seconds to set for refresh the latest prices.
@@ -118,7 +118,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         initTrader();
     }
 
-    /** Constructor to init BinanceTraderBot
+    /** Constructor to init {@link BinanceTraderBot}
      * @param apiKey: your Binance's api key
      * @param secretKey: your Binance's secret key
      * @param refreshPricesTime: is time in seconds to set for refresh the latest prices.
@@ -139,7 +139,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         initTrader();
     }
 
-    /** Constructor to init BinanceTraderBot
+    /** Constructor to init {@link BinanceTraderBot}
      * @param apiKey: your Binance's api key
      * @param secretKey: your Binance's secret key
      * @param refreshPricesTime: is time in seconds to set for refresh the latest prices.
@@ -161,7 +161,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         initTrader();
     }
 
-    /** Constructor to init BinanceTraderBot
+    /** Constructor to init {@link BinanceTraderBot}
      * @param apiKey: your Binance's api key
      * @param secretKey: your Binance's secret key
      * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR).
@@ -175,7 +175,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         initTrader();
     }
 
-    /** Constructor to init BinanceTraderBot
+    /** Constructor to init {@link BinanceTraderBot}
      * @param apiKey: your Binance's api key
      * @param secretKey: your Binance's secret key
      * @param baseEndpoint: base endpoint choose from BinanceManager.BASE_ENDPOINTS array

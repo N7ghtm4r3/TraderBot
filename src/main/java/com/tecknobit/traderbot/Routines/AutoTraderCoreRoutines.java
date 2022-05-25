@@ -200,7 +200,7 @@ public interface AutoTraderCoreRoutines {
     void start();
 
     /**
-     * This method is used to check list of possible new cryptocurrencies to buy using {@link TradingConfig} model.
+     * This method is used to check list of possible new cryptocurrencies to buy using {@link TradingConfig} model. <br>
      * Any params required
      * **/
     void checkCryptocurrencies() throws Exception;
@@ -211,18 +211,6 @@ public interface AutoTraderCoreRoutines {
      * Any params required
      * **/
     void buyCryptocurrencies() throws Exception;
-
-    /**
-     * This method is used to send stats report of trading using {@link TradingConfig} fetched.
-     * This is very helpful to make A.I. for automatic trader better and more efficiently.
-     * @implNote any personal data will be sent in this method and any personal data will be saved in our systems anywhere. Data that will be passed are
-     * only data contained in {@link TradingConfig} model.
-     * **/
-    default void sendStatsReport(/*params*/){
-        // TODO: 22/05/2022 request to send report and add to docu
-        System.out.println("gagagagag");
-        //send data in some methods
-    }
 
     /**
      * This method is used to check if a {@link Cryptocurrency} when this method is called is respecting correct range gap
@@ -256,39 +244,118 @@ public interface AutoTraderCoreRoutines {
      * **/
     void updateWallet() throws Exception;
 
+    /**
+     * This method is used to increment sells detail
+     * @param cryptocurrency: cryptocurrency used in the order
+     * @param codeOpe: code of type of sell to increment
+     * **/
     void incrementSellsSale(Cryptocurrency cryptocurrency, int codeOpe) throws Exception;
 
+    /**
+     * This method is used to refresh details of {@link Cryptocurrency}
+     * @param cryptocurrency: cryptocurrency to refresh
+     * @param trendPercent: percent that cryptocurrency is having
+     * @param lastPrice: last price of cryptocurrency
+     * **/
     default void refreshCryptoDetails(Cryptocurrency cryptocurrency, double trendPercent, double lastPrice){
         cryptocurrency.setTrendPercent(trendPercent);
         cryptocurrency.setLastPrice(lastPrice);
     }
 
+    /**
+     * This method is used to send stats report of trading using {@link TradingConfig} fetched.
+     * This is very helpful to make A.I. for automatic trader better and more efficiently.
+     * @implNote any personal data will be sent in this method and any personal data will be saved in our systems anywhere. Data that will be passed are
+     * only data contained in {@link TradingConfig} model.
+     * **/
+    default void sendStatsReport(/*params*/){
+        // TODO: 22/05/2022 request to send report and add to docu
+        System.out.println("gagagagag");
+        //send data in some methods
+    }
+
+    /**
+     * This method is used to set flag to send stats report with {@link #sendStatsReport()} method
+     * @param sendStatsReport: flag to insert to send or not reports
+     * **/
     void setSendStatsReport(boolean sendStatsReport);
 
+    /**
+     * This method is used to get flag to send stats report with {@link #sendStatsReport()} method <br>
+     * @return flag that indicates the possibility or not to send stats reports
+     * **/
     boolean canSendStatsReport();
 
+    /**
+     * This method is used to set flag to print routine messages
+     * @param printRoutineMessages: flag to insert to print or not routine messages
+     * **/
     void setPrintRoutineMessages(boolean printRoutineMessages);
 
+    /**
+     * This method is used to get flag to print or not routine messages
+     * @return flag that indicates the possibility or not to print or not routine messages
+     * **/
     boolean canPrintRoutineMessages();
 
+    /**
+     * This method is used to get if bot is in running mode
+     * @return flag that indicates if the bot is running
+     * **/
     boolean isRunningBot();
 
+    /**
+     * This method is used to disable running mode of bot
+     * **/
     void disableBot();
 
+    /**
+     * This method is used to enable running mode of bot
+     * **/
     void enableBot();
 
+    /**
+     * This method is used to get coin balance
+     * @param lastPrice: last price of cryptocurrency
+     * @param quote: string of quote currency to return amount value of balance
+     * @return balance of coin inserted
+     * **/
     double getCoinBalance(double lastPrice, String quote);
 
+    /**
+     * This method is used to get sells at loss
+     * @return sells at loss
+     * **/
     double getSellsAtLoss();
 
+    /**
+     * This method is used to get sells at gain
+     * @return sells at gain
+     * **/
     double getSellsAtGain();
 
+    /**
+     * This method is used to get sells at pair
+     * @return sells at pair
+     * **/
     double getSellsInPair();
 
+    /**
+     * This method is used to get total sells
+     * @return total sells
+     * **/
     double getTotalSells();
 
+    /**
+     * This method is used to set base currency for change amount value
+     * @param baseCurrency: base currency to get all amount value of traders routine es. EUR
+     * **/
     void setBaseCurrency(String baseCurrency);
 
+    /**
+     * This method is used to get base currency for change amount value <br>
+     * Any params required
+     * **/
     String getBaseCurrency();
 
 }
