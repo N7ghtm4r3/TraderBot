@@ -2,6 +2,7 @@ package com.tecknobit.traderbot.Traders.Autonomous.Native;
 
 import com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.Records.Ticker;
 import com.tecknobit.traderbot.Helpers.Orders.MarketOrder;
+import com.tecknobit.traderbot.Records.Coin;
 import com.tecknobit.traderbot.Records.Cryptocurrency;
 import com.tecknobit.traderbot.Routines.AutoTraderCoreRoutines;
 import com.tecknobit.traderbot.Traders.Autonomous.Utils.AutoTraderBotAccount;
@@ -337,10 +338,36 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
         int daysGap = tradingConfig.getDaysGap();
         for (Ticker ticker : coinbaseProductsManager.getAllTickersList()){
             String symbol = ticker.getProductId();
-            String baseAsset = ticker.getBaseAsset();
-            if(quoteCurrencies.isEmpty() || quoteContained(baseAsset)){
-                double tptop = isTradable(symbol, tradingConfig, GRANULARITY_1d, 0);
-             }
+            String quoteAsset = ticker.getQuoteAsset();
+            if(quoteCurrencies.isEmpty() || quoteContained(quoteAsset)){
+                String baseAsset = ticker.getBaseAsset();
+                Coin coin = coins.get(baseAsset);
+                if(coin != null && !walletList.containsKey(baseAsset)){
+                    double lastPrice = ticker.getPrice();
+                    double previousPrice;
+                    Cryptocurrency cryptocurrency = checkingList.get(baseAsset);
+                    if(cryptocurrency != null)
+                        previousPrice = cryptocurrency.getLastPrice();
+                    else
+                        previousPrice = lastPrice;
+                    double priceChangePercent = coinbaseProductsManager.getTrendPercent(previousPrice, lastPrice);
+                    double tptop = isTradable(symbol, tradingConfig, GRANULARITY_1d, priceChangePercent);
+                    if(tptop != ASSET_NOT_TRADABLE){
+                        System.out.println(priceChangePercent + symbol);
+                        checkingList.put(baseAsset, new Cryptocurrency(baseAsset,
+                                coin.getAssetName(),
+                                0,
+                                symbol,
+                                lastPrice,
+                                tptop,
+                                GRANULARITY_1d,
+                                priceChangePercent,
+                                quoteAsset,
+                                tradingConfig
+                        ));
+                    }
+                }
+            }
         }
     }
 
@@ -372,7 +399,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
 
     @Override
     public void updateWallet() throws Exception {
-        System.out.println("## UPDATING WALLET CRYPTOCURRENCIES");
+        //System.out.println("## UPDATING WALLET CRYPTOCURRENCIES");
 
     }
 

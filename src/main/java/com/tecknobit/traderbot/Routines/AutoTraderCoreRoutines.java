@@ -173,7 +173,7 @@ public interface AutoTraderCoreRoutines {
         return new TradingConfig(1,
                 3,
                 29,
-                1,
+                0.00001,
                 -4,
                 2
         );
