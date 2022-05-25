@@ -13,7 +13,7 @@ public interface AutoTraderCoreRoutines {
     /**
      * {@code CHECKING_GAP_TIME} is instance that memorize time gap for checking routine
      * **/
-    long CHECKING_GAP_TIME = 10000L;//60000*5L;
+    long CHECKING_GAP_TIME = 60000*5L;
 
     /**
      * {@code BUYING_GAP_TIME} is instance that memorize time gap for buying routine
@@ -313,11 +313,10 @@ public interface AutoTraderCoreRoutines {
 
     /**
      * This method is used to get coin balance
-     * @param lastPrice: last price of cryptocurrency
      * @param quote: string of quote currency to return amount value of balance
      * @return balance of coin inserted
      * **/
-    double getCoinBalance(double lastPrice, String quote);
+    double getCoinBalance(String quote);
 
     /**
      * This method is used to get sells at loss

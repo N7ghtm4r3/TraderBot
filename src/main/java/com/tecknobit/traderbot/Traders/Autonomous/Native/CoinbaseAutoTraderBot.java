@@ -1,9 +1,11 @@
 package com.tecknobit.traderbot.Traders.Autonomous.Native;
 
+import com.tecknobit.coinbasemanager.Managers.ExchangePro.Currencies.Records.Currency;
 import com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.Records.Ticker;
 import com.tecknobit.traderbot.Helpers.Orders.MarketOrder;
 import com.tecknobit.traderbot.Records.Coin;
 import com.tecknobit.traderbot.Records.Cryptocurrency;
+import com.tecknobit.traderbot.Records.Transaction;
 import com.tecknobit.traderbot.Routines.AutoTraderCoreRoutines;
 import com.tecknobit.traderbot.Traders.Autonomous.Utils.AutoTraderBotAccount;
 import com.tecknobit.traderbot.Traders.Interfaces.Native.CoinbaseTraderBot;
@@ -14,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.Records.Candle.GRANULARITY_1d;
 import static java.lang.Math.abs;
+import static java.lang.Math.ceil;
 
 /**
  * The {@code CoinbaseAutoTraderBot} class is trader for {@link CoinbaseTraderBot} library.<br>
@@ -351,7 +354,6 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                                 lastPrice, 8);
                     }
                     double tptop = isTradable(symbol, tradingConfig, GRANULARITY_1d, priceChangePercent);
-                    System.out.println(tptop);
                     if(tptop != ASSET_NOT_TRADABLE){
                         checkingList.put(baseAsset, new Cryptocurrency(baseAsset,
                                 coin.getAssetName(),
@@ -411,6 +413,9 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
             }
         }
         checkingList.clear();
+        if(printRoutineMessages)
+            for (Transaction transaction : getAllTransactions(true))
+                transaction.printDetails();
     }
 
     @Override
@@ -474,18 +479,25 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
 
     @Override
     public double getMarketOrderQuantity(Cryptocurrency cryptocurrency) throws Exception {
-        double quantity = -1;
-
+        double coinBalance = getCoinBalance(cryptocurrency.getQuoteAsset());
+        String assetIndex = cryptocurrency.getAssetIndex();
+        Currency currency = coinbaseCurrenciesManager.getCurrencyObject(assetIndex);
+        double quantity = coinbaseProductsManager.roundValue(coinBalance * cryptocurrency.getTptopIndex() / 100, 6);
+        if(quantity >= currency.getMinSize()) {
+            if(quantity % currency.getMaxPrecision() != 0)
+                quantity = ceil(quantity);
+        }else
+            quantity = -1;
         return quantity;
     }
 
     // TODO: 25/05/2022 INSERT RIGHT ROUTINE METHOD
     @Override
-    public double getCoinBalance(double lastPrice, String quote) {
+    public double getCoinBalance(String quote) {
         return 100;
         /*Coin coin = coins.get(quote);
         return coinbaseAccountManager.roundValue(coin.getQuantity() *
-                lastPrices.get(coin.getAssetIndex() + USD_CURRENCY), 8);*/
+                lastPrices.get(coin.getAssetIndex() + "-" + USD_CURRENCY), 8);*/
     }
 
     @Override

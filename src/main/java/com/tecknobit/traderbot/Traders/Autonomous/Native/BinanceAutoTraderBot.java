@@ -597,8 +597,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         String symbol = cryptocurrency.getSymbol();
         Symbol exchangeInformation = binanceMarketManager.getObjectExchangeInformation(symbol).getSymbols().get(0);
         double stepSize = 0, maxQty = 0, minQty = 0, minNotional = 0, quantity = -1;
-        double lastPrice = cryptocurrency.getLastPrice();
-        double coinBalance = getCoinBalance(lastPrice, cryptocurrency.getQuoteAsset());
+        double coinBalance = getCoinBalance(cryptocurrency.getQuoteAsset());
         for (Filter filter : exchangeInformation.getFiltersList()) {
             if(filter.getFilterType().equals(LOT_SIZE_FILTER)){
                 JSONObject lotSize = filter.getFilterDetails().getJSONObject(LOT_SIZE_FILTER);
@@ -611,7 +610,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                 break;
             }
         }
-        double minNotionalQty = minNotional / lastPrice;
+        double minNotionalQty = minNotional / cryptocurrency.getLastPrice();
         if(coinBalance == minNotional)
             quantity = ceil(minNotional);
         else if(coinBalance > minNotional){
@@ -635,12 +634,11 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
 
     /**
      * This method is used to get coin balance
-     * @param lastPrice: last price of cryptocurrency
      * @param quote: string of quote currency to return amount value of balance
      * @return balance of coin inserted
      * **/
     @Override
-    public double getCoinBalance(double lastPrice, String quote) {
+    public double getCoinBalance(String quote) {
         Coin coin = coins.get(quote);
         return binanceMarketManager.roundValue(coin.getQuantity() *
                 lastPrices.get(coin.getAssetIndex() + USDT_CURRENCY), 8);

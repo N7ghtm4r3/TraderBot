@@ -419,7 +419,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
                     balance += coin.getQuantity() * lastPrices.get(coin.getAssetIndex() + "-" + USD_CURRENCY);
             if(!lastBalanceCurrency.contains(USD_CURRENCY)){
                 try {
-                    balance *= coinbaseProductsManager.getProductTickerObject(getSymbol(currency)).getPrice();
+                    balance *= coinbaseProductsManager.getProductTickerObject(getUSDTSymbol(currency)).getPrice();
                 }catch (Exception ignored){
                 }
             }
@@ -458,7 +458,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
                     double balance = quantity * lastPrices.get(index);
                     if(!currency.contains(USD_CURRENCY)){
                         try {
-                            balance *= coinbaseProductsManager.getProductTickerObject(getSymbol(currency)).getPrice();
+                            balance *= coinbaseProductsManager.getProductTickerObject(getUSDTSymbol(currency)).getPrice();
                         }catch (Exception ignored){
                         }
                     }
@@ -700,7 +700,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * @param currency: currency for the request es. EUR
      * @return USDT-currency inserted es. USDT-EUR.
      * **/
-    protected String getSymbol(String currency){
+    private String getUSDTSymbol(String currency){
         return USDT_CURRENCY + "-" + currency;
     }
 
