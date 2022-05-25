@@ -1,15 +1,18 @@
 package com.tecknobit.traderbot.Traders.Autonomous.Native;
 
+import com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.Records.Candle;
+import com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.Records.Ticker;
 import com.tecknobit.traderbot.Helpers.Orders.MarketOrder;
 import com.tecknobit.traderbot.Records.Cryptocurrency;
 import com.tecknobit.traderbot.Routines.AutoTraderCoreRoutines;
 import com.tecknobit.traderbot.Traders.Autonomous.Utils.AutoTraderBotAccount;
 import com.tecknobit.traderbot.Traders.Interfaces.Native.CoinbaseTraderBot;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static java.lang.Math.abs;
 
 /**
  * The {@code CoinbaseAutoTraderBot} class is trader for {@link CoinbaseTraderBot} library.<br>
@@ -294,45 +297,98 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     }
 
     @Override
-    public double getMarketOrderQuantity(Cryptocurrency cryptocurrency) throws Exception {
-        return 0;
-    }
-
-    @Override
     public void start() {
-
+        tradingConfig = fetchTradingConfig();
+        previousBuying = System.currentTimeMillis();
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                try {
+                    while (true){
+                        while (runningBot){
+                            if(makeRoutine(previousChecking, CHECKING_GAP_TIME)){
+                                previousChecking = System.currentTimeMillis();
+                                checkCryptocurrencies();
+                            }
+                            if(makeRoutine(previousBuying, BUYING_GAP_TIME)){
+                                previousBuying = System.currentTimeMillis();
+                                buyCryptocurrencies();
+                            }
+                            if(makeRoutine(previousUpdating, UPDATING_GAP_TIME)){
+                                previousUpdating = System.currentTimeMillis();
+                                updateWallet();
+                            }
+                        }
+                        System.out.println("Bot is stopped, waiting for reactivation");
+                        Thread.sleep(5000);
+                    }
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
     }
 
     @Override
     public void checkCryptocurrencies() throws Exception {
-
+        System.out.println("## CHECKING NEW CRYPTOCURRENCIES");
+        tradingConfig = fetchTradingConfig();
+        int daysGap = tradingConfig.getDaysGap();
+        for (Ticker ticker : coinbaseProductsManager.getAllTickersList()){
+            //if(quoteCurrencies.isEmpty() || quoteContained())
+        }
     }
 
     @Override
     public void buyCryptocurrencies() throws Exception {
+        System.out.println("## BUYING NEW CRYPTOCURRENCIES");
 
     }
 
     @Override
-    public double isTradable(String symbol, TradingConfig tradingConfig, Object candleInterval, double lastPrice,
-                             double priceChangePercent) throws IOException {
-        return 0;
+    public double isTradable(String symbol, TradingConfig tradingConfig, Object candleInterval,
+                             double priceChangePercent) throws Exception {
+        double wasteRange = tradingConfig.getWasteRange();
+        if((abs(priceChangePercent - tradingConfig.getMarketPhase()) <= wasteRange) &&
+                ((priceChangePercent >= tradingConfig.getMaxLoss()) && (priceChangePercent <= tradingConfig.getMaxGain()))){
+            double tptop = computeTPTOPIndex(symbol, tradingConfig, Candle.GRANULARITY_1d, wasteRange);
+            if(tptop >= tradingConfig.getMinGainForOrder())
+                return tptop;
+        }
+        return ASSET_NOT_TRADABLE;
     }
 
     @Override
     public double computeTPTOPIndex(String symbol, TradingConfig tradingConfig, Object candleInterval,
-                                    double wasteRange) throws IOException {
-        return 0;
+                                    double wasteRange) throws Exception {
+        return coinbaseProductsManager.getSymbolForecast(symbol, tradingConfig.getDaysGap(), (Integer) candleInterval,
+                (int) tradingConfig.getWasteRange());
     }
 
     @Override
     public void updateWallet() throws Exception {
+        System.out.println("## UPDATING WALLET CRYPTOCURRENCIES");
 
     }
 
     @Override
     public void incrementSellsSale(Cryptocurrency cryptocurrency, int codeOpe) throws Exception {
 
+    }
+
+    @Override
+    public void buyMarket(String symbol, double quantity) throws Exception {
+        super.buyMarket(symbol, quantity);
+        if(sendStatsReport)
+            sendStatsReport(/*params*/);
+    }
+
+    @Override
+    public void sellMarket(String symbol, double quantity) throws Exception {
+        super.sellMarket(symbol, quantity);
+        if(sendStatsReport)
+            sendStatsReport(/*params*/);
     }
 
     @Override
@@ -368,6 +424,11 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     @Override
     public void enableBot() {
         runningBot = true;
+    }
+
+    @Override
+    public double getMarketOrderQuantity(Cryptocurrency cryptocurrency) throws Exception {
+        return 0;
     }
 
     // TODO: 25/05/2022 INSERT RIGHT ROUTINE METHOD

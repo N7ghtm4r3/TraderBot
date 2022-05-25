@@ -342,7 +342,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                 if(coin != null && !walletList.containsKey(baseAsset)){
                     double lastPrice = ticker.getLastPrice();
                     double priceChangePercent = ticker.getPriceChangePercent();
-                    double tptop = isTradable(symbol, tradingConfig, candleInterval, lastPrice, priceChangePercent);
+                    double tptop = isTradable(symbol, tradingConfig, candleInterval, priceChangePercent);
                     if(tptop != ASSET_NOT_TRADABLE) {
                         checkingList.put(baseAsset, new Cryptocurrency(baseAsset,
                                 coin.getAssetName(),
@@ -373,7 +373,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
             String symbol = cryptocurrency.getSymbol();
             double lastPrice = cryptocurrency.getLastPrice();
             double tptop = isTradable(symbol, cryptocurrency.getTradingConfig(), cryptocurrency.getCandleGap(),
-                    lastPrice, cryptocurrency.getPriceChangePercent());
+                    cryptocurrency.getPriceChangePercent());
             if(tptop != ASSET_NOT_TRADABLE) {
                 double quantity = getMarketOrderQuantity(cryptocurrency);
                 if(quantity != -1) {
@@ -402,16 +402,15 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
      * @param symbol: symbol used in checking phase es. BTCBUSD or BTC-USD
      * @param tradingConfig: model of trading to use as {@link TradingConfig}
      * @param candleInterval: interval gap to make forecast
-     * @param lastPrice: last price of the symbol
      * @param priceChangePercent: percent gap of the symbol from previous day and day when the symbol is checked
      * @return value of {@link #computeTPTOPIndex(String, TradingConfig, Object, double)} if is correct and return
      * {@link #ASSET_NOT_TRADABLE} if is not respect {@link TradingConfig} model.
      * **/
     @Override
-    public double isTradable(String symbol, TradingConfig tradingConfig, Object candleInterval, double lastPrice,
+    public double isTradable(String symbol, TradingConfig tradingConfig, Object candleInterval,
                              double priceChangePercent) throws IOException {
         double wasteRange = tradingConfig.getWasteRange();
-        if((abs(priceChangePercent - tradingConfig.getMarketPhase()) <= abs(wasteRange)) ||
+        if((abs(priceChangePercent - tradingConfig.getMarketPhase()) <= abs(wasteRange)) &&
                 (priceChangePercent >= tradingConfig.getMaxLoss() && priceChangePercent <= tradingConfig.getMaxGain())){
             double tptop = computeTPTOPIndex(symbol, tradingConfig, candleInterval, wasteRange);
             if(tptop >= tradingConfig.getMinGainForOrder())

@@ -2,8 +2,6 @@ package com.tecknobit.traderbot.Routines;
 
 import com.tecknobit.traderbot.Records.Cryptocurrency;
 
-import java.io.IOException;
-
 /**
  * The {@code AutoTraderCoreRoutines} interface defines base routines methods for auto traders bot.<br>
  * These routines allow the different auto traders to do some operations about wallet info and make trading operations autonomously.
@@ -218,13 +216,12 @@ public interface AutoTraderCoreRoutines {
      * @param symbol: symbol used in checking phase es. BTCBUSD or BTC-USD
      * @param tradingConfig: model of trading to use as {@link TradingConfig}
      * @param candleInterval: interval gap to make forecast
-     * @param lastPrice: last price of the symbol
      * @param priceChangePercent: percent gap of the symbol from previous day and day when the symbol is checked
      * @return value of {@link #computeTPTOPIndex(String, TradingConfig, Object, double)} if is correct and return
      * {@link #ASSET_NOT_TRADABLE} if is not respect {@link TradingConfig} model.
      * **/
-    double isTradable(String symbol, TradingConfig tradingConfig, Object candleInterval, double lastPrice,
-                      double priceChangePercent) throws IOException;
+    double isTradable(String symbol, TradingConfig tradingConfig, Object candleInterval,
+                      double priceChangePercent) throws Exception;
 
     /**
      * This method is used to check if a {@link Cryptocurrency} when this method is called is respecting correct range gap
@@ -235,7 +232,7 @@ public interface AutoTraderCoreRoutines {
      * @return value of tptop index if is correct and return {@link #ASSET_NOT_TRADABLE} if is not respect {@link TradingConfig} model.
      * **/
     double computeTPTOPIndex(String symbol, TradingConfig tradingConfig, Object candleInterval, double wasteRange)
-            throws IOException;
+            throws Exception;
 
     /**
      * This method is used to routine of update wallet of cryptocurrencies bought by auto trader. If {@link Cryptocurrency}
