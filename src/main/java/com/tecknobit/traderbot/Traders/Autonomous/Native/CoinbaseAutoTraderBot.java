@@ -370,9 +370,13 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
         runningBot = true;
     }
 
+    // TODO: 25/05/2022 INSERT RIGHT ROUTINE METHOD 
     @Override
     public double getCoinBalance(double lastPrice, String quote) {
-        return 0;
+        return 100;
+        /*Coin coin = coins.get(quote);
+        return coinbaseAccountManager.roundValue(coin.getQuantity() *
+                lastPrices.get(coin.getAssetIndex() + USDT_CURRENCY), 8);*/
     }
 
     @Override

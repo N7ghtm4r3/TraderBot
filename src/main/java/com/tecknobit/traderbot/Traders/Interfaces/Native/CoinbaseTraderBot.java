@@ -34,23 +34,23 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
     /**
      * {@code coinbaseAccountManager} is instance of {@link CoinbaseAccountManager} helpful to account operations
      * **/
-    private final CoinbaseAccountManager coinbaseAccountManager;
+    protected final CoinbaseAccountManager coinbaseAccountManager;
 
     /**
      * {@code coinbaseProductsManager} is instance of {@link CoinbaseProductsManager} helpful to products requests
      * **/
-    private final CoinbaseProductsManager coinbaseProductsManager;
+    protected final CoinbaseProductsManager coinbaseProductsManager;
 
     /**
      * {@code coinbaseCurrenciesManager} is instance of {@link CoinbaseCurrenciesManager} helpful to fetch details about
      * cryptocurrencies
      * **/
-    private final CoinbaseCurrenciesManager coinbaseCurrenciesManager;
+    protected final CoinbaseCurrenciesManager coinbaseCurrenciesManager;
 
     /**
      * {@code coinbaseOrdersManager} is instance of {@link CoinbaseOrdersManager} helpful to order operations
      * **/
-    private final CoinbaseOrdersManager coinbaseOrdersManager;
+    protected final CoinbaseOrdersManager coinbaseOrdersManager;
 
     /**
      * {@code tradingPairsList} is a map that contains symbols of trading pair list
