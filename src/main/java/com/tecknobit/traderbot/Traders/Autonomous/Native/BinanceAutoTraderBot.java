@@ -340,7 +340,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                 String baseAsset = tradingPair.getBaseAsset();
                 Coin coin = coins.get(baseAsset);
                 if(coin != null && !walletList.containsKey(baseAsset)){
-                    double lastPrice = ticker.getLastPrice();
                     double priceChangePercent = ticker.getPriceChangePercent();
                     double tptop = isTradable(symbol, tradingConfig, candleInterval, priceChangePercent);
                     if(tptop != ASSET_NOT_TRADABLE) {
@@ -348,7 +347,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                                 coin.getAssetName(),
                                 0,
                                 symbol,
-                                lastPrice,
+                                ticker.getLastPrice(),
                                 tptop,
                                 candleInterval,
                                 priceChangePercent,

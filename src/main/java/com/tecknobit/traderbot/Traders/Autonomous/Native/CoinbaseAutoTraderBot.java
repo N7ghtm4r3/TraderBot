@@ -1,6 +1,5 @@
 package com.tecknobit.traderbot.Traders.Autonomous.Native;
 
-import com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.Records.Candle;
 import com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.Records.Ticker;
 import com.tecknobit.traderbot.Helpers.Orders.MarketOrder;
 import com.tecknobit.traderbot.Records.Cryptocurrency;
@@ -12,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.Records.Candle.GRANULARITY_1d;
 import static java.lang.Math.abs;
 
 /**
@@ -336,7 +336,11 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
         tradingConfig = fetchTradingConfig();
         int daysGap = tradingConfig.getDaysGap();
         for (Ticker ticker : coinbaseProductsManager.getAllTickersList()){
-            //if(quoteCurrencies.isEmpty() || quoteContained())
+            String symbol = ticker.getProductId();
+            String baseAsset = ticker.getBaseAsset();
+            if(quoteCurrencies.isEmpty() || quoteContained(baseAsset)){
+                double tptop = isTradable(symbol, tradingConfig, GRANULARITY_1d, 0);
+             }
         }
     }
 
@@ -352,7 +356,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
         double wasteRange = tradingConfig.getWasteRange();
         if((abs(priceChangePercent - tradingConfig.getMarketPhase()) <= wasteRange) &&
                 ((priceChangePercent >= tradingConfig.getMaxLoss()) && (priceChangePercent <= tradingConfig.getMaxGain()))){
-            double tptop = computeTPTOPIndex(symbol, tradingConfig, Candle.GRANULARITY_1d, wasteRange);
+            double tptop = computeTPTOPIndex(symbol, tradingConfig, candleInterval, wasteRange);
             if(tptop >= tradingConfig.getMinGainForOrder())
                 return tptop;
         }
