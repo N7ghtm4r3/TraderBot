@@ -362,36 +362,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     }
 
     /**
-     * This method is used to buy new cryptocurrencies from list loaded from {@link #checkCryptocurrencies()} routine
-     * using {@link TradingConfig} model. <br>
-     * Any params required
-     * **/
-    @Override
-    public void buyCryptocurrencies() throws Exception {
-        System.out.println("## BUYING NEW CRYPTOCURRENCIES");
-        for (Cryptocurrency cryptocurrency : checkingList.values()){
-            String symbol = cryptocurrency.getSymbol();
-            double quantity = getMarketOrderQuantity(cryptocurrency);
-            if(quantity != -1) {
-                try {
-                    buyMarket(symbol, quantity);
-                    cryptocurrency.setQuantity(quantity);
-                    cryptocurrency.setFirstPrice(cryptocurrency.getLastPrice());
-                    walletList.put(cryptocurrency.getAssetIndex(), cryptocurrency);
-                    if(printRoutineMessages)
-                        System.out.println("Buying [" + symbol + "], quantity: " + quantity);
-                }catch (Exception e){
-                    printError(symbol, e);
-                }
-            }
-        }
-        checkingList.clear();
-        if(printRoutineMessages)
-            for (Transaction transaction : getAllTransactions(true))
-                transaction.printDetails();
-    }
-
-    /**
      * This method is used to check if a {@link Cryptocurrency} when this method is called is respecting correct range gap
      * to be bought using {@link TradingConfig} model.
      * @param symbol: symbol used in checking phase es. BTCBUSD or BTC-USD
@@ -427,6 +397,36 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                                     double wasteRange) throws IOException {
         return binanceMarketManager.getSymbolForecast(symbol, (String) candleInterval, tradingConfig.getDaysGap(),
                 (int) wasteRange);
+    }
+
+    /**
+     * This method is used to buy new cryptocurrencies from list loaded from {@link #checkCryptocurrencies()} routine
+     * using {@link TradingConfig} model. <br>
+     * Any params required
+     * **/
+    @Override
+    public void buyCryptocurrencies() throws Exception {
+        System.out.println("## BUYING NEW CRYPTOCURRENCIES");
+        for (Cryptocurrency cryptocurrency : checkingList.values()){
+            String symbol = cryptocurrency.getSymbol();
+            double quantity = getMarketOrderQuantity(cryptocurrency);
+            if(quantity != -1) {
+                try {
+                    buyMarket(symbol, quantity);
+                    cryptocurrency.setQuantity(quantity);
+                    cryptocurrency.setFirstPrice(cryptocurrency.getLastPrice());
+                    walletList.put(cryptocurrency.getAssetIndex(), cryptocurrency);
+                    if(printRoutineMessages)
+                        System.out.println("Buying [" + symbol + "], quantity: " + quantity);
+                }catch (Exception e){
+                    printError(symbol, e);
+                }
+            }
+        }
+        checkingList.clear();
+        if(printRoutineMessages)
+            for (Transaction transaction : getAllTransactions(true))
+                transaction.printDetails();
     }
 
     /**

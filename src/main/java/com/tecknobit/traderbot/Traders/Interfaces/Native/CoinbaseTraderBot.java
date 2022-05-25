@@ -621,7 +621,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
     /**
      * This method is used to place an order
      * @param symbol: this indicates the symbol for the order es. BTC-BUSD
-     * @param quantity: this indicates quantity of that symbol is wanted to sell es. 10
+     * @param quantity: this indicates quantity of that symbol is wanted to trade es. 10
      * @param side: this indicates the side of the order (BUY or SELL)
      * **/
     @Override

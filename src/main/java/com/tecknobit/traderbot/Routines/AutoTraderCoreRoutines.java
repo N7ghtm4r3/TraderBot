@@ -204,13 +204,6 @@ public interface AutoTraderCoreRoutines {
     void checkCryptocurrencies() throws Exception;
 
     /**
-     * This method is used to buy new cryptocurrencies from list loaded from {@link #checkCryptocurrencies()} routine
-     * using {@link TradingConfig} model. <br>
-     * Any params required
-     * **/
-    void buyCryptocurrencies() throws Exception;
-
-    /**
      * This method is used to check if a {@link Cryptocurrency} when this method is called is respecting correct range gap
      * to be bought using {@link TradingConfig} model.
      * @param symbol: symbol used in checking phase es. BTCBUSD or BTC-USD
@@ -233,6 +226,13 @@ public interface AutoTraderCoreRoutines {
      * **/
     double computeTPTOPIndex(String symbol, TradingConfig tradingConfig, Object candleInterval, double wasteRange)
             throws Exception;
+
+    /**
+     * This method is used to buy new cryptocurrencies from list loaded from {@link #checkCryptocurrencies()} routine
+     * using {@link TradingConfig} model. <br>
+     * Any params required
+     * **/
+    void buyCryptocurrencies() throws Exception;
 
     /**
      * This method is used to routine of update wallet of cryptocurrencies bought by auto trader. If {@link Cryptocurrency}

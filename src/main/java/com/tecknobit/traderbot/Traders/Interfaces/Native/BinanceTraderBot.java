@@ -425,14 +425,14 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     /**
      * This method is used to place an order<br>
      * @param symbol: this indicates the symbol for the order es. BTCBUSD
-     * @param quantity: this indicates quantity of that symbol is wanted to sell es. 10
+     * @param quantity: this indicates quantity of that symbol is wanted to trade es. 10
      * @param side: this indicates the side of the order (BUY or SELL)
      * **/
-    @Override // TODO: 20/05/2022 SET TO NEW ORDER
+    @Override
     protected void placeAnOrder(String symbol, double quantity, String side) throws Exception {
         HashMap<String, Object> quantityParam = new HashMap<>();
         quantityParam.put("quantity", quantity);
-        orderStatus = binanceSpotManager.testNewOrder(symbol, side, MARKET_TYPE, quantityParam);
+        orderStatus = binanceSpotManager.sendNewOrder(symbol, side, MARKET_TYPE, quantityParam);
     }
 
     /**

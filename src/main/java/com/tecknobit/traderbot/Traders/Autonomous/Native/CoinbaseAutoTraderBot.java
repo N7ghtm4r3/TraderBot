@@ -372,6 +372,26 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     }
 
     @Override
+    public double isTradable(String symbol, TradingConfig tradingConfig, Object candleInterval,
+                             double priceChangePercent) throws Exception {
+        double wasteRange = tradingConfig.getWasteRange();
+        if((abs(priceChangePercent - tradingConfig.getMarketPhase()) <= wasteRange) &&
+                ((priceChangePercent >= tradingConfig.getMaxLoss()) && (priceChangePercent <= tradingConfig.getMaxGain()))){
+            double tptop = computeTPTOPIndex(symbol, tradingConfig, candleInterval, wasteRange);
+            if(tptop >= tradingConfig.getMinGainForOrder())
+                return tptop;
+        }
+        return ASSET_NOT_TRADABLE;
+    }
+
+    @Override
+    public double computeTPTOPIndex(String symbol, TradingConfig tradingConfig, Object candleInterval,
+                                    double wasteRange) throws Exception {
+        return coinbaseProductsManager.getSymbolForecast(symbol, tradingConfig.getDaysGap(), (Integer) candleInterval,
+                (int) tradingConfig.getWasteRange());
+    }
+
+    @Override
     public void buyCryptocurrencies() throws Exception {
         System.out.println("## BUYING NEW CRYPTOCURRENCIES");
         for (Cryptocurrency cryptocurrency : checkingList.values()){
@@ -391,26 +411,6 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
             }
         }
         checkingList.clear();
-    }
-
-    @Override
-    public double isTradable(String symbol, TradingConfig tradingConfig, Object candleInterval,
-                             double priceChangePercent) throws Exception {
-        double wasteRange = tradingConfig.getWasteRange();
-        if((abs(priceChangePercent - tradingConfig.getMarketPhase()) <= wasteRange) &&
-                ((priceChangePercent >= tradingConfig.getMaxLoss()) && (priceChangePercent <= tradingConfig.getMaxGain()))){
-            double tptop = computeTPTOPIndex(symbol, tradingConfig, candleInterval, wasteRange);
-            if(tptop >= tradingConfig.getMinGainForOrder())
-                return tptop;
-        }
-        return ASSET_NOT_TRADABLE;
-    }
-
-    @Override
-    public double computeTPTOPIndex(String symbol, TradingConfig tradingConfig, Object candleInterval,
-                                    double wasteRange) throws Exception {
-        return coinbaseProductsManager.getSymbolForecast(symbol, tradingConfig.getDaysGap(), (Integer) candleInterval,
-                (int) tradingConfig.getWasteRange());
     }
 
     @Override
@@ -474,7 +474,9 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
 
     @Override
     public double getMarketOrderQuantity(Cryptocurrency cryptocurrency) throws Exception {
-        return 0;
+        double quantity = -1;
+
+        return quantity;
     }
 
     // TODO: 25/05/2022 INSERT RIGHT ROUTINE METHOD
