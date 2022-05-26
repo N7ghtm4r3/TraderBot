@@ -424,9 +424,11 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
             }
         }
         checkingList.clear();
-        if(printRoutineMessages)
+        if(printRoutineMessages) {
+            System.out.println("### Transactions");
             for (Transaction transaction : getAllTransactions(true))
                 transaction.printDetails();
+        }
     }
 
     /**
@@ -443,14 +445,16 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
             TradingConfig tradingConfig = cryptocurrency.getTradingConfig();
             double lastPrice = lastPrices.get(symbol);
             double trendPercent = binanceMarketManager.getTrendPercent(cryptocurrency.getFirstPrice(), lastPrice);
+            double minGainOrder = tradingConfig.getMinGainForOrder();
+            double tptopIndex = cryptocurrency.getTptopIndex();
             refreshCryptoDetails(cryptocurrency, trendPercent, lastPrice);
             try {
-                if(trendPercent < tradingConfig.getMinGainForOrder() && trendPercent < cryptocurrency.getTptopIndex()){
+                if(trendPercent < minGainOrder && trendPercent < tptopIndex){
                     if(printRoutineMessages)
                         System.out.println("Refreshing [" + symbol + "]");
                 }else if(trendPercent <= tradingConfig.getMaxLoss())
                     incrementSellsSale(cryptocurrency, LOSS_SELL);
-                else if(trendPercent >= tradingConfig.getMinGainForOrder() || trendPercent >= cryptocurrency.getTptopIndex())
+                else if(trendPercent >= minGainOrder || trendPercent >= tptopIndex)
                     incrementSellsSale(cryptocurrency, GAIN_SELL);
                 else
                     incrementSellsSale(cryptocurrency, PAIR_SELL);
@@ -459,6 +463,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
             }
         }
         if(printRoutineMessages){
+            System.out.println("### Wallet");
             for (Cryptocurrency cryptocurrency : walletList.values())
                 cryptocurrency.printDetails();
             System.out.println("## Balance amount: " + getWalletBalance(baseCurrency, true, 2)

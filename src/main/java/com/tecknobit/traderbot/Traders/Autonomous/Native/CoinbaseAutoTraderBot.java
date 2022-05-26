@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.Records.Candle.GRANULARITY_1d;
+import static com.tecknobit.traderbot.Routines.RoutineMessages.*;
+import static com.tecknobit.traderbot.Routines.RoutineMessages.ANSI_RESET;
 import static java.lang.Math.abs;
 import static java.lang.Math.ceil;
 
@@ -413,19 +415,73 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
             }
         }
         checkingList.clear();
-        if(printRoutineMessages)
+        if(printRoutineMessages) {
+            System.out.println("### Transactions");
             for (Transaction transaction : getAllTransactions(true))
                 transaction.printDetails();
+        }
     }
 
     @Override
     public void updateWallet() throws Exception {
         System.out.println("## UPDATING WALLET CRYPTOCURRENCIES");
+        refreshLatestPrice();
+        for (Cryptocurrency cryptocurrency : walletList.values()){
+            String symbol = cryptocurrency.getSymbol();
+            TradingConfig tradingConfig = cryptocurrency.getTradingConfig();
+            double lastPrice = lastPrices.get(symbol);
+            double trendPercent = coinbaseProductsManager.getTrendPercent(cryptocurrency.getFirstPrice(), lastPrice);
+            double minGainOrder = tradingConfig.getMinGainForOrder();
+            double tptopIndex = cryptocurrency.getTptopIndex();
+            refreshCryptoDetails(cryptocurrency, trendPercent, lastPrice);
+            if(trendPercent < tradingConfig.getMinGainForOrder() && trendPercent < tptopIndex){
+                if(printRoutineMessages)
+                    System.out.println("Refreshing [" + symbol + "]");
+            }else if(trendPercent <= tradingConfig.getMaxLoss())
+                incrementSellsSale(cryptocurrency, LOSS_SELL);
+            else if(trendPercent >= minGainOrder || trendPercent >= tptopIndex)
+                incrementSellsSale(cryptocurrency, GAIN_SELL);
+            else
+                incrementSellsSale(cryptocurrency, PAIR_SELL);
+        }
+        if(printRoutineMessages){
+            System.out.println("### Wallet");
+            for (Cryptocurrency cryptocurrency : walletList.values())
+                cryptocurrency.printDetails();
+            System.out.println("## Balance amount: " + getWalletBalance(baseCurrency, true, 2)
+                    + " " + baseCurrency);
+        }
     }
 
     @Override
     public void incrementSellsSale(Cryptocurrency cryptocurrency, int codeOpe) throws Exception {
-
+        sellMarket(cryptocurrency.getSymbol(), cryptocurrency.getQuantity());
+        walletList.remove(cryptocurrency.getAssetIndex());
+        switch (codeOpe){
+            case LOSS_SELL:
+                autoTraderBotAccount.addLoss();
+                if(printRoutineMessages) {
+                    System.out.println(ANSI_RED + "## Selling at loss [" + cryptocurrency.getSymbol() + "], " +
+                            "income: [" + cryptocurrency.getTextTrendPercent(2) +  "]" + ANSI_RESET);
+                }
+                break;
+            case GAIN_SELL:
+                autoTraderBotAccount.addGain();
+                if(printRoutineMessages) {
+                    System.out.println(ANSI_GREEN + "## Selling at gain [" + cryptocurrency.getSymbol() + "], " +
+                            "income: [" + cryptocurrency.getTextTrendPercent(2) +  "]" + ANSI_RESET);
+                }
+                break;
+            default:
+                autoTraderBotAccount.addPair();
+                if(printRoutineMessages) {
+                    System.out.println("## Selling at pair [" + cryptocurrency.getSymbol() + "], " +
+                            "income: [" + cryptocurrency.getTextTrendPercent() +  "]");
+                }
+        }
+        autoTraderBotAccount.addIncome(cryptocurrency.getTrendPercent(2));
+        if(printRoutineMessages)
+            autoTraderBotAccount.printDetails();
     }
 
     @Override
@@ -479,9 +535,8 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
 
     @Override
     public double getMarketOrderQuantity(Cryptocurrency cryptocurrency) throws Exception {
+        Currency currency = coinbaseCurrenciesManager.getCurrencyObject(cryptocurrency.getAssetIndex());
         double coinBalance = getCoinBalance(cryptocurrency.getQuoteAsset());
-        String assetIndex = cryptocurrency.getAssetIndex();
-        Currency currency = coinbaseCurrenciesManager.getCurrencyObject(assetIndex);
         double quantity = coinbaseProductsManager.roundValue(coinBalance * cryptocurrency.getTptopIndex() / 100, 6);
         if(quantity >= currency.getMinSize()) {
             if(quantity % currency.getMaxPrecision() != 0)
@@ -491,13 +546,11 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
         return quantity;
     }
 
-    // TODO: 25/05/2022 INSERT RIGHT ROUTINE METHOD
     @Override
     public double getCoinBalance(String quote) {
-        return 100;
-        /*Coin coin = coins.get(quote);
+        Coin coin = coins.get(quote);
         return coinbaseAccountManager.roundValue(coin.getQuantity() *
-                lastPrices.get(coin.getAssetIndex() + "-" + USD_CURRENCY), 8);*/
+                lastPrices.get(coin.getAssetIndex() + "-" + USD_CURRENCY), 8);
     }
 
     @Override

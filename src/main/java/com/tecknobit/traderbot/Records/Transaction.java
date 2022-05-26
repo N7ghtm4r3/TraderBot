@@ -62,8 +62,6 @@ public final class Transaction implements RoutineMessages {
         if(value < 0)
             throw new IllegalArgumentException("Value cannot be less than 0");
         this.value = value;
-        if(quantity < 0)
-            throw new IllegalArgumentException("Quantity value cannot be less than 0");
         this.quantity = quantity;
     }
 

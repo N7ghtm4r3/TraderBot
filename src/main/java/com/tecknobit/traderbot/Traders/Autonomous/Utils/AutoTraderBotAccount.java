@@ -205,7 +205,7 @@ public final class AutoTraderBotAccount implements RoutineMessages {
      * **/
     @Override
     public void printDetails() {
-        out.println("## [ ACCOUNT STATUS ]\n" +
+        out.println("### [ ACCOUNT STATUS ]\n" +
                 "## Total: " + getTotalSells() + "\n" +
                 "## At loss: " + ANSI_RED + sellsAtLoss + ANSI_RESET + "\n" +
                 "## At gain: " + ANSI_GREEN + sellsAtGain + ANSI_RESET +"\n" +
