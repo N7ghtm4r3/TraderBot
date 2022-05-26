@@ -126,7 +126,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * @param passphrase: your Coinbase's api passphrase
      * @param defaultErrorMessage: custom error to show when is not a request error
      * @param timeout: custom timeout for request
-     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR).
+     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR)
      * @implNote these keys will NOT store by libray anywhere.
      * **/
     public CoinbaseTraderBot(String apiKey, String apiSecret, String passphrase, String defaultErrorMessage, int timeout,
@@ -144,7 +144,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
      * @param timeout: custom timeout for request
-     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR).
+     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR)
      * @implNote these keys will NOT store by libray anywhere.
      * **/
     public CoinbaseTraderBot(String apiKey, String apiSecret, String passphrase, int timeout,
@@ -162,7 +162,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
      * @param defaultErrorMessage: custom error to show when is not a request error
-     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR).
+     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR)
      * @implNote these keys will NOT store by libray anywhere.
      * **/
     public CoinbaseTraderBot(String apiKey, String apiSecret, String passphrase, String defaultErrorMessage,
@@ -179,7 +179,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * @param apiKey: your Coinbase's api key
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
-     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR).
+     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR)
      * @implNote these keys will NOT store by libray anywhere.
      * **/
     public CoinbaseTraderBot(String apiKey, String apiSecret, String passphrase,
@@ -198,7 +198,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * @param passphrase: your Coinbase's api passphrase
      * @param defaultErrorMessage: custom error to show when is not a request error
      * @param timeout: custom timeout for request
-     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices.
+     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
      * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
      * @implNote these keys will NOT store by libray anywhere.
      * **/
@@ -216,7 +216,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
      * @param timeout: custom timeout for request
-     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices.
+     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
      * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
      * @implNote these keys will NOT store by libray anywhere.
      * **/
@@ -237,7 +237,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
      * @param defaultErrorMessage: custom error to show when is not a request error
-     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices.
+     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
      * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
      * @implNote these keys will NOT store by libray anywhere.
      * **/
@@ -258,7 +258,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * @param apiKey: your Coinbase's api key
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
-     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices.
+     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
      * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
      * @implNote these keys will NOT store by libray anywhere.
      * **/
@@ -280,8 +280,8 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * @param passphrase: your Coinbase's api passphrase
      * @param defaultErrorMessage: custom error to show when is not a request error
      * @param timeout: custom timeout for request
-     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices.
-     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR).
+     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
+     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR)
      * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
      * @implNote these keys will NOT store by libray anywhere.
      * **/
@@ -304,8 +304,8 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
      * @param timeout: custom timeout for request
-     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices.
-     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR).
+     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
+     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR)
      * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
      * @implNote these keys will NOT store by libray anywhere.
      * **/
@@ -328,8 +328,8 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
      * @param defaultErrorMessage: custom error to show when is not a request error
-     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices.
-     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR).
+     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
+     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR)
      * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
      * @implNote these keys will NOT store by libray anywhere.
      * **/
@@ -351,8 +351,8 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * @param apiKey: your Coinbase's api key
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
-     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices.
-     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR).
+     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
+     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR)
      * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
      * @implNote these keys will NOT store by libray anywhere.
      * **/

@@ -147,7 +147,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     /** Constructor to init {@link BinanceTraderBot}
      * @param apiKey: your Binance's api key
      * @param secretKey: your Binance's secret key
-     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices.
+     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
      * @param sendStatsReport: flag to insert to send or not reports
      * @param printRoutineMessages: flag to insert to print or not routine messages
      * @param baseCurrency: base currency to get all amount value of traders routine es. EUR
@@ -170,7 +170,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
      * @param apiKey: your Binance's api key
      * @param secretKey: your Binance's secret key
      * @param baseEndpoint: base endpoint choose from BinanceManager.BASE_ENDPOINTS array
-     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices.
+     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
      * @param sendStatsReport: flag to insert to send or not reports
      * @param printRoutineMessages: flag to insert to print or not routine messages
      * @param baseCurrency: base currency to get all amount value of traders routine es. EUR
@@ -192,8 +192,8 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     /** Constructor to init {@link BinanceTraderBot}
      * @param apiKey: your Binance's api key
      * @param secretKey: your Binance's secret key
-     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices.
-     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR).
+     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
+     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR)
      * @param sendStatsReport: flag to insert to send or not reports
      * @param printRoutineMessages: flag to insert to print or not routine messages
      * @param baseCurrency: base currency to get all amount value of traders routine es. EUR
@@ -215,9 +215,9 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     /** Constructor to init {@link BinanceTraderBot}
      * @param apiKey: your Binance's api key
      * @param secretKey: your Binance's secret key
-     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices.
+     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
      * @param baseEndpoint: base endpoint choose from BinanceManager.BASE_ENDPOINTS array
-     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR).
+     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR)
      * @param sendStatsReport: flag to insert to send or not reports
      * @param printRoutineMessages: flag to insert to print or not routine messages
      * @param baseCurrency: base currency to get all amount value of traders routine es. EUR
@@ -240,7 +240,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     /** Constructor to init {@link BinanceTraderBot}
      * @param apiKey: your Binance's api key
      * @param secretKey: your Binance's secret key
-     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR).
+     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR)
      * @param sendStatsReport: flag to insert to send or not reports
      * @param printRoutineMessages: flag to insert to print or not routine messages
      * @param baseCurrency: base currency to get all amount value of traders routine es. EUR
@@ -262,7 +262,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
      * @param apiKey: your Binance's api key
      * @param secretKey: your Binance's secret key
      * @param baseEndpoint: base endpoint choose from BinanceManager.BASE_ENDPOINTS array
-     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR).
+     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR)
      * @param sendStatsReport: flag to insert to send or not reports
      * @param printRoutineMessages: flag to insert to print or not routine messages
      * @param baseCurrency: base currency to get all amount value of traders routine es. EUR
@@ -283,6 +283,8 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     /**
      * This method is used to start {@link BinanceAutoTraderBot}<br>
      * Any params required
+     * @implNote the running mode if is disabled (using {@link #disableBot()}) trader will not do more trading operations, but trader will continue to listen for reactivation of the running mode
+     * (using {@link #enableBot()}) and trading operations will start again.
      * **/
     @Override
     public void start() {
@@ -439,34 +441,37 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     @Override
     public void updateWallet() throws Exception {
         System.out.println("## UPDATING WALLET CRYPTOCURRENCIES");
-        refreshLatestPrice();
-        for (Cryptocurrency cryptocurrency : walletList.values()) {
-            String symbol = cryptocurrency.getSymbol();
-            TradingConfig tradingConfig = cryptocurrency.getTradingConfig();
-            double lastPrice = lastPrices.get(symbol);
-            double trendPercent = binanceMarketManager.getTrendPercent(cryptocurrency.getFirstPrice(), lastPrice);
-            double minGainOrder = tradingConfig.getMinGainForOrder();
-            double tptopIndex = cryptocurrency.getTptopIndex();
-            refreshCryptoDetails(cryptocurrency, trendPercent, lastPrice);
-            try {
-                if(trendPercent < minGainOrder && trendPercent < tptopIndex){
-                    if(printRoutineMessages)
-                        System.out.println("Refreshing [" + symbol + "]");
-                }else if(trendPercent <= tradingConfig.getMaxLoss())
-                    incrementSellsSale(cryptocurrency, LOSS_SELL);
-                else if(trendPercent >= minGainOrder || trendPercent >= tptopIndex)
-                    incrementSellsSale(cryptocurrency, GAIN_SELL);
-                else
-                    incrementSellsSale(cryptocurrency, PAIR_SELL);
-            }catch (Exception e){
-                printError(symbol, e);
+        boolean forceRefresh = true;
+        if(walletList.size() > 0){
+            refreshLatestPrice();
+            for (Cryptocurrency cryptocurrency : walletList.values()) {
+                String symbol = cryptocurrency.getSymbol();
+                TradingConfig tradingConfig = cryptocurrency.getTradingConfig();
+                double lastPrice = lastPrices.get(symbol);
+                double trendPercent = binanceMarketManager.getTrendPercent(cryptocurrency.getFirstPrice(), lastPrice);
+                double minGainOrder = tradingConfig.getMinGainForOrder();
+                double tptopIndex = cryptocurrency.getTptopIndex();
+                refreshCryptoDetails(cryptocurrency, trendPercent, lastPrice);
+                try {
+                    if(trendPercent < minGainOrder && trendPercent < tptopIndex){
+                        if(printRoutineMessages)
+                            System.out.println("Refreshing [" + symbol + "]");
+                    }else if(trendPercent <= tradingConfig.getMaxLoss())
+                        incrementSellsSale(cryptocurrency, LOSS_SELL);
+                    else if(trendPercent >= minGainOrder || trendPercent >= tptopIndex)
+                        incrementSellsSale(cryptocurrency, GAIN_SELL);
+                    else
+                        incrementSellsSale(cryptocurrency, PAIR_SELL);
+                }catch (Exception e){
+                    printError(symbol, e);
+                }
             }
         }
         if(printRoutineMessages){
             System.out.println("### Wallet");
             for (Cryptocurrency cryptocurrency : walletList.values())
                 cryptocurrency.printDetails();
-            System.out.println("## Balance amount: " + getWalletBalance(baseCurrency, true, 2)
+            System.out.println("## Balance amount: " + getWalletBalance(baseCurrency, false, 2)
                     + " " + baseCurrency);
         }
     }
