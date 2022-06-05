@@ -8,9 +8,9 @@ import com.tecknobit.coinbasemanager.Managers.ExchangePro.Orders.CoinbaseOrdersM
 import com.tecknobit.coinbasemanager.Managers.ExchangePro.Orders.Records.Order;
 import com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.CoinbaseProductsManager;
 import com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.Records.TradingPair;
-import com.tecknobit.traderbot.Records.Asset;
-import com.tecknobit.traderbot.Records.Coin;
-import com.tecknobit.traderbot.Records.Transaction;
+import com.tecknobit.traderbot.Records.Portfolio.Asset;
+import com.tecknobit.traderbot.Records.Portfolio.Coin;
+import com.tecknobit.traderbot.Records.Portfolio.Transaction;
 import com.tecknobit.traderbot.Routines.TraderCoreRoutines;
 import org.json.JSONArray;
 import org.json.JSONObject;

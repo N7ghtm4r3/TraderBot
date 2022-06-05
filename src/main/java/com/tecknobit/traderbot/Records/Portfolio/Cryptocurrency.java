@@ -1,4 +1,4 @@
-package com.tecknobit.traderbot.Records;
+package com.tecknobit.traderbot.Records.Portfolio;
 
 import com.tecknobit.traderbot.Routines.RoutineMessages;
 import com.tecknobit.traderbot.Routines.AutoTraderCoreRoutines.TradingConfig;
@@ -13,7 +13,7 @@ import static java.lang.System.out;
  * @author Tecknobit N7ghtm4r3
  * **/
 
-public final class Cryptocurrency extends Token implements RoutineMessages {
+public class Cryptocurrency extends Token implements RoutineMessages {
 
     /**
      * {@code symbol} is instance that memorize symbol of cryptocurrency es. BTCBUSD or BTC-USD

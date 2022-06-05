@@ -1,4 +1,4 @@
-package com.tecknobit.traderbot.Traders.Autonomous.Utils;
+package com.tecknobit.traderbot.Records.Account;
 
 import com.tecknobit.traderbot.Routines.RoutineMessages;
 
@@ -9,27 +9,27 @@ import static com.tecknobit.traderbot.Routines.TraderCoreRoutines.tradingTools;
 import static java.lang.System.out;
 
 /**
- * The {@code AutoTraderBotAccount} class is useful to contains reports of trading. <br>
+ * The {@code TraderAccount} class is useful to contains reports of trading. <br>
  * Is useful for autonomous traders and Android's traders.
  * @author Tecknobit N7ghtm4r3
  * **/
 
-public final class AutoTraderBotAccount implements RoutineMessages {
+public final class TraderAccount implements RoutineMessages {
 
     /**
-     * {@code sellsAtLoss} is instance that memorize sells at loss for account
+     * {@code salesAtLoss} is instance that memorize sales at loss for account
      * **/
-    private int sellsAtLoss;
+    private int salesAtLoss;
 
     /**
-     * {@code sellsAtGain} is instance that memorize sells at gain for account
+     * {@code salesAtGain} is instance that memorize sales at gain for account
      * **/
-    private int sellsAtGain;
+    private int salesAtGain;
 
     /**
-     * {@code sellsAtGain} is instance that memorize sells at pair for account
+     * {@code salesAtPair} is instance that memorize sales at pair for account
      * **/
-    private int sellsAtPair;
+    private int salesAtPair;
 
     /**
      * {@code activationDate} is instance that memorize activation date for account
@@ -41,81 +41,81 @@ public final class AutoTraderBotAccount implements RoutineMessages {
      * **/
     private final ArrayList<Double> incomes;
 
-    /** Constructor to init {@link AutoTraderBotAccount}
-     * @param sellsAtLoss: sells at loss for account
-     * @param sellsAtGain: sells at gain for account
-     * @param sellsAtPair: sells at pair for account
+    /** Constructor to init {@link TraderAccount}
+     * @param salesAtLoss: sales at loss for account
+     * @param salesAtGain: sales at gain for account
+     * @param salesAtPair: sales at pair for account
      * **/
-    public AutoTraderBotAccount(int sellsAtLoss, int sellsAtGain, int sellsAtPair) {
-        this.sellsAtLoss = sellsAtLoss;
-        this.sellsAtGain = sellsAtGain;
-        this.sellsAtPair = sellsAtPair;
+    public TraderAccount(int salesAtLoss, int salesAtGain, int salesAtPair) {
+        this.salesAtLoss = salesAtLoss;
+        this.salesAtGain = salesAtGain;
+        this.salesAtPair = salesAtPair;
         this.activationDate = fetchActivationDate();
         incomes = new ArrayList<>();
     }
 
-    /** Constructor to init {@link AutoTraderBotAccount} <br>
+    /** Constructor to init {@link TraderAccount} <br>
      * Any params required
      * **/
-    public AutoTraderBotAccount() {
+    public TraderAccount() {
         this.activationDate = fetchActivationDate();
         incomes = new ArrayList<>();
     }
 
     /**
-     * This method is used to get sells at loss
-     * @return sells at loss
+     * This method is used to get sales at loss
+     * @return sales at loss
      * **/
-    public int getSellsAtLoss() {
-        return sellsAtLoss;
+    public int getSalesAtLoss() {
+        return salesAtLoss;
     }
 
     /**
-     * This method is used to increment sells at loss<br>
+     * This method is used to increment sales at loss<br>
      * Any params required
      * **/
     public void addLoss(){
-        sellsAtLoss++;
+        salesAtLoss++;
     }
 
     /**
-     * This method is used to get sells at gain
-     * @return sells at gain
+     * This method is used to get sales at gain
+     * @return sales at gain
      * **/
-    public int getSellsAtGain() {
-        return sellsAtGain;
+    public int getSalesAtGain() {
+        return salesAtGain;
     }
 
     /**
-     * This method is used to add increment sells at gain <br>
+     * This method is used to add increment sales at gain <br>
      * Any params required
      * **/
     public void addGain(){
-        sellsAtGain++;
+        salesAtGain++;
     }
 
     /**
-     * This method is used to get sells at pair
-     * @return sells at loss
+     * This method is used to get sales at pair
+     * @return sales at loss
      * **/
-    public int getSellsAtPair() {
-        return sellsAtPair;
+    public int getSalesAtPair() {
+        return salesAtPair;
     }
 
     /**
-     * This method is used to increment sells at pair <br>
+     * This method is used to increment sales at pair <br>
      * Any params required
      * **/
     public void addPair(){
-        sellsAtPair++;
+        salesAtPair++;
     }
 
     /**
-     * This method is used to get total sells
-     * @return total sells
+     * This method is used to get total sales
+     * @return total sales
      * **/
-    public int getTotalSells(){
-        return sellsAtLoss + sellsAtGain + sellsAtPair;
+    public int getTotalSales(){
+        return salesAtLoss + salesAtGain + salesAtPair;
     }
 
     /**
@@ -200,16 +200,16 @@ public final class AutoTraderBotAccount implements RoutineMessages {
     }
 
     /**
-     * This method is used to print details of {@link AutoTraderBotAccount} object <br>
+     * This method is used to print details of {@link TraderAccount} object <br>
      * Any params required
      * **/
     @Override
     public void printDetails() {
         out.println("### [ ACCOUNT STATUS ]\n" +
-                "## Total: " + getTotalSells() + "\n" +
-                "## At loss: " + ANSI_RED + sellsAtLoss + ANSI_RESET + "\n" +
-                "## At gain: " + ANSI_GREEN + sellsAtGain + ANSI_RESET +"\n" +
-                "## At pair: " + sellsAtPair + "\n" +
+                "## Total: " + getTotalSales() + "\n" +
+                "## At loss: " + ANSI_RED + salesAtLoss + ANSI_RESET + "\n" +
+                "## At gain: " + ANSI_GREEN + salesAtGain + ANSI_RESET +"\n" +
+                "## At pair: " + salesAtPair + "\n" +
                 getIncomeColorLine("## Total income: ", getTotalIncome()) +
                 "######################");
     }

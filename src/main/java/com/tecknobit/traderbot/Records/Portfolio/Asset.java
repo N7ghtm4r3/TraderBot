@@ -1,4 +1,4 @@
-package com.tecknobit.traderbot.Records;
+package com.tecknobit.traderbot.Records.Portfolio;
 
 /**
  * The {@code Asset} class defines Asset object. <br>
@@ -29,10 +29,12 @@ public final class Asset extends Token {
         super(assetIndex, assetName, quantity);
         if(balance < 0)
             throw new IllegalArgumentException("Value cannot be less than 0");
-        this.balance = balance;
+        else
+            this.balance = balance;
         if(currency == null || currency.isEmpty())
             throw new IllegalArgumentException("Currency must contains characters");
-        this.currency = currency;
+        else
+            this.currency = currency;
     }
 
     public double getBalance() {

@@ -7,9 +7,9 @@ import com.tecknobit.binancemanager.Managers.SignedManagers.Trade.Spot.BinanceSp
 import com.tecknobit.binancemanager.Managers.SignedManagers.Trade.Spot.Records.Orders.Response.SpotOrderStatus;
 import com.tecknobit.binancemanager.Managers.SignedManagers.Wallet.BinanceWalletManager;
 import com.tecknobit.binancemanager.Managers.SignedManagers.Wallet.Records.Asset.CoinInformation;
-import com.tecknobit.traderbot.Records.Asset;
-import com.tecknobit.traderbot.Records.Coin;
-import com.tecknobit.traderbot.Records.Transaction;
+import com.tecknobit.traderbot.Records.Portfolio.Asset;
+import com.tecknobit.traderbot.Records.Portfolio.Coin;
+import com.tecknobit.traderbot.Records.Portfolio.Transaction;
 import com.tecknobit.traderbot.Routines.TraderCoreRoutines;
 import org.json.JSONArray;
 import org.json.JSONException;

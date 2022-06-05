@@ -1,6 +1,6 @@
 package com.tecknobit.traderbot.Helpers.Orders;
 
-import com.tecknobit.traderbot.Records.Cryptocurrency;
+import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency;
 
 /**
  * The {@code MarketOrder} interface defines base methods to create a market type order<br>

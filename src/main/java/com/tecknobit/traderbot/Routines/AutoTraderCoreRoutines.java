@@ -1,6 +1,6 @@
 package com.tecknobit.traderbot.Routines;
 
-import com.tecknobit.traderbot.Records.Cryptocurrency;
+import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency;
 
 /**
  * The {@code AutoTraderCoreRoutines} interface defines base routines methods for auto traders bot.<br>
@@ -242,11 +242,11 @@ public interface AutoTraderCoreRoutines {
     void updateWallet() throws Exception;
 
     /**
-     * This method is used to increment sells detail
+     * This method is used to increment sales detail
      * @param cryptocurrency: cryptocurrency used in the order
      * @param codeOpe: code of type of sell to increment
      * **/
-    void incrementSellsSale(Cryptocurrency cryptocurrency, int codeOpe) throws Exception;
+    void incrementSalesSale(Cryptocurrency cryptocurrency, int codeOpe) throws Exception;
 
     /**
      * This method is used to refresh details of {@link Cryptocurrency}
@@ -319,28 +319,28 @@ public interface AutoTraderCoreRoutines {
     double getCoinBalance(String quote);
 
     /**
-     * This method is used to get sells at loss
-     * @return sells at loss
+     * This method is used to get sales at loss
+     * @return sales at loss
      * **/
-    double getSellsAtLoss();
+    double getSalesAtLoss();
 
     /**
-     * This method is used to get sells at gain
-     * @return sells at gain
+     * This method is used to get sales at gain
+     * @return sales at gain
      * **/
-    double getSellsAtGain();
+    double getSalesAtGain();
 
     /**
-     * This method is used to get sells at pair
-     * @return sells at pair
+     * This method is used to get sales at pair
+     * @return sales at pair
      * **/
-    double getSellsInPair();
+    double getSalesInPair();
 
     /**
-     * This method is used to get total sells
-     * @return total sells
+     * This method is used to get total sales
+     * @return total sales
      * **/
-    double getTotalSells();
+    double getTotalSales();
 
     /**
      * This method is used to set base currency for change amount value

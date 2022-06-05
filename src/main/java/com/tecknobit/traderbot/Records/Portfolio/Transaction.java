@@ -1,4 +1,4 @@
-package com.tecknobit.traderbot.Records;
+package com.tecknobit.traderbot.Records.Portfolio;
 
 import com.tecknobit.traderbot.Routines.RoutineMessages;
 
@@ -51,17 +51,21 @@ public final class Transaction implements RoutineMessages {
     public Transaction(String symbol, String side, String transactionDate, double value, double quantity) {
         if(symbol == null || symbol.isEmpty())
             throw new IllegalArgumentException("Symbol must contains characters");
-        this.symbol = symbol;
+        else
+            this.symbol = symbol;
         side = side.toUpperCase();
         if(!side.equals(BUY) && !side.equals(SELL))
             throw new IllegalArgumentException("Side can be only value BUY or SELL");
-        this.side = side;
+        else
+            this.side = side;
         if(transactionDate == null || transactionDate.isEmpty())
             throw new IllegalArgumentException("Transaction date must contains characters");
-        this.transactionDate = transactionDate;
+        else
+            this.transactionDate = transactionDate;
         if(value < 0)
             throw new IllegalArgumentException("Value cannot be less than 0");
-        this.value = value;
+        else
+            this.value = value;
         this.quantity = quantity;
     }
 

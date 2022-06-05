@@ -4,11 +4,11 @@ import com.tecknobit.binancemanager.Managers.BinanceManager;
 import com.tecknobit.binancemanager.Managers.Market.Records.Filter;
 import com.tecknobit.binancemanager.Managers.Market.Records.Tickers.TickerPriceChange;
 import com.tecknobit.traderbot.Helpers.Orders.MarketOrder;
-import com.tecknobit.traderbot.Records.Coin;
-import com.tecknobit.traderbot.Records.Cryptocurrency;
-import com.tecknobit.traderbot.Records.Transaction;
+import com.tecknobit.traderbot.Records.Portfolio.Coin;
+import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency;
+import com.tecknobit.traderbot.Records.Portfolio.Transaction;
 import com.tecknobit.traderbot.Routines.AutoTraderCoreRoutines;
-import com.tecknobit.traderbot.Traders.Autonomous.Utils.AutoTraderBotAccount;
+import com.tecknobit.traderbot.Records.Account.TraderAccount;
 import com.tecknobit.traderbot.Traders.Interfaces.Native.BinanceTraderBot;
 import org.json.JSONObject;
 
@@ -34,10 +34,10 @@ import static java.lang.Math.ceil;
 public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTraderCoreRoutines, MarketOrder {
 
     /**
-     * {@code AutoTraderBotAccount} is instance that memorize and manage account information and trading reports of auto trader
+     * {@code TraderAccount} is instance that memorize and manage account information and trading reports of auto trader
      * account
      * **/
-    protected final AutoTraderBotAccount autoTraderBotAccount = new AutoTraderBotAccount();
+    protected final TraderAccount traderAccount = new TraderAccount();
 
     /**
      * {@code MIN_NOTIONAL_FILTER} is instance that contains key for {@code MIN_NOTIONAL} filter
@@ -457,11 +457,11 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                         if(printRoutineMessages)
                             System.out.println("Refreshing [" + symbol + "]");
                     }else if(trendPercent <= tradingConfig.getMaxLoss())
-                        incrementSellsSale(cryptocurrency, LOSS_SELL);
+                        incrementSalesSale(cryptocurrency, LOSS_SELL);
                     else if(trendPercent >= minGainOrder || trendPercent >= tptopIndex)
-                        incrementSellsSale(cryptocurrency, GAIN_SELL);
+                        incrementSalesSale(cryptocurrency, GAIN_SELL);
                     else
-                        incrementSellsSale(cryptocurrency, PAIR_SELL);
+                        incrementSalesSale(cryptocurrency, PAIR_SELL);
                 }catch (Exception e){
                     printError(symbol, e);
                 }
@@ -477,39 +477,39 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     }
 
     /**
-     * This method is used to increment sells detail
+     * This method is used to increment sales detail
      * @param cryptocurrency: cryptocurrency used in the order
      * @param codeOpe: code of type of sell to increment
      * **/
     @Override
-    public void incrementSellsSale(Cryptocurrency cryptocurrency, int codeOpe) throws Exception {
+    public void incrementSalesSale(Cryptocurrency cryptocurrency, int codeOpe) throws Exception {
         sellMarket(cryptocurrency.getSymbol(), cryptocurrency.getQuantity());
         walletList.remove(cryptocurrency.getAssetIndex());
         switch (codeOpe){
             case LOSS_SELL:
-                autoTraderBotAccount.addLoss();
+                traderAccount.addLoss();
                 if(printRoutineMessages) {
                     System.out.println(ANSI_RED + "## Selling at loss [" + cryptocurrency.getSymbol() + "], " +
                             "income: [" + cryptocurrency.getTextTrendPercent(2) +  "]" + ANSI_RESET);
                 }
                 break;
             case GAIN_SELL:
-                autoTraderBotAccount.addGain();
+                traderAccount.addGain();
                 if(printRoutineMessages) {
                     System.out.println(ANSI_GREEN + "## Selling at gain [" + cryptocurrency.getSymbol() + "], " +
                             "income: [" + cryptocurrency.getTextTrendPercent(2) +  "]" + ANSI_RESET);
                 }
                 break;
             default:
-                autoTraderBotAccount.addPair();
+                traderAccount.addPair();
                 if(printRoutineMessages) {
                     System.out.println("## Selling at pair [" + cryptocurrency.getSymbol() + "], " +
                             "income: [" + cryptocurrency.getTextTrendPercent() +  "]");
                 }
         }
-        autoTraderBotAccount.addIncome(cryptocurrency.getTrendPercent(2));
+        traderAccount.addIncome(cryptocurrency.getTrendPercent(2));
         if(printRoutineMessages)
-            autoTraderBotAccount.printDetails();
+            traderAccount.printDetails();
     }
 
     /**
@@ -655,39 +655,39 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     }
 
     /**
-     * This method is used to get sells at loss
-     * @return sells at loss
+     * This method is used to get sales at loss
+     * @return sales at loss
      * **/
     @Override
-    public double getSellsAtLoss() {
-        return autoTraderBotAccount.getSellsAtLoss();
+    public double getSalesAtLoss() {
+        return traderAccount.getSalesAtLoss();
     }
 
     /**
-     * This method is used to get sells at gain
-     * @return sells at gain
+     * This method is used to get sales at gain
+     * @return sales at gain
      * **/
     @Override
-    public double getSellsAtGain() {
-        return autoTraderBotAccount.getSellsAtGain();
+    public double getSalesAtGain() {
+        return traderAccount.getSalesAtGain();
     }
 
     /**
-     * This method is used to get sells at pair
-     * @return sells at pair
+     * This method is used to get sales at pair
+     * @return sales at pair
      * **/
     @Override
-    public double getSellsInPair() {
-        return autoTraderBotAccount.getSellsAtPair();
+    public double getSalesInPair() {
+        return traderAccount.getSalesAtPair();
     }
 
     /**
-     * This method is used to get total sells
-     * @return total sells
+     * This method is used to get total sales
+     * @return total sales
      * **/
     @Override
-    public double getTotalSells() {
-        return autoTraderBotAccount.getTotalSells();
+    public double getTotalSales() {
+        return traderAccount.getTotalSales();
     }
 
     /**

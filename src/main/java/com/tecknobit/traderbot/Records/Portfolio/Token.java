@@ -1,4 +1,4 @@
-package com.tecknobit.traderbot.Records;
+package com.tecknobit.traderbot.Records.Portfolio;
 
 /**
  * The {@code Token} class defines base methods for asset and coin objects. <br>

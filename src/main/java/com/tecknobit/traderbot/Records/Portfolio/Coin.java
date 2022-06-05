@@ -1,4 +1,4 @@
-package com.tecknobit.traderbot.Records;
+package com.tecknobit.traderbot.Records.Portfolio;
 
 /**
  * The {@code Coin} class defines Coin object. <br>

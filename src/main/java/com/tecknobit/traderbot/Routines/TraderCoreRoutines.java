@@ -1,9 +1,9 @@
 package com.tecknobit.traderbot.Routines;
 
 import com.tecknobit.apimanager.Tools.Trading.TradingTools;
-import com.tecknobit.traderbot.Records.Asset;
-import com.tecknobit.traderbot.Records.Coin;
-import com.tecknobit.traderbot.Records.Transaction;
+import com.tecknobit.traderbot.Records.Portfolio.Asset;
+import com.tecknobit.traderbot.Records.Portfolio.Coin;
+import com.tecknobit.traderbot.Records.Portfolio.Transaction;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

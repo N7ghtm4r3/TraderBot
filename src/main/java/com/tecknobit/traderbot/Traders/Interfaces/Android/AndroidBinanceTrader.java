@@ -1,7 +1,7 @@
 package com.tecknobit.traderbot.Traders.Interfaces.Android;
 
-import com.tecknobit.traderbot.Records.Asset;
-import com.tecknobit.traderbot.Records.Transaction;
+import com.tecknobit.traderbot.Records.Portfolio.Asset;
+import com.tecknobit.traderbot.Records.Portfolio.Transaction;
 import com.tecknobit.traderbot.Traders.Interfaces.Native.BinanceTraderBot;
 
 import java.util.ArrayList;
