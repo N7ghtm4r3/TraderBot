@@ -17,15 +17,34 @@ import static java.text.DateFormat.getDateInstance;
 public final class TraderDetails {
 
     /**
-     * {@code dayPassFormat} is instance that memorize format of {@link #lastTraderActivity} when a day from last activity
-     * is passed
+     * {@code CUSTOM_DEF_COLOR} is instance that memorize default color to use for example when asset is at pair
+     * @implSpec not available for console color
      * **/
-    private static final DateFormat dayPassFormat = getDateInstance(DATE_FIELD, Locale.getDefault());
+    public static final String CUSTOM_DEF_COLOR = "#A8A8A8";
 
     /**
-     * {@code timeFormat} is instance that memorize default format of {@link #lastTraderActivity}
+     * {@code CUSTOM_RED_COLOR} is instance that memorize red color to use for example when asset is at loss
+     * @implSpec not available for console color
      * **/
-    private static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+    public static final String CUSTOM_RED_COLOR = "#C3100C";
+
+    /**
+     * {@code CUSTOM_GREEN_COLOR} is instance that memorize green color to use for example when asset is at gain
+     * @implSpec not available for console color
+     * **/
+    public static final String CUSTOM_GREEN_COLOR = "#24B82B";
+
+    /**
+     * {@code BINANCE_COLOR} is instance that memorize Binance official color
+     * @implSpec not available for console color
+     * **/
+    public static final String BINANCE_COLOR = "#F3BA2F";
+
+    /**
+     * {@code COINBASE_COLOR} is instance that memorize Coinbase official color
+     * @implSpec not available for console color
+     * **/
+    public static final String COINBASE_COLOR = "#1652f0";
 
     /**
      * {@code TRADER_TYPE_AUTONOMOUS} is instance that memorize AUTONOMOUS trader type in use
@@ -56,6 +75,17 @@ public final class TraderDetails {
      * {@code STOPPED_TRADER_STATUS} is instance that memorize STOPPED trader current status
      * **/
     public static final String STOPPED_TRADER_STATUS = "STOPPED";
+
+    /**
+     * {@code dayPassFormat} is instance that memorize format of {@link #lastTraderActivity} when a day from last activity
+     * is passed
+     * **/
+    private static final DateFormat dayPassFormat = getDateInstance(DATE_FIELD, Locale.getDefault());
+
+    /**
+     * {@code timeFormat} is instance that memorize default format of {@link #lastTraderActivity}
+     * **/
+    private static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
     /**
      * {@code lastTraderActivity} is instance that memorize last time when bot contact server
@@ -183,6 +213,19 @@ public final class TraderDetails {
 
     public String getTraderPlatform() {
         return traderPlatform;
+    }
+
+    /**
+     * This method is used to get color of platform that trader is using<br>
+     * Any params required
+     * @return color platform as {@link String}
+     * **/
+    public String getTraderPlatformColor(){
+        switch (traderPlatform){
+            case BINANCE_TRADER_PLATFORM: return BINANCE_COLOR;
+            case COINBASE_TRADER_PLATFORM: return COINBASE_COLOR;
+            default: return CUSTOM_DEF_COLOR;
+        }
     }
 
     public long getRefreshPricesTime() {
