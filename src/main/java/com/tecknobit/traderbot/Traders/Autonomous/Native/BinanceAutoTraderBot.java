@@ -4,11 +4,11 @@ import com.tecknobit.binancemanager.Managers.BinanceManager;
 import com.tecknobit.binancemanager.Managers.Market.Records.Filter;
 import com.tecknobit.binancemanager.Managers.Market.Records.Tickers.TickerPriceChange;
 import com.tecknobit.traderbot.Helpers.Orders.MarketOrder;
+import com.tecknobit.traderbot.Records.Account.TraderAccount;
 import com.tecknobit.traderbot.Records.Portfolio.Coin;
 import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency;
 import com.tecknobit.traderbot.Records.Portfolio.Transaction;
 import com.tecknobit.traderbot.Routines.AutoTraderCoreRoutines;
-import com.tecknobit.traderbot.Records.Account.TraderAccount;
 import com.tecknobit.traderbot.Traders.Interfaces.Native.BinanceTraderBot;
 import org.json.JSONObject;
 

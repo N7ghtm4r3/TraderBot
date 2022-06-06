@@ -5,6 +5,7 @@ import com.tecknobit.traderbot.Routines.RoutineMessages;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static com.tecknobit.traderbot.Routines.AutoTraderCoreRoutines.ASSET_NOT_TRADABLE;
 import static com.tecknobit.traderbot.Routines.TraderCoreRoutines.tradingTools;
 import static java.lang.System.out;
 
@@ -34,32 +35,54 @@ public final class TraderAccount implements RoutineMessages {
     /**
      * {@code activationDate} is instance that memorize activation date for account
      * **/
-    private final String activationDate;
+    private String activationDate;
 
     /**
      * {@code incomes} is instance that memorize list of incomes from orders
      * **/
-    private final ArrayList<Double> incomes;
+    private ArrayList<Double> incomes;
+
+    /**
+     * {@code totalIncome} is instance that memorize total income for account
+     * **/
+    double totalIncome;
 
     /** Constructor to init {@link TraderAccount}
      * @param salesAtLoss: sales at loss for account
      * @param salesAtGain: sales at gain for account
      * @param salesAtPair: sales at pair for account
+     * @param activationDate: date when trader has been activated
+     * @param totalIncome: total income gained for account
      * **/
-    public TraderAccount(int salesAtLoss, int salesAtGain, int salesAtPair) {
+    public TraderAccount(int salesAtLoss, int salesAtGain, int salesAtPair, String activationDate, double totalIncome) {
         this.salesAtLoss = salesAtLoss;
         this.salesAtGain = salesAtGain;
         this.salesAtPair = salesAtPair;
-        this.activationDate = fetchActivationDate();
-        incomes = new ArrayList<>();
+        this.activationDate = activationDate;
+        this.totalIncome = totalIncome;
+    }
+
+    /** Constructor to init {@link TraderAccount}
+     * @param salesAtLoss: sales at loss for account
+     * @param salesAtGain: sales at gain for account
+     * @param salesAtPair: sales at pair for account
+     * @param activationDate: date when trader has been activated
+     * @param incomes: list of past incomes
+     * **/
+    public TraderAccount(int salesAtLoss, int salesAtGain, int salesAtPair, String activationDate,
+                         ArrayList<Double> incomes) {
+        this.salesAtLoss = salesAtLoss;
+        this.salesAtGain = salesAtGain;
+        this.salesAtPair = salesAtPair;
+        this.activationDate = activationDate;
+        this.incomes = incomes;
     }
 
     /** Constructor to init {@link TraderAccount} <br>
      * Any params required
      * **/
     public TraderAccount() {
-        this.activationDate = fetchActivationDate();
-        incomes = new ArrayList<>();
+        fetchAccountInformation();
     }
 
     /**
@@ -128,13 +151,17 @@ public final class TraderAccount implements RoutineMessages {
     }
 
     /**
-     * This method is used to fetch and init activation date of account <br>
+     * This method is used to init account information <br>
      * Any params required
-     * @return activation date of account as {@link String}
      * **/
-    private String fetchActivationDate(){
-        // TODO: 22/05/2022 REQUEST TO GET ACTIVATION DATE
-        return new Date(System.currentTimeMillis()).toString();
+    private void fetchAccountInformation(){
+        // TODO: 22/05/2022 REQUEST TO GET ACCOUNT INFORMATION
+        salesAtGain = 0;
+        salesAtLoss = 0;
+        salesAtPair = 0;
+        activationDate = new Date(System.currentTimeMillis()).toString();
+        incomes = new ArrayList<>();
+        totalIncome = ASSET_NOT_TRADABLE;
     }
 
     public ArrayList<Double> getIncomes() {
@@ -163,13 +190,16 @@ public final class TraderAccount implements RoutineMessages {
     /**
      * This method is used to calculate general profit of account
      * Any params required
-     * @return general income of account
+     * @return general profit of account
      * **/
-    public double getTotalIncome(){
-        double totalIncome = 0;
-        for (double income : incomes)
-            totalIncome += income;
-        return tradingTools.roundValue(totalIncome / incomes.size(), 2);
+    public double computeTotalIncome(){
+        if(totalIncome == ASSET_NOT_TRADABLE || incomes != null){
+            double totalIncome = 0;
+            for (double income : incomes)
+                totalIncome += income;
+            return tradingTools.roundValue(totalIncome / incomes.size(), 2);
+        }
+        return totalIncome;
     }
 
     /**
@@ -177,26 +207,44 @@ public final class TraderAccount implements RoutineMessages {
      * @param decimals: number of decimal digits es. 2
      * @return general income of account formatted with decimals digits
      * **/
-    public double getTotalIncome(int decimals){
-        return tradingTools.roundValue(getTotalIncome(), decimals);
+    public double computeTotalIncome(int decimals){
+        return tradingTools.roundValue(computeTotalIncome(), decimals);
     }
 
     /**
-     * This method is used to format like a {@link String} general income from {@link #getTotalIncome()}
+     * This method is used to format like a {@link String} general income from {@link #computeTotalIncome()}
      * Any params required
      * @return general income of account formatted as {@link String} es. +1.674% or -1.756%
      * **/
     public String textualizeTotalIncome(){
-        return tradingTools.textualizeAssetPercent(getTotalIncome());
+        return tradingTools.textualizeAssetPercent(computeTotalIncome());
     }
 
     /**
-     * This method is used to format like a {@link String} general income from {@link #getTotalIncome()}
+     * This method is used to format like a {@link String} general income from {@link #computeTotalIncome()}
      * @param decimals: number of decimal digits es. 2
      * @return general income of account formatted as {@link String} es. +1.67% or -1.75%
      * **/
     public String textualizeTotalIncome(int decimals){
-        return tradingTools.textualizeAssetPercent(getTotalIncome(decimals));
+        return tradingTools.textualizeAssetPercent(computeTotalIncome(decimals));
+    }
+
+    /**
+     * This method is used to get total income for account <br>
+     * Any params required
+     * @return general profit of account
+     * **/
+    public double getTotalIncome() {
+        return computeTotalIncome();
+    }
+
+    /**
+     * This method is used to get total income for account
+     * @param decimals: number of decimal digits es. 2
+     * @return general income of account formatted with decimals digits
+     * **/
+    public double getTotalIncome(int decimals) {
+        return computeTotalIncome(2);
     }
 
     /**
@@ -210,7 +258,7 @@ public final class TraderAccount implements RoutineMessages {
                 "## At loss: " + ANSI_RED + salesAtLoss + ANSI_RESET + "\n" +
                 "## At gain: " + ANSI_GREEN + salesAtGain + ANSI_RESET +"\n" +
                 "## At pair: " + salesAtPair + "\n" +
-                getIncomeColorLine("## Total income: ", getTotalIncome()) +
+                getIncomeColorLine("## Total income: ", computeTotalIncome(2)) +
                 "######################");
     }
 

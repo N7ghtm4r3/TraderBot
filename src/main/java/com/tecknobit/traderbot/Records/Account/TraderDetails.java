@@ -152,9 +152,11 @@ public final class TraderDetails {
             this.runningFromDate = runningFromDate;
     }
 
-    public String getLastTraderActivity() {
-        if((System.currentTimeMillis() - lastTraderActivityTimestamp) >= ((86400 * 1000) / 2))
-            lastTraderActivity = dayPassFormat.format(new Date(lastTraderActivityTimestamp));
+    public String getLastTraderActivity(boolean serverUse) {
+        if(serverUse) {
+            if((System.currentTimeMillis() - lastTraderActivityTimestamp) >= ((86400 * 1000) / 2))
+                lastTraderActivity = dayPassFormat.format(new Date(lastTraderActivityTimestamp));
+        }
         return lastTraderActivity;
     }
 
