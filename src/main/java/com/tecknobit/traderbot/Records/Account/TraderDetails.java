@@ -172,6 +172,8 @@ public final class TraderDetails {
             throw new IllegalArgumentException("Trader platform inserted is not supported yet or is a wrong value");
         else
             this.traderPlatform = traderPlatform;
+        if(refreshPricesTime > 3600)
+            refreshPricesTime /= 1000;
         if(refreshPricesTime < 5 || refreshPricesTime > 3600)
             throw new IllegalArgumentException("Refresh prices time must be more than 5 (5s) and less than 3600 (1h)");
         else
@@ -234,7 +236,7 @@ public final class TraderDetails {
 
     public void setRefreshPricesTime(int refreshPricesTime) {
         if(refreshPricesTime >= 5 && refreshPricesTime <= 3600)
-            this.refreshPricesTime = refreshPricesTime * 1000L;
+            this.refreshPricesTime = refreshPricesTime;
         else
             throw new IllegalArgumentException("Refresh prices time must be more than 5 (5s) and less than 3600 (1h)");
     }
