@@ -154,6 +154,7 @@ public final class TraderDetails {
      * **/
     public TraderDetails(long lastTraderActivity, String traderType, String traderStatus, String traderPlatform,
                          int refreshPricesTime, String runningFromDate) {
+        boolean isInMillis = refreshPricesTime > 3600;
         if(lastTraderActivity < 0)
             throw new IllegalArgumentException("Last trader activity timestamp cannot be less than 0");
         else {
@@ -172,12 +173,15 @@ public final class TraderDetails {
             throw new IllegalArgumentException("Trader platform inserted is not supported yet or is a wrong value");
         else
             this.traderPlatform = traderPlatform;
-        if(refreshPricesTime > 3600)
+        if(isInMillis)
             refreshPricesTime /= 1000;
         if(refreshPricesTime < 5 || refreshPricesTime > 3600)
             throw new IllegalArgumentException("Refresh prices time must be more than 5 (5s) and less than 3600 (1h)");
-        else
+        else {
+            if(isInMillis)
+                refreshPricesTime *= 1000;
             this.refreshPricesTime = refreshPricesTime;
+        }
         if(runningFromDate == null || runningFromDate.trim().isEmpty())
             throw new IllegalArgumentException("Running from date cannot be null or empty");
         else
