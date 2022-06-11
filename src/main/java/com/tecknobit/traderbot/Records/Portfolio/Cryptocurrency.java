@@ -86,6 +86,34 @@ public class Cryptocurrency extends Token implements RoutineMessages {
         firstPrice = -1;
     }
 
+    /** Constructor to init {@link Cryptocurrency}
+     * @param assetIndex: index of cryptocurrency es. BTC
+     * @param assetName: full name of cryptocurrency es Bitcoin
+     * @param quantity: value of quantity bought for this cryptocurrency es 1
+     * @param symbol: symbol of cryptocurrency es. BTCBUSD or BTC-USD
+     * @param lastPrice: last inserted price of cryptocurrency
+     * @param tptopIndex: forecast trend of cryptocurrency
+     * @param candleGap: previous day percent gap of trend of cryptocurrency
+     * @param priceChangePercent: previous day percent gap of trend of cryptocurrency
+     * @param quoteAsset: quote asset to buy this cryptocurrency es. USD
+     * @param trendPercent: trend that this asset is having compare to {@link #firstPrice} and {@link #lastPrice}
+     * @param tradingConfig: model of trading to use for this cryptocurrency
+     * **/
+    public Cryptocurrency(String assetIndex, String assetName, double quantity, String symbol, double lastPrice,
+                          double tptopIndex, Object candleGap, double priceChangePercent, String quoteAsset,
+                          double trendPercent, TradingConfig tradingConfig) {
+        super(assetIndex, assetName, quantity);
+        this.symbol = symbol;
+        this.lastPrice = lastPrice;
+        this.tptopIndex = tptopIndex;
+        this.candleGap = candleGap;
+        this.priceChangePercent = priceChangePercent;
+        this.quoteAsset = quoteAsset;
+        this.trendPercent = trendPercent;
+        this.tradingConfig = tradingConfig;
+        firstPrice = -1;
+    }
+
     public String getSymbol() {
         return symbol;
     }
@@ -205,6 +233,24 @@ public class Cryptocurrency extends Token implements RoutineMessages {
     }
 
     /**
+     * This method is used to get balance for this cryptocurrency
+     * Any params required
+     * @return balance for this cryptocurrency es 2221
+     * **/
+    public double getCryptocurrencyBalance(){
+        return lastPrice * getQuantity();
+    }
+
+    /**
+     * This method is used to get balance for this cryptocurrency
+     * @param decimals: number of decimal digits es. 2221.08
+     * @return balance for this cryptocurrency
+     * **/
+    public double getCryptocurrencyBalance(int decimals){
+        return tradingTools.roundValue(getCryptocurrencyBalance(), decimals);
+    }
+
+    /**
      * This method is used to print details of {@link Cryptocurrency} object <br>
      * Any params required
      * **/
@@ -214,6 +260,7 @@ public class Cryptocurrency extends Token implements RoutineMessages {
                 getANSIText("## Trend: ", getTextTrendPercent(2)) +
                 "## Last: " + lastPrice + "\n" +
                 "## Quantity: " + getQuantity() + "\n" +
+                "## Portfolio balance: " + getCryptocurrencyBalance(2) + "\n" +
                 getANSIText("## Estimated asset trend: ", getTextTptopIndex(2)) +
                 "######################");
     }
