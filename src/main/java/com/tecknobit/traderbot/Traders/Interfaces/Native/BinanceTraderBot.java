@@ -336,7 +336,8 @@ public class BinanceTraderBot extends TraderCoreRoutines {
             transactions.clear();
             for (Coin coin : coins.values()){
                 if(coin.isTradingEnabled()){
-                    String symbol = coin.getAssetIndex() + lastTransactionCurrency;
+                    String baseAsset = coin.getAssetIndex();
+                    String symbol = baseAsset + lastTransactionCurrency;
                     if(!symbol.startsWith(lastTransactionCurrency)) {
                         try {
                             for (SpotOrderStatus order : binanceSpotManager.getObjectAllOrdersList(symbol)){
@@ -350,7 +351,9 @@ public class BinanceTraderBot extends TraderCoreRoutines {
                                             order.getSide(),
                                             date,
                                             order.getCummulativeQuoteQty(),
-                                            order.getExecutedQty()
+                                            order.getExecutedQty(),
+                                            lastTransactionCurrency,
+                                            baseAsset
                                     ));
                                 }
                             }

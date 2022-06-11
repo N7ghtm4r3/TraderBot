@@ -40,15 +40,29 @@ public final class Transaction implements RoutineMessages {
      * **/
     private final double quantity;
 
-    /** Constructor to init {@link Transaction}
+    /**
+     * {@code quoteAsset} is instance that memorize quote asset used in that transaction es. EUR
+     * **/
+    private final String quoteAsset;
+
+    /**
+     * {@code baseAsset} is instance that memorize base asset used in that transaction es. BTC
+     * **/
+    private final String baseAsset;
+
+    /**
+     * Constructor to init {@link Transaction}
      * @param symbol: symbol of transaction es. BTCBUSD or BTC-USD
      * @param side: side of transaction BUY or SELL
      * @param transactionDate: date of that transaction es 21:08:22 24/05/2022
      * @param value: value of symbol in fiat currency amount of transaction transfered es. 1235 USD
      * @param quantity: value of quantity transfered in that transaction es. 1 BTC
+     * @param quoteAsset: quote asset used in that transaction es. EUR
+     * @param baseAsset: base asset used in that transaction es. BTC
      * @throws IllegalArgumentException when parameters inserted do not respect right value form.
-     * **/
-    public Transaction(String symbol, String side, String transactionDate, double value, double quantity) {
+     **/
+    public Transaction(String symbol, String side, String transactionDate, double value, double quantity,
+                       String quoteAsset, String baseAsset) {
         if(symbol == null || symbol.isEmpty())
             throw new IllegalArgumentException("Symbol must contains characters");
         else
@@ -67,6 +81,14 @@ public final class Transaction implements RoutineMessages {
         else
             this.value = value;
         this.quantity = quantity;
+        if(quoteAsset == null || quoteAsset.isEmpty())
+            throw new IllegalArgumentException("Quote asset must contains characters");
+        else
+            this.quoteAsset = quoteAsset;
+        if(baseAsset == null || baseAsset.isEmpty())
+            throw new IllegalArgumentException("Base asset must contains characters");
+        else
+            this.baseAsset = baseAsset;
     }
 
     public String getSymbol() {
@@ -98,6 +120,14 @@ public final class Transaction implements RoutineMessages {
         return quantity;
     }
 
+    public String getQuoteAsset() {
+        return quoteAsset;
+    }
+
+    public String getBaseAsset() {
+        return baseAsset;
+    }
+
     /**
      * This method is used to print details of {@link Transaction} object <br>
      * Any params required
@@ -109,6 +139,8 @@ public final class Transaction implements RoutineMessages {
                 "## Date: " + transactionDate + "\n" +
                 "## Amount value: " + value + "\n" +
                 "## Quantity: " + quantity + "\n" +
+                "## Base asset: " + baseAsset + "\n" +
+                "## Quote asset: " + quoteAsset + "\n" +
                 "######################");
     }
 

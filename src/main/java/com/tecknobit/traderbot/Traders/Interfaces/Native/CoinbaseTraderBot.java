@@ -518,7 +518,8 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
             String date;
             for (Coin coin : coins.values()){
                 if(coin.isTradingEnabled()){
-                    String symbol = coin.getAssetIndex() + "-" + lastTransactionCurrency;
+                    String baseAsset = coin.getAssetIndex();
+                    String symbol = baseAsset + "-" + lastTransactionCurrency;
                     for (Order order : orders){
                         if(order.getProductId().equals(symbol)){
                             String createdAt = order.getCreatedAt();
@@ -532,7 +533,9 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
                                     order.getSide(),
                                     date,
                                     order.getExecutedValue(),
-                                    order.getSize()
+                                    order.getSize(),
+                                    lastTransactionCurrency,
+                                    baseAsset
                             ));
                         }
                     }
