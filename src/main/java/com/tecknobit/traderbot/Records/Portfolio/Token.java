@@ -11,17 +11,17 @@ public class Token {
     /**
      * {@code assetIndex} is instance that memorize index of token es. BTC
      * **/
-    private final String assetIndex;
+    protected final String assetIndex;
 
     /**
      * {@code assetName} is instance that memorize full name of token es Bitcoin
      * **/
-    private final String assetName;
+    protected final String assetName;
 
     /**
      * {@code quantity} is instance that memorize value of quantity bought for this token es 1
      * **/
-    private double quantity;
+    protected double quantity;
 
     /** Constructor to init {@link Cryptocurrency}
      * @param assetIndex: index of cryptocurrency es. BTC

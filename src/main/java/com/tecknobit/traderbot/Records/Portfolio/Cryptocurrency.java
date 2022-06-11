@@ -238,7 +238,7 @@ public class Cryptocurrency extends Token implements RoutineMessages {
      * @return balance for this cryptocurrency es 2221
      * **/
     public double getCryptocurrencyBalance(){
-        return lastPrice * getQuantity();
+        return lastPrice * quantity;
     }
 
     /**
@@ -259,7 +259,7 @@ public class Cryptocurrency extends Token implements RoutineMessages {
         out.println("## [" + symbol + "]\n" +
                 getANSIText("## Trend: ", getTextTrendPercent(2)) +
                 "## Last: " + lastPrice + "\n" +
-                "## Quantity: " + getQuantity() + "\n" +
+                "## Quantity: " + quantity + "\n" +
                 "## Portfolio balance: " + getCryptocurrencyBalance(2) + "\n" +
                 getANSIText("## Estimated asset trend: ", getTextTptopIndex(2)) +
                 "######################");
