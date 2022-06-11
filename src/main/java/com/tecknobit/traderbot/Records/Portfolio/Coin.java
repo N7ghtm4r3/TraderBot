@@ -1,12 +1,14 @@
 package com.tecknobit.traderbot.Records.Portfolio;
 
+import java.io.Serializable;
+
 /**
  * The {@code Coin} class defines Coin object. <br>
  * This object is useful for all traders routines and also useful as asset container
  * @author Tecknobit N7ghtm4r3
  * **/
 
-public final class Coin extends Token{
+public final class Coin extends Token implements Serializable {
 
     /**
      * {@code tradingEnabled} is instance that memorize if this coin is available or not for trading or if is not bought yet.

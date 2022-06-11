@@ -1,12 +1,14 @@
 package com.tecknobit.traderbot.Records.Portfolio;
 
+import java.io.Serializable;
+
 /**
  * The {@code Token} class defines base methods for asset and coin objects. <br>
  * These methods allow to use inheritance object more efficiently.
  * @author Tecknobit N7ghtm4r3
  * **/
 
-public class Token {
+public class Token implements Serializable {
 
     /**
      * {@code assetIndex} is instance that memorize index of token es. BTC
