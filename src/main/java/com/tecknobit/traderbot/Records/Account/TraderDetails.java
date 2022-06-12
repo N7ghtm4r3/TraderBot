@@ -120,16 +120,16 @@ public final class TraderDetails {
     private long refreshPricesTime;
 
     /**
-     * {@code traderPlatform} is instance that memorize date when trader has been started
+     * {@code traderPlatform} is instance that memorize time stamp of date when trader has been started
      * **/
-    private final String runningFromDate;
+    private long runningFromDate;
 
     /** Constructor to init {@link TraderDetails}
      * @param traderType: type of trader in use {@link #TRADER_TYPE_AUTONOMOUS} or {@link #TRADER_TYPE_MANUAL}
      * @param traderPlatform: platform of trader in use {@link #BINANCE_TRADER_PLATFORM} or {@link #COINBASE_TRADER_PLATFORM}
-     * @param runningFromDate: date when trader has been started
+     * @param runningFromDate: time stamp of date when trader has been started
      * **/
-    public TraderDetails(String traderType, String traderPlatform, String runningFromDate) {
+    public TraderDetails(String traderType, String traderPlatform, long runningFromDate) {
         if(!traderType.equals(TRADER_TYPE_AUTONOMOUS) && !traderType.equals(TRADER_TYPE_MANUAL))
             throw new IllegalArgumentException("Trader type inserted is wrong value, can be AUTONOMOUS or MANUAL type");
         else
@@ -138,8 +138,8 @@ public final class TraderDetails {
             throw new IllegalArgumentException("Trader platform inserted is not supported yet or is a wrong value");
         else
             this.traderPlatform = traderPlatform;
-        if(runningFromDate == null || runningFromDate.trim().isEmpty())
-            throw new IllegalArgumentException("Running from date cannot be null or empty");
+        if(runningFromDate < 0)
+            throw new IllegalArgumentException("Running from date timestamp cannot be less than 0");
         else
             this.runningFromDate = runningFromDate;
     }
@@ -153,7 +153,7 @@ public final class TraderDetails {
      * @param runningFromDate: date when trader has been started
      * **/
     public TraderDetails(long lastTraderActivity, String traderType, String traderStatus, String traderPlatform,
-                         int refreshPricesTime, String runningFromDate) {
+                         int refreshPricesTime, long runningFromDate) {
         boolean isInMillis = refreshPricesTime > 3600;
         if(lastTraderActivity < 0)
             throw new IllegalArgumentException("Last trader activity timestamp cannot be less than 0");
@@ -182,13 +182,13 @@ public final class TraderDetails {
                 refreshPricesTime *= 1000;
             this.refreshPricesTime = refreshPricesTime;
         }
-        if(runningFromDate == null || runningFromDate.trim().isEmpty())
-            throw new IllegalArgumentException("Running from date cannot be null or empty");
+        if(runningFromDate < 0)
+            throw new IllegalArgumentException("Running from date timestamp cannot be less than 0");
         else
             this.runningFromDate = runningFromDate;
     }
 
-    public String getLastTraderActivity(boolean serverUse) {
+    public String getLastTraderActivity() {
         if((System.currentTimeMillis() - lastTraderActivityTimestamp) >= ((86400 * 1000) / 2))
             lastTraderActivity = dayPassFormat.format(new Date(lastTraderActivityTimestamp));
         return lastTraderActivity;
@@ -243,8 +243,24 @@ public final class TraderDetails {
             throw new IllegalArgumentException("Refresh prices time must be more than 5 (5s) and less than 3600 (1h)");
     }
 
-    public String getRunningFromDate() {
+    public long getRunningFromDate() {
         return runningFromDate;
+    }
+
+    public void setRunningFromDate(long runningFromDate){
+        if(runningFromDate < 0)
+            throw new IllegalArgumentException("Running from date timestamp cannot be less than 0");
+        else
+            this.runningFromDate = runningFromDate;
+    }
+
+    /**
+     * This method is used to get date of {@link #runningFromDate} timestamp
+     * Any params required
+     * @return date from last start as {@link String}
+     * **/
+    public String getRunningDate(){
+        return dayPassFormat.format(runningFromDate);
     }
 
 }
