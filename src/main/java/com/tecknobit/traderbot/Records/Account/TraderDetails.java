@@ -3,10 +3,10 @@ package com.tecknobit.traderbot.Records.Account;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import static java.text.DateFormat.DATE_FIELD;
 import static java.text.DateFormat.getDateInstance;
+import static java.util.Locale.getDefault;
 
 /**
  * The {@code TraderDetails} class is useful to contains details of trader used. <br>
@@ -80,12 +80,12 @@ public final class TraderDetails {
      * {@code dayPassFormat} is instance that memorize format of {@link #lastTraderActivity} when a day from last activity
      * is passed
      * **/
-    private static final DateFormat dayPassFormat = getDateInstance(DATE_FIELD, Locale.getDefault());
+    private static DateFormat dayPassFormat;
 
     /**
      * {@code timeFormat} is instance that memorize default format of {@link #lastTraderActivity}
      * **/
-    private static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+    private static SimpleDateFormat timeFormat;
 
     /**
      * {@code lastTraderActivity} is instance that memorize last time when bot contact server
@@ -130,6 +130,7 @@ public final class TraderDetails {
      * @param runningFromDate: time stamp of date when trader has been started
      * **/
     public TraderDetails(String traderType, String traderPlatform, long runningFromDate) {
+        initTimeFormatters();
         if(!traderType.equals(TRADER_TYPE_AUTONOMOUS) && !traderType.equals(TRADER_TYPE_MANUAL))
             throw new IllegalArgumentException("Trader type inserted is wrong value, can be AUTONOMOUS or MANUAL type");
         else
@@ -154,6 +155,7 @@ public final class TraderDetails {
      * **/
     public TraderDetails(long lastTraderActivity, String traderType, String traderStatus, String traderPlatform,
                          int refreshPricesTime, long runningFromDate) {
+        initTimeFormatters();
         boolean isInMillis = refreshPricesTime > 3600;
         if(lastTraderActivity < 0)
             throw new IllegalArgumentException("Last trader activity timestamp cannot be less than 0");
@@ -186,6 +188,16 @@ public final class TraderDetails {
             throw new IllegalArgumentException("Running from date timestamp cannot be less than 0");
         else
             this.runningFromDate = runningFromDate;
+    }
+
+    /**
+     * This method is used to init {@link #dayPassFormat} and {@link #timeFormat} time formatters
+     * Any params required <br>
+     * Any return
+     * **/
+    private void initTimeFormatters(){
+        dayPassFormat = getDateInstance(DATE_FIELD, getDefault());
+        timeFormat = new SimpleDateFormat("HH:mm:ss", getDefault());
     }
 
     public String getLastTraderActivity() {
