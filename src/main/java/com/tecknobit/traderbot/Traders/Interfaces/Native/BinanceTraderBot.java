@@ -54,6 +54,14 @@ public class BinanceTraderBot extends TraderCoreRoutines {
      * **/
     protected HashMap<String, Symbol> tradingPairsList;
 
+    /**
+     * {@code lastPrices} is a map that contains asset index (es. BTC) as key {@link String} and last ticker as {@link TickerPriceChange}
+     * @apiNote values inserted in this map are only tickers of coins inserted in {@link #coins} list
+     * @implNote refresh of last prices, by default, is every 10 seconds, but you can set programmatically
+     * {@link #REFRESH_PRICES_TIME} to customize refresh time.
+     * **/
+    protected HashMap<String, TickerPriceChange> lastPrices;
+
     /** Constructor to init {@link BinanceTraderBot}
      * @param apiKey: your Binance's api key
      * @param secretKey: your Binance's secret key
@@ -219,9 +227,9 @@ public class BinanceTraderBot extends TraderCoreRoutines {
                     isTradingEnable
             ));
         }
-        refreshLatestPrice();
         for (Symbol symbol : binanceMarketManager.getObjectExchangeInformation().getSymbols())
             tradingPairsList.put(symbol.getSymbol(), symbol);
+        refreshLatestPrice();
     }
 
     /**
@@ -238,7 +246,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
             balance = 0;
             for (Coin coin : coins.values())
                 if(coin.isTradingEnabled())
-                    balance += coin.getQuantity() * lastPrices.get(coin.getAssetIndex() + USDT_CURRENCY);
+                    balance += coin.getQuantity() * lastPrices.get(coin.getAssetIndex() + USDT_CURRENCY).getLastPrice();
             if(!currency.contains(USD_CURRENCY)){
                 try {
                     balance /= binanceMarketManager.getCurrentAveragePriceValue(currency + USDT_CURRENCY);
@@ -276,7 +284,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
                 if(coin.isTradingEnabled()){
                     double free = coin.getQuantity();
                     String asset = coin.getAssetIndex();
-                    double value = free * lastPrices.get(asset + USDT_CURRENCY);
+                    double value = free * lastPrices.get(asset + USDT_CURRENCY).getLastPrice();
                     if(!currency.contains(USD_CURRENCY)){
                         try {
                             value /= binanceMarketManager.getCurrentAveragePriceValue(currency + USDT_CURRENCY);
@@ -435,7 +443,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     protected void placeAnOrder(String symbol, double quantity, String side) throws Exception {
         HashMap<String, Object> quantityParam = new HashMap<>();
         quantityParam.put("quantity", quantity);
-        orderStatus = binanceSpotManager.sendNewOrder(symbol, side, MARKET_TYPE, quantityParam);
+        orderStatus = binanceSpotManager.testNewOrder(symbol, side, MARKET_TYPE, quantityParam);
     }
 
     /**
@@ -487,7 +495,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
             String symbol = tickerPriceChange.getSymbol();
             try {
                 if(coins.get(tradingPairsList.get(symbol).getBaseAsset()).isTradingEnabled() || symbol.endsWith(USDT_CURRENCY))
-                    lastPrices.put(symbol, tickerPriceChange.getLastPrice());
+                    lastPrices.put(symbol, tickerPriceChange);
             }catch (NullPointerException ignored){
             }
         }

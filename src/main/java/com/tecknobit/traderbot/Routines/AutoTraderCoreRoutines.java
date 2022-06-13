@@ -18,7 +18,7 @@ public interface AutoTraderCoreRoutines {
     /**
      * {@code BUYING_GAP_TIME} is instance that memorize time gap for buying routine
      * **/
-    long BUYING_GAP_TIME = 1800*1000L;
+    long BUYING_GAP_TIME = 10000;//1800*1000L;
 
     /**
      * {@code UPDATING_GAP_TIME} is instance that memorize time gap for updating routine
@@ -174,7 +174,7 @@ public interface AutoTraderCoreRoutines {
                 3,
                 29,
                 0.00001,
-                -0.01,
+                -10,
                 2
         );
     }
@@ -254,9 +254,11 @@ public interface AutoTraderCoreRoutines {
      * @param trendPercent: percent that cryptocurrency is having
      * @param lastPrice: last price of cryptocurrency
      * **/
-    default void refreshCryptoDetails(Cryptocurrency cryptocurrency, double trendPercent, double lastPrice){
+    default void refreshCryptoDetails(Cryptocurrency cryptocurrency, double trendPercent, double lastPrice,
+                                      double priceChangePercent){
         cryptocurrency.setTrendPercent(trendPercent);
         cryptocurrency.setLastPrice(lastPrice);
+        cryptocurrency.setPriceChangePercent(priceChangePercent);
     }
 
     /**

@@ -7,6 +7,7 @@ import com.tecknobit.coinbasemanager.Managers.ExchangePro.Currencies.CoinbaseCur
 import com.tecknobit.coinbasemanager.Managers.ExchangePro.Orders.CoinbaseOrdersManager;
 import com.tecknobit.coinbasemanager.Managers.ExchangePro.Orders.Records.Order;
 import com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.CoinbaseProductsManager;
+import com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.Records.Ticker;
 import com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.Records.TradingPair;
 import com.tecknobit.traderbot.Records.Portfolio.Asset;
 import com.tecknobit.traderbot.Records.Portfolio.Coin;
@@ -58,6 +59,14 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * {@link TradingPair} give by {@link CoinbaseManager} library.
      * **/
     protected HashMap<String, TradingPair> tradingPairsList;
+
+    /**
+     * {@code lastPrices} is a map that contains asset index (es. BTC) as key {@link String} and last ticker as {@link Ticker}
+     * @apiNote values inserted in this map are only tickers of coins inserted in {@link #coins} list
+     * @implNote refresh of last prices, by default, is every 10 seconds, but you can set programmatically
+     * {@link #REFRESH_PRICES_TIME} to customize refresh time.
+     * **/
+    protected HashMap<String, Ticker> lastPrices;
 
     /** Constructor to init CoinbaseTraderBot
      * @param apiKey: your Coinbase's api key
@@ -416,7 +425,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
             balance = 0;
             for (Coin coin : coins.values())
                 if(coin.isTradingEnabled())
-                    balance += coin.getQuantity() * lastPrices.get(coin.getAssetIndex() + "-" + USD_CURRENCY);
+                    balance += coin.getQuantity() * lastPrices.get(coin.getAssetIndex() + "-" + USD_CURRENCY).getPrice();
             if(!lastBalanceCurrency.contains(USD_CURRENCY)){
                 try {
                     balance *= coinbaseProductsManager.getProductTickerObject(getUSDTSymbol(currency)).getPrice();
@@ -455,7 +464,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
                 if(coin.isTradingEnabled()){
                     String index = coin.getAssetIndex();
                     double quantity = coin.getQuantity();
-                    double balance = quantity * lastPrices.get(index);
+                    double balance = quantity * lastPrices.get(index).getPrice();
                     if(!currency.contains(USD_CURRENCY)){
                         try {
                             balance *= coinbaseProductsManager.getProductTickerObject(getUSDTSymbol(currency)).getPrice();
@@ -680,7 +689,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         for (String productId : tradingPairsList.keySet()) {
             try {
                 if(coins.get(productId.split("-")[0]).isTradingEnabled() || productId.endsWith(USD_CURRENCY))
-                    lastPrices.put(productId, coinbaseProductsManager.getProductTickerObject(productId).getPrice());
+                    lastPrices.put(productId, coinbaseProductsManager.getProductTickerObject(productId));
             }catch (Exception ignored){
             }
         }

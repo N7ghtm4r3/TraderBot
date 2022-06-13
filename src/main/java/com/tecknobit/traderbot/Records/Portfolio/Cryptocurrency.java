@@ -290,9 +290,10 @@ public class Cryptocurrency extends Token implements RoutineMessages {
     @Override
     public void printDetails() {
         out.println("## [" + symbol + "]\n" +
-                getANSIText("## Trend: ", getTextTrendPercent(2)) +
-                "## Last: " + lastPrice + "\n" +
+                getANSIText("## Income: ", getTextTrendPercent(2)) +
+                "## Last price: " + lastPrice + "\n" +
                 "## Quantity: " + quantity + "\n" +
+                getANSIText("## Asset trend: ", getTextPriceChangePercent(2)) +
                 "## Portfolio balance: " + getCryptocurrencyBalance(2) + "\n" +
                 getANSIText("## Estimated asset trend: ", getTextTptopIndex(2)) +
                 "######################");

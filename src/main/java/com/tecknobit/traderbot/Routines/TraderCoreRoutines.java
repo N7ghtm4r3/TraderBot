@@ -61,15 +61,6 @@ public abstract class TraderCoreRoutines {
     protected ArrayList<Transaction> allTransactions;
 
     /**
-     * {@code lastPrices} is a map that contains asset index (es. BTC) as key {@link String} and last price in
-     * {@link #USD_CURRENCY} or {@link #USDT_CURRENCY} of that cryptocurrency as {@link Double}.
-     * @apiNote prices inserted in this map are only prices of coins inserted in {@link #coins} list
-     * @implNote refresh of last prices, by default, is every 10 seconds, but you can set programmatically
-     * {@link #REFRESH_PRICES_TIME} to customize refresh time.
-     * **/
-    protected HashMap<String, Double> lastPrices;
-
-    /**
      * {@code coins} is a map that contains assets of base user wallet and all assets that a trader will trade
      * during his operation.
      * @implSpec this map has as key the asset index (es. BTC) as {@link String} and has as value custom object

@@ -562,6 +562,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                                 quoteAsset,
                                 tradingConfig
                         ));
+                        walletList.put(baseAsset, checkingList.get(baseAsset));
                     }else
                         checkingList.remove(baseAsset);
                 }
@@ -628,6 +629,10 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                         System.out.println("Buying [" + symbol + "], quantity: " + quantity);
                 }catch (Exception e){
                     printError(symbol, e);
+                    cryptocurrency.setQuantity(quantity);
+                    cryptocurrency.setFirstPrice(cryptocurrency.getLastPrice());
+                    walletList.put(cryptocurrency.getAssetIndex(), cryptocurrency);
+                    insertCoin(cryptocurrency.getAssetIndex(), cryptocurrency.getAssetName(), quantity);
                 }
             }
         }
@@ -652,11 +657,15 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
             for (Cryptocurrency cryptocurrency : walletList.values()){
                 String symbol = cryptocurrency.getSymbol();
                 TradingConfig tradingConfig = cryptocurrency.getTradingConfig();
-                double lastPrice = lastPrices.get(symbol);
+                Ticker ticker = lastPrices.get(symbol);
+                double lastPrice = ticker.getPrice();
+                cryptocurrency.setFirstPrice(1);
                 double trendPercent = coinbaseProductsManager.getTrendPercent(cryptocurrency.getFirstPrice(), lastPrice);
                 double minGainOrder = tradingConfig.getMinGainForOrder();
                 double tptopIndex = cryptocurrency.getTptopIndex();
-                refreshCryptoDetails(cryptocurrency, trendPercent, lastPrice);
+                double priceChangePercent = coinbaseProductsManager.getTrendPercent(cryptocurrency.getLastPrice(), lastPrice, 8);
+                System.out.println(priceChangePercent);
+                refreshCryptoDetails(cryptocurrency, trendPercent, lastPrice, priceChangePercent);
                 if(trendPercent < tradingConfig.getMinGainForOrder() && trendPercent < tptopIndex){
                     if(printRoutineMessages)
                         System.out.println("Refreshing [" + symbol + "]");
@@ -825,7 +834,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     public double getCoinBalance(String quote) {
         Coin coin = coins.get(quote);
         return coinbaseAccountManager.roundValue(coin.getQuantity() *
-                lastPrices.get(coin.getAssetIndex() + "-" + USD_CURRENCY), 8);
+                lastPrices.get(coin.getAssetIndex() + "-" + USD_CURRENCY).getPrice(), 8);
     }
 
     /**

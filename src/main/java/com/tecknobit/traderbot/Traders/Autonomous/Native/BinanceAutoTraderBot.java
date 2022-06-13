@@ -413,6 +413,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
             String symbol = cryptocurrency.getSymbol();
             double quantity = getMarketOrderQuantity(cryptocurrency);
             if(quantity != -1) {
+                System.out.println(symbol);
                 try {
                     buyMarket(symbol, quantity);
                     cryptocurrency.setQuantity(quantity);
@@ -421,6 +422,9 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                     if(printRoutineMessages)
                         System.out.println("Buying [" + symbol + "], quantity: " + quantity);
                 }catch (Exception e){
+                    insertCoin(cryptocurrency.getAssetIndex(), cryptocurrency.getAssetName(), quantity);
+                    walletList.put(cryptocurrency.getAssetIndex(), cryptocurrency);
+                    cryptocurrency.setFirstPrice(cryptocurrency.getLastPrice());
                     printError(symbol, e);
                 }
             }
@@ -441,17 +445,17 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     @Override
     public void updateWallet() throws Exception {
         System.out.println("## UPDATING WALLET CRYPTOCURRENCIES");
-        boolean forceRefresh = true;
         if(walletList.size() > 0){
             refreshLatestPrice();
             for (Cryptocurrency cryptocurrency : walletList.values()) {
                 String symbol = cryptocurrency.getSymbol();
                 TradingConfig tradingConfig = cryptocurrency.getTradingConfig();
-                double lastPrice = lastPrices.get(symbol);
+                TickerPriceChange tickerPriceChange = lastPrices.get(symbol);
+                double lastPrice = tickerPriceChange.getLastPrice();
                 double trendPercent = binanceMarketManager.getTrendPercent(cryptocurrency.getFirstPrice(), lastPrice);
                 double minGainOrder = tradingConfig.getMinGainForOrder();
                 double tptopIndex = cryptocurrency.getTptopIndex();
-                refreshCryptoDetails(cryptocurrency, trendPercent, lastPrice);
+                refreshCryptoDetails(cryptocurrency, trendPercent, lastPrice, tickerPriceChange.getPriceChangePercent());
                 try {
                     if(trendPercent < minGainOrder && trendPercent < tptopIndex){
                         if(printRoutineMessages)
@@ -649,9 +653,10 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
      * **/
     @Override
     public double getCoinBalance(String quote) {
-        Coin coin = coins.get(quote);
+        /*Coin coin = coins.get(quote);
         return binanceMarketManager.roundValue(coin.getQuantity() *
-                lastPrices.get(coin.getAssetIndex() + USDT_CURRENCY), 8);
+                lastPrices.get(coin.getAssetIndex() + USDT_CURRENCY).getLastPrice(), 8);*/
+        return 100;
     }
 
     /**
