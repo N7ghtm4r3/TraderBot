@@ -43,7 +43,7 @@ public class Cryptocurrency extends Token implements RoutineMessages {
     /**
      * {@code priceChangePercent} is instance that memorize previous day percent gap of trend of cryptocurrency.
      * **/
-    private final double priceChangePercent;
+    private double priceChangePercent;
 
     /**
      * {@code quoteAsset} is instance that memorize quote asset to buy this cryptocurrency es. USD
@@ -167,6 +167,39 @@ public class Cryptocurrency extends Token implements RoutineMessages {
 
     public double getPriceChangePercent() {
         return priceChangePercent;
+    }
+
+    /**
+     * This method is used get {@link #priceChangePercent} instance
+     * @param decimals: number of decimal digits es. 2
+     * @return {@link #priceChangePercent} formatted as 1.65 or -1.65
+     * **/
+    public double getPriceChangePercent(int decimals){
+        return tradingTools.roundValue(priceChangePercent, decimals);
+    }
+
+    /**
+     * This method is used to format like a {@link String} object {@link #priceChangePercent}.<br>
+     * Any params required
+     * @return {@link #priceChangePercent} formatted as +1.653% or -1.6563% as {@link String}
+     * **/
+    public String getTextPriceChangePercent(){
+        return tradingTools.textualizeAssetPercent(priceChangePercent);
+    }
+
+    /**
+     * This method is used to format like a {@link String} object {@link #priceChangePercent}.<br>
+     * @param decimals: number of decimal digits es. 2
+     * @return {@link #priceChangePercent} formatted as +1.65% or -1.65% as {@link String}
+     * **/
+    public String getTextPriceChangePercent(int decimals){
+        return tradingTools.textualizeAssetPercent(tradingTools.roundValue(priceChangePercent, decimals));
+    }
+
+    public void setPriceChangePercent(double priceChangePercent) {
+        if(priceChangePercent < -100)
+            throw new IllegalArgumentException("Price change percent cannot be less than -100");
+        this.priceChangePercent = priceChangePercent;
     }
 
     public String getQuoteAsset() {
