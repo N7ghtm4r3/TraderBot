@@ -3,6 +3,8 @@ package com.tecknobit.traderbot.Records.Portfolio;
 import com.tecknobit.traderbot.Routines.RoutineMessages;
 import com.tecknobit.traderbot.Routines.AutoTraderCoreRoutines.TradingConfig;
 
+import java.util.ArrayList;
+
 import static com.tecknobit.traderbot.Routines.TraderCoreRoutines.tradingTools;
 import static java.lang.System.out;
 
@@ -23,7 +25,7 @@ public class Cryptocurrency extends Token implements RoutineMessages {
     /**
      * {@code firstPrice} is instance that memorize first inserted price of cryptocurrency and not more changeable.
      * **/
-    private double firstPrice;
+    private final ArrayList<Double> firstPrices;
 
     /**
      * {@code lastPrice} is instance that memorize last inserted price of cryptocurrency and is constantly refreshed.
@@ -51,9 +53,9 @@ public class Cryptocurrency extends Token implements RoutineMessages {
     private final String quoteAsset;
 
     /**
-     * {@code trendPercent} is instance that memorize trend percent of cryptocurrency and is constantly refreshed.
+     * {@code incomePercent} is instance that memorize income percent of cryptocurrency and is constantly refreshed.
      * **/
-    private double trendPercent;
+    private double incomePercent;
 
     /**
      * {@code tradingConfig} is instance that memorize model of trading to use for this cryptocurrency.
@@ -83,7 +85,7 @@ public class Cryptocurrency extends Token implements RoutineMessages {
         this.priceChangePercent = priceChangePercent;
         this.quoteAsset = quoteAsset;
         this.tradingConfig = tradingConfig;
-        firstPrice = -1;
+        firstPrices = new ArrayList<>();
     }
 
     /** Constructor to init {@link Cryptocurrency}
@@ -96,12 +98,12 @@ public class Cryptocurrency extends Token implements RoutineMessages {
      * @param candleGap: previous day percent gap of trend of cryptocurrency
      * @param priceChangePercent: previous day percent gap of trend of cryptocurrency
      * @param quoteAsset: quote asset to buy this cryptocurrency es. USD
-     * @param trendPercent: trend that this asset is having compare to {@link #firstPrice} and {@link #lastPrice}
+     * @param incomePercent: trend that this asset is having compare to {@link #firstPrices} and {@link #lastPrice}
      * @param tradingConfig: model of trading to use for this cryptocurrency
      * **/
     public Cryptocurrency(String assetIndex, String assetName, double quantity, String symbol, double lastPrice,
                           double tptopIndex, Object candleGap, double priceChangePercent, String quoteAsset,
-                          double trendPercent, TradingConfig tradingConfig) {
+                          double incomePercent, TradingConfig tradingConfig) {
         super(assetIndex, assetName, quantity);
         this.symbol = symbol;
         this.lastPrice = lastPrice;
@@ -109,9 +111,36 @@ public class Cryptocurrency extends Token implements RoutineMessages {
         this.candleGap = candleGap;
         this.priceChangePercent = priceChangePercent;
         this.quoteAsset = quoteAsset;
-        this.trendPercent = trendPercent;
+        this.incomePercent = incomePercent;
         this.tradingConfig = tradingConfig;
-        firstPrice = -1;
+        firstPrices = new ArrayList<>();
+    }
+
+    /** Constructor to init {@link Cryptocurrency}
+     * @param assetIndex: index of cryptocurrency es. BTC
+     * @param assetName: full name of cryptocurrency es Bitcoin
+     * @param quantity: value of quantity bought for this cryptocurrency es 1
+     * @param symbol: symbol of cryptocurrency es. BTCBUSD or BTC-USD
+     * @param lastPrice: last inserted price of cryptocurrency
+     * @param tptopIndex: forecast trend of cryptocurrency
+     * @param candleGap: previous day percent gap of trend of cryptocurrency
+     * @param priceChangePercent: previous day percent gap of trend of cryptocurrency
+     * @param quoteAsset: quote asset to buy this cryptocurrency es. USD
+     * @param tradingConfig: model of trading to use for this cryptocurrency
+     * @param firstPrices: list of first prices inserted in past orders
+     * **/
+    public Cryptocurrency(String assetIndex, String assetName, double quantity, String symbol, double lastPrice,
+                          double tptopIndex, Object candleGap, double priceChangePercent, String quoteAsset,
+                          TradingConfig tradingConfig, ArrayList<Double> firstPrices) {
+        super(assetIndex, assetName, quantity);
+        this.symbol = symbol;
+        this.lastPrice = lastPrice;
+        this.tptopIndex = tptopIndex;
+        this.candleGap = candleGap;
+        this.priceChangePercent = priceChangePercent;
+        this.quoteAsset = quoteAsset;
+        this.tradingConfig = tradingConfig;
+        this.firstPrices = firstPrices;
     }
 
     public String getSymbol() {
@@ -119,14 +148,30 @@ public class Cryptocurrency extends Token implements RoutineMessages {
     }
 
     public double getFirstPrice() {
-        return firstPrice;
+        double firstPrice = 0;
+        for (double price : firstPrices)
+            firstPrice += price;
+        return firstPrice / firstPrices.size();
     }
 
-    public void setFirstPrice(double firstPrice) {
+    /**
+     * This method is used to get first price
+     * @param decimals: number of decimal digits es. 2
+     * @return first price formatted as 1.65 or -1.65
+     * **/
+    public double getFirstPrice(int decimals){
+        return tradingTools.roundValue(getFirstPrice(), decimals);
+    }
+
+    /**
+     * This method is used to add new first price
+     * @param firstPrice: first price to add at {@link #firstPrices} list <br>
+     * Any params.
+     * **/
+    public void addFirstPrice(double firstPrice) {
         if(firstPrice < 0)
             throw new IllegalArgumentException("First price cannot be less than 0");
-        if(this.firstPrice == -1)
-            this.firstPrice = firstPrice;
+        firstPrices.add(firstPrice);
     }
 
     public double getLastPrice() {
@@ -134,7 +179,7 @@ public class Cryptocurrency extends Token implements RoutineMessages {
     }
 
     /**
-     * This method is used get {@link #lastPrice} instance
+     * This method is used to get {@link #lastPrice} instance
      * @param decimals: number of decimal digits es. 2
      * @return {@link #lastPrice} formatted as 1.65 or -1.65
      * **/
@@ -153,7 +198,7 @@ public class Cryptocurrency extends Token implements RoutineMessages {
     }
 
     /**
-     * This method is used get {@link #tptopIndex} instance
+     * This method is used to get {@link #tptopIndex} instance
      * @param decimals: number of decimal digits es. 2
      * @return {@link #tptopIndex} formatted as 1.65 or -1.65
      * **/
@@ -170,7 +215,7 @@ public class Cryptocurrency extends Token implements RoutineMessages {
     }
 
     /**
-     * This method is used get {@link #priceChangePercent} instance
+     * This method is used to get {@link #priceChangePercent} instance
      * @param decimals: number of decimal digits es. 2
      * @return {@link #priceChangePercent} formatted as 1.65 or -1.65
      * **/
@@ -206,35 +251,41 @@ public class Cryptocurrency extends Token implements RoutineMessages {
         return quoteAsset;
     }
 
-    public double getTrendPercent() {
-        return trendPercent;
+    public double getIncomePercent() {
+        return incomePercent;
     }
 
     /**
-     * This method is used get {@link #trendPercent} instance
+     * This method is used get {@link #incomePercent} instance
      * @param decimals: number of decimal digits es. 2
-     * @return {@link #trendPercent} formatted as 1.65 or -1.65
+     * @return {@link #incomePercent} formatted as 1.65 or -1.65
      * **/
-    public double getTrendPercent(int decimals){
-        return tradingTools.roundValue(trendPercent, decimals);
+    public double getIncomePercent(int decimals){
+        return tradingTools.roundValue(incomePercent, decimals);
     }
 
     /**
-     * This method is used to format like a {@link String} object {@link #trendPercent}.<br>
+     * This method is used to format like a {@link String} object {@link #incomePercent}.<br>
      * Any params required
-     * @return {@link #trendPercent} formatted as +1.653% or -1.6563% as {@link String}
+     * @return {@link #incomePercent} formatted as +1.653% or -1.6563% as {@link String}
      * **/
-    public String getTextTrendPercent(){
-        return tradingTools.textualizeAssetPercent(trendPercent);
+    public String getTextIncomePercent(){
+        return tradingTools.textualizeAssetPercent(incomePercent);
     }
 
     /**
-     * This method is used to format like a {@link String} object {@link #trendPercent}.<br>
+     * This method is used to format like a {@link String} object {@link #incomePercent}.<br>
      * @param decimals: number of decimal digits es. 2
-     * @return {@link #trendPercent} formatted as +1.65% or -1.65% as {@link String}
+     * @return {@link #incomePercent} formatted as +1.65% or -1.65% as {@link String}
      * **/
-    public String getTextTrendPercent(int decimals){
-        return tradingTools.textualizeAssetPercent(tradingTools.roundValue(trendPercent, decimals));
+    public String getTextIncomePercent(int decimals){
+        return tradingTools.textualizeAssetPercent(tradingTools.roundValue(incomePercent, decimals));
+    }
+
+    public void setIncomePercent(double incomePercent) {
+        if(incomePercent < -100)
+            throw new IllegalArgumentException("Trend percent cannot be less than -100");
+        this.incomePercent = incomePercent;
     }
 
     /**
@@ -253,12 +304,6 @@ public class Cryptocurrency extends Token implements RoutineMessages {
      * **/
     public String getTextTptopIndex(int decimals){
         return tradingTools.textualizeAssetPercent(tradingTools.roundValue(tptopIndex, decimals));
-    }
-
-    public void setTrendPercent(double trendPercent) {
-        if(trendPercent < -100)
-            throw new IllegalArgumentException("Trend percent cannot be less than -100");
-        this.trendPercent = trendPercent;
     }
 
     public TradingConfig getTradingConfig() {
@@ -290,7 +335,7 @@ public class Cryptocurrency extends Token implements RoutineMessages {
     @Override
     public void printDetails() {
         out.println("## [" + symbol + "]\n" +
-                getANSIText("## Income: ", getTextTrendPercent(2)) +
+                getANSIText("## Income: ", getTextIncomePercent(2)) +
                 "## Last price: " + lastPrice + "\n" +
                 "## Quantity: " + quantity + "\n" +
                 getANSIText("## Asset trend: ", getTextPriceChangePercent(2)) +

@@ -416,7 +416,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                 try {
                     buyMarket(symbol, quantity);
                     cryptocurrency.setQuantity(quantity);
-                    cryptocurrency.setFirstPrice(cryptocurrency.getLastPrice());
+                    cryptocurrency.addFirstPrice(cryptocurrency.getLastPrice());
                     walletList.put(cryptocurrency.getAssetIndex(), cryptocurrency);
                     if(printRoutineMessages)
                         System.out.println("Buying [" + symbol + "], quantity: " + quantity);
@@ -435,7 +435,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
 
     /**
      * This method is used to routine of update wallet of cryptocurrencies bought by auto trader. If {@link Cryptocurrency}
-     * respect {@link TradingConfig} model that {@link Cryptocurrency} will be sold. <br>
+     * respects {@link TradingConfig} model that {@link Cryptocurrency} will be sold. <br>
      * Any params required
      * **/
     @Override
@@ -448,17 +448,17 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                 TradingConfig tradingConfig = cryptocurrency.getTradingConfig();
                 TickerPriceChange tickerPriceChange = lastPrices.get(symbol);
                 double lastPrice = tickerPriceChange.getLastPrice();
-                double trendPercent = binanceMarketManager.getTrendPercent(cryptocurrency.getFirstPrice(), lastPrice);
+                double incomePercent = binanceMarketManager.getTrendPercent(cryptocurrency.getFirstPrice(), lastPrice);
                 double minGainOrder = tradingConfig.getMinGainForOrder();
                 double tptopIndex = cryptocurrency.getTptopIndex();
-                refreshCryptoDetails(cryptocurrency, trendPercent, lastPrice, tickerPriceChange.getPriceChangePercent());
+                refreshCryptoDetails(cryptocurrency, incomePercent, lastPrice, tickerPriceChange.getPriceChangePercent());
                 try {
-                    if(trendPercent < minGainOrder && trendPercent < tptopIndex){
+                    if(incomePercent < minGainOrder && incomePercent < tptopIndex){
                         if(printRoutineMessages)
                             System.out.println("Refreshing [" + symbol + "]");
-                    }else if(trendPercent <= tradingConfig.getMaxLoss())
+                    }else if(incomePercent <= tradingConfig.getMaxLoss())
                         incrementSalesSale(cryptocurrency, LOSS_SELL);
-                    else if(trendPercent >= minGainOrder || trendPercent >= tptopIndex)
+                    else if(incomePercent >= minGainOrder || incomePercent >= tptopIndex)
                         incrementSalesSale(cryptocurrency, GAIN_SELL);
                     else
                         incrementSalesSale(cryptocurrency, PAIR_SELL);
@@ -490,24 +490,24 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                 traderAccount.addLoss();
                 if(printRoutineMessages) {
                     System.out.println(ANSI_RED + "## Selling at loss [" + cryptocurrency.getSymbol() + "], " +
-                            "income: [" + cryptocurrency.getTextTrendPercent(2) +  "]" + ANSI_RESET);
+                            "income: [" + cryptocurrency.getTextIncomePercent(2) +  "]" + ANSI_RESET);
                 }
                 break;
             case GAIN_SELL:
                 traderAccount.addGain();
                 if(printRoutineMessages) {
                     System.out.println(ANSI_GREEN + "## Selling at gain [" + cryptocurrency.getSymbol() + "], " +
-                            "income: [" + cryptocurrency.getTextTrendPercent(2) +  "]" + ANSI_RESET);
+                            "income: [" + cryptocurrency.getTextIncomePercent(2) +  "]" + ANSI_RESET);
                 }
                 break;
             default:
                 traderAccount.addPair();
                 if(printRoutineMessages) {
                     System.out.println("## Selling at pair [" + cryptocurrency.getSymbol() + "], " +
-                            "income: [" + cryptocurrency.getTextTrendPercent() +  "]");
+                            "income: [" + cryptocurrency.getTextIncomePercent() +  "]");
                 }
         }
-        traderAccount.addIncome(cryptocurrency.getTrendPercent(2));
+        traderAccount.addIncome(cryptocurrency.getIncomePercent(2));
         if(printRoutineMessages)
             traderAccount.printDetails();
     }

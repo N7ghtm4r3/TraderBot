@@ -251,12 +251,12 @@ public interface AutoTraderCoreRoutines {
     /**
      * This method is used to refresh details of {@link Cryptocurrency}
      * @param cryptocurrency: cryptocurrency to refresh
-     * @param trendPercent: percent that cryptocurrency is having
+     * @param incomePercent: percent that cryptocurrency is having
      * @param lastPrice: last price of cryptocurrency
      * **/
-    default void refreshCryptoDetails(Cryptocurrency cryptocurrency, double trendPercent, double lastPrice,
+    default void refreshCryptoDetails(Cryptocurrency cryptocurrency, double incomePercent, double lastPrice,
                                       double priceChangePercent){
-        cryptocurrency.setTrendPercent(trendPercent);
+        cryptocurrency.setIncomePercent(incomePercent);
         cryptocurrency.setLastPrice(lastPrice);
         cryptocurrency.setPriceChangePercent(priceChangePercent);
     }

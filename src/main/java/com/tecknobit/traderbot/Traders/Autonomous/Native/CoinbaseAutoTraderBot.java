@@ -622,7 +622,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                 try {
                     buyMarket(symbol, quantity);
                     cryptocurrency.setQuantity(quantity);
-                    cryptocurrency.setFirstPrice(cryptocurrency.getLastPrice());
+                    cryptocurrency.addFirstPrice(cryptocurrency.getLastPrice());
                     walletList.put(cryptocurrency.getAssetIndex(), cryptocurrency);
                     if(printRoutineMessages)
                         System.out.println("Buying [" + symbol + "], quantity: " + quantity);
@@ -654,18 +654,17 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                 TradingConfig tradingConfig = cryptocurrency.getTradingConfig();
                 Ticker ticker = lastPrices.get(symbol);
                 double lastPrice = ticker.getPrice();
-                cryptocurrency.setFirstPrice(1);
-                double trendPercent = coinbaseProductsManager.getTrendPercent(cryptocurrency.getFirstPrice(), lastPrice);
+                double incomePercent = coinbaseProductsManager.getTrendPercent(cryptocurrency.getFirstPrice(), lastPrice);
                 double minGainOrder = tradingConfig.getMinGainForOrder();
                 double tptopIndex = cryptocurrency.getTptopIndex();
                 double priceChangePercent = coinbaseProductsManager.getTrendPercent(cryptocurrency.getLastPrice(), lastPrice, 8);
-                refreshCryptoDetails(cryptocurrency, trendPercent, lastPrice, priceChangePercent);
-                if(trendPercent < tradingConfig.getMinGainForOrder() && trendPercent < tptopIndex){
+                refreshCryptoDetails(cryptocurrency, incomePercent, lastPrice, priceChangePercent);
+                if(incomePercent < tradingConfig.getMinGainForOrder() && incomePercent < tptopIndex){
                     if(printRoutineMessages)
                         System.out.println("Refreshing [" + symbol + "]");
-                }else if(trendPercent <= tradingConfig.getMaxLoss())
+                }else if(incomePercent <= tradingConfig.getMaxLoss())
                     incrementSalesSale(cryptocurrency, LOSS_SELL);
-                else if(trendPercent >= minGainOrder || trendPercent >= tptopIndex)
+                else if(incomePercent >= minGainOrder || incomePercent >= tptopIndex)
                     incrementSalesSale(cryptocurrency, GAIN_SELL);
                 else
                     incrementSalesSale(cryptocurrency, PAIR_SELL);
@@ -694,24 +693,24 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                 traderAccount.addLoss();
                 if(printRoutineMessages) {
                     System.out.println(ANSI_RED + "## Selling at loss [" + cryptocurrency.getSymbol() + "], " +
-                            "income: [" + cryptocurrency.getTextTrendPercent(2) +  "]" + ANSI_RESET);
+                            "income: [" + cryptocurrency.getTextIncomePercent(2) +  "]" + ANSI_RESET);
                 }
                 break;
             case GAIN_SELL:
                 traderAccount.addGain();
                 if(printRoutineMessages) {
                     System.out.println(ANSI_GREEN + "## Selling at gain [" + cryptocurrency.getSymbol() + "], " +
-                            "income: [" + cryptocurrency.getTextTrendPercent(2) +  "]" + ANSI_RESET);
+                            "income: [" + cryptocurrency.getTextIncomePercent(2) +  "]" + ANSI_RESET);
                 }
                 break;
             default:
                 traderAccount.addPair();
                 if(printRoutineMessages) {
                     System.out.println("## Selling at pair [" + cryptocurrency.getSymbol() + "], " +
-                            "income: [" + cryptocurrency.getTextTrendPercent() +  "]");
+                            "income: [" + cryptocurrency.getTextIncomePercent() +  "]");
                 }
         }
-        traderAccount.addIncome(cryptocurrency.getTrendPercent(2));
+        traderAccount.addIncome(cryptocurrency.getIncomePercent(2));
         if(printRoutineMessages)
             traderAccount.printDetails();
     }
