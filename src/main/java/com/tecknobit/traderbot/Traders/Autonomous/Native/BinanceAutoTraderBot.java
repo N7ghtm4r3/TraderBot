@@ -413,7 +413,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
             String symbol = cryptocurrency.getSymbol();
             double quantity = getMarketOrderQuantity(cryptocurrency);
             if(quantity != -1) {
-                System.out.println(symbol);
                 try {
                     buyMarket(symbol, quantity);
                     cryptocurrency.setQuantity(quantity);
@@ -422,9 +421,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                     if(printRoutineMessages)
                         System.out.println("Buying [" + symbol + "], quantity: " + quantity);
                 }catch (Exception e){
-                    insertCoin(cryptocurrency.getAssetIndex(), cryptocurrency.getAssetName(), quantity);
-                    walletList.put(cryptocurrency.getAssetIndex(), cryptocurrency);
-                    cryptocurrency.setFirstPrice(cryptocurrency.getLastPrice());
                     printError(symbol, e);
                 }
             }
@@ -612,34 +608,36 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         Symbol exchangeInformation = binanceMarketManager.getObjectExchangeInformation(symbol).getSymbols().get(0);
         double stepSize = 0, maxQty = 0, minQty = 0, minNotional = 0, quantity = -1;
         double coinBalance = getCoinBalance(cryptocurrency.getQuoteAsset());
-        for (Filter filter : exchangeInformation.getFiltersList()) {
-            if(filter.getFilterType().equals(LOT_SIZE_FILTER)){
-                JSONObject lotSize = filter.getFilterDetails().getJSONObject(LOT_SIZE_FILTER);
-                stepSize = lotSize.getDouble("stepSize");
-                maxQty = lotSize.getDouble("maxQty");
-                minQty = lotSize.getDouble("minQty");
-            }else if(filter.getFilterType().equals(MIN_NOTIONAL_FILTER)) {
-                minNotional = filter.getFilterDetails().getJSONObject(MIN_NOTIONAL_FILTER)
-                        .getDouble("minNotional");
-                break;
-            }
-        }
-        double minNotionalQty = minNotional / cryptocurrency.getLastPrice();
-        if(coinBalance == minNotional)
-            quantity = ceil(minNotional);
-        else if(coinBalance > minNotional){
-            double difference = coinBalance - minNotional;
-            quantity = difference * cryptocurrency.getTptopIndex() / 100;
-            if(quantity < minQty)
-                quantity = minQty;
-            else if(quantity > maxQty)
-                quantity = maxQty;
-            else {
-                if ((quantity - minQty) % stepSize != 0) {
-                    quantity = ceil(quantity);
+        if(coinBalance != -1){
+            for (Filter filter : exchangeInformation.getFiltersList()) {
+                if(filter.getFilterType().equals(LOT_SIZE_FILTER)){
+                    JSONObject lotSize = filter.getFilterDetails().getJSONObject(LOT_SIZE_FILTER);
+                    stepSize = lotSize.getDouble("stepSize");
+                    maxQty = lotSize.getDouble("maxQty");
+                    minQty = lotSize.getDouble("minQty");
+                }else if(filter.getFilterType().equals(MIN_NOTIONAL_FILTER)) {
+                    minNotional = filter.getFilterDetails().getJSONObject(MIN_NOTIONAL_FILTER)
+                            .getDouble("minNotional");
+                    break;
                 }
-                if(quantity < (minNotionalQty)) {
-                    quantity = ceil(minNotionalQty + 1);
+            }
+            double minNotionalQty = minNotional / cryptocurrency.getLastPrice();
+            if(coinBalance == minNotional)
+                quantity = ceil(minNotional);
+            else if(coinBalance > minNotional){
+                double difference = coinBalance - minNotional;
+                quantity = difference * cryptocurrency.getTptopIndex() / 100;
+                if(quantity < minQty)
+                    quantity = minQty;
+                else if(quantity > maxQty)
+                    quantity = maxQty;
+                else {
+                    if ((quantity - minQty) % stepSize != 0) {
+                        quantity = ceil(quantity);
+                    }
+                    if(quantity < (minNotionalQty)) {
+                        quantity = ceil(minNotionalQty + 1);
+                    }
                 }
             }
         }
@@ -653,10 +651,19 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
      * **/
     @Override
     public double getCoinBalance(String quote) {
-        /*Coin coin = coins.get(quote);
-        return binanceMarketManager.roundValue(coin.getQuantity() *
-                lastPrices.get(coin.getAssetIndex() + USDT_CURRENCY).getLastPrice(), 8);*/
-        return 100;
+        Coin coin = coins.get(quote);
+        String assetIndex = coin.getAssetIndex();
+        double quantity = coin.getQuantity();
+        if(assetIndex.equals(USDT_CURRENCY)){
+            try {
+                return binanceMarketManager.roundValue(quantity *
+                        binanceMarketManager.getCurrentAveragePriceValue(BUSD_CURRENCY + USDT_CURRENCY), 8);
+            } catch (IOException e) {
+                return -1;
+            }
+        }
+        return binanceMarketManager.roundValue(quantity *
+                lastPrices.get(assetIndex + USDT_CURRENCY).getLastPrice(), 8);
     }
 
     /**

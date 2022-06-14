@@ -18,7 +18,7 @@ public interface AutoTraderCoreRoutines {
     /**
      * {@code BUYING_GAP_TIME} is instance that memorize time gap for buying routine
      * **/
-    long BUYING_GAP_TIME = 10000;//1800*1000L;
+    long BUYING_GAP_TIME = 1800*1000L;
 
     /**
      * {@code UPDATING_GAP_TIME} is instance that memorize time gap for updating routine
@@ -269,7 +269,7 @@ public interface AutoTraderCoreRoutines {
      * **/
     default void sendStatsReport(/*params*/){
         // TODO: 22/05/2022 request to send report and add to docu
-        System.out.println("gagagagag");
+        System.out.println("Sent report");
         //send data in some methods
     }
 

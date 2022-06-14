@@ -15,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,6 +32,11 @@ import static com.tecknobit.coinbasemanager.Managers.ExchangePro.Orders.Records.
  * **/
 
 public class BinanceTraderBot extends TraderCoreRoutines {
+
+    /**
+     * {@code BUSD_CURRENCY} is the identifier of BUSD currency used by Binance's traders
+     * **/
+    protected static final String BUSD_CURRENCY = "BUSD";
 
     /**
      * {@code binanceWalletManager} is instance of {@link BinanceWalletManager} helpful to wallet operations
@@ -245,8 +251,19 @@ public class BinanceTraderBot extends TraderCoreRoutines {
             lastBalanceCurrency = currency;
             balance = 0;
             for (Coin coin : coins.values())
-                if(coin.isTradingEnabled())
-                    balance += coin.getQuantity() * lastPrices.get(coin.getAssetIndex() + USDT_CURRENCY).getLastPrice();
+                if(coin.isTradingEnabled()) {
+                    String assetIndex = coin.getAssetIndex();
+                    double lastPrice;
+                    if(assetIndex.equals(USDT_CURRENCY)){
+                        try {
+                            lastPrice = binanceMarketManager.getCurrentAveragePriceValue(BUSD_CURRENCY + USDT_CURRENCY);
+                        } catch (IOException e) {
+                            return 0;
+                        }
+                    }else
+                        lastPrice = lastPrices.get(assetIndex + USDT_CURRENCY).getLastPrice();
+                    balance += coin.getQuantity() * lastPrice;
+                }
             if(!currency.contains(USD_CURRENCY)){
                 try {
                     balance /= binanceMarketManager.getCurrentAveragePriceValue(currency + USDT_CURRENCY);
@@ -284,6 +301,8 @@ public class BinanceTraderBot extends TraderCoreRoutines {
                 if(coin.isTradingEnabled()){
                     double free = coin.getQuantity();
                     String asset = coin.getAssetIndex();
+                    if(asset.equals(USDT_CURRENCY))
+                        asset = BUSD_CURRENCY;
                     double value = free * lastPrices.get(asset + USDT_CURRENCY).getLastPrice();
                     if(!currency.contains(USD_CURRENCY)){
                         try {
@@ -443,7 +462,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
     protected void placeAnOrder(String symbol, double quantity, String side) throws Exception {
         HashMap<String, Object> quantityParam = new HashMap<>();
         quantityParam.put("quantity", quantity);
-        orderStatus = binanceSpotManager.testNewOrder(symbol, side, MARKET_TYPE, quantityParam);
+        orderStatus = binanceSpotManager.sendNewOrder(symbol, side, MARKET_TYPE, quantityParam);
     }
 
     /**
