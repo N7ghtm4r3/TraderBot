@@ -14,6 +14,10 @@ public final class ServerRequest {
     public static final String GET_KEYS_OPE = "get_keys_ope";
     public static final String REGISTRATION_OPE = "registration_ope";
     public static final String LOGIN_OPE = "login_ope";
+    public static final String CHANGE_MAIL_OPE = "change_mail_ope";
+    public static final String CHANGE_PASSWORD_OPE = "change_password_ope";
+    public static final String LOGOUT_ACCOUNT_OPE = "logout_account_ope";
+    public static final String DELETE_ACCOUNT_OPE = "delete_account_ope";
     public static final String STATUS_CODE = "status_code";
     public static final int GENERIC_ERROR_RESPONSE = 300;
     public static final int SUCCESSFUL_RESPONSE = 200;

@@ -24,7 +24,7 @@ public interface AndroidCoreRoutines {
                 ##################################################################################
                 """);
     }
-    
+
     final class Credentials{
 
         public static final int MAX_TOKEN_LENGTH = 32;
@@ -37,15 +37,14 @@ public interface AndroidCoreRoutines {
         private final String ivSpec;
         private final String secretKey;
 
-        /**
-         * {
-         *     "secret_key": "cbDMC1jgNI1XpXVT/tG0ebydi6jleMpwRW65b1GdxpQ=",
-         *     "password": "agaggagaga",
-         *     "mail": "gaaaaucho_javier@alibero.it",
-         *     "iv_spec": "IklkXsEA/Up5wisDjTUVIA==",
-         *     "auth_token": "fb1ac02555f540adbc21045bdefa932b",
-         *     "token": "cc470995ba8a457c980a8106495e256c"
-         * }
+        /**{
+             "secret_key": "FIjcWNCXx3sfbjQaSbIa1UyNNS2+ectb1WxnqwFSMxk=",
+             "password": "agaggagaga",
+             "mail": "gaaaaucho_javier@alibero.it",
+             "iv_spec": "3MPPgYx/cdzMRw5SYksaIA==",
+             "auth_token": "4c74bdd2f97944b79b4013bea1340617",
+             "token": "42bdb0c384c74ba8a94dd995df5a28fe"
+             }
          * **/
 
         public Credentials(String mail, String password) throws Exception {
