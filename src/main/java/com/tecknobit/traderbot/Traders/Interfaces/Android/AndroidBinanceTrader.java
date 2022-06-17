@@ -2,50 +2,63 @@ package com.tecknobit.traderbot.Traders.Interfaces.Android;
 
 import com.tecknobit.traderbot.Records.Portfolio.Asset;
 import com.tecknobit.traderbot.Records.Portfolio.Transaction;
+import com.tecknobit.traderbot.Routines.Android.AndroidCoreRoutines;
 import com.tecknobit.traderbot.Traders.Interfaces.Native.BinanceTraderBot;
 
 import java.util.ArrayList;
 
-public class AndroidBinanceTrader extends BinanceTraderBot {
+public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCoreRoutines {
 
-    public AndroidBinanceTrader(String apiKey, String secretKey) throws Exception {
+    public AndroidBinanceTrader(String apiKey, String secretKey, Credentials credentials) throws Exception {
         super(apiKey, secretKey);
-    }
-
-    public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint) throws Exception {
-        super(apiKey, secretKey, baseEndpoint);
-    }
-
-    public AndroidBinanceTrader(String apiKey, String secretKey, int refreshPricesTime) throws Exception {
-        super(apiKey, secretKey, refreshPricesTime);
+        checkCredentialsValidity(credentials);
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint,
-                                int refreshPricesTime) throws Exception {
-        super(apiKey, secretKey, baseEndpoint, refreshPricesTime);
+                                Credentials credentials) throws Exception {
+        super(apiKey, secretKey, baseEndpoint);
+        checkCredentialsValidity(credentials);
     }
 
-    public AndroidBinanceTrader(String apiKey, String secretKey, ArrayList<String> quoteCurrencies,
-                                int refreshPricesTime) throws Exception {
+    public AndroidBinanceTrader(String apiKey, String secretKey, int refreshPricesTime,
+                                Credentials credentials) throws Exception {
+        super(apiKey, secretKey, refreshPricesTime);
+        checkCredentialsValidity(credentials);
+    }
+
+    public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint, int refreshPricesTime,
+                                Credentials credentials) throws Exception {
+        super(apiKey, secretKey, baseEndpoint, refreshPricesTime);
+        checkCredentialsValidity(credentials);
+    }
+
+    public AndroidBinanceTrader(String apiKey, String secretKey, ArrayList<String> quoteCurrencies, int refreshPricesTime,
+                                Credentials credentials) throws Exception {
         super(apiKey, secretKey, quoteCurrencies, refreshPricesTime);
+        checkCredentialsValidity(credentials);
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint, ArrayList<String> quoteCurrencies,
-                                int refreshPricesTime) throws Exception {
+                                int refreshPricesTime, Credentials credentials) throws Exception {
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies, refreshPricesTime);
+        checkCredentialsValidity(credentials);
     }
 
-    public AndroidBinanceTrader(String apiKey, String secretKey, ArrayList<String> quoteCurrencies) throws Exception {
+    public AndroidBinanceTrader(String apiKey, String secretKey, ArrayList<String> quoteCurrencies,
+                                Credentials credentials) throws Exception {
         super(apiKey, secretKey, quoteCurrencies);
+        checkCredentialsValidity(credentials);
     }
 
-    public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint,
-                                ArrayList<String> quoteCurrencies) throws Exception {
+    public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint, ArrayList<String> quoteCurrencies,
+                                Credentials credentials) throws Exception {
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies);
+        checkCredentialsValidity(credentials);
     }
 
     @Override
     protected void initTrader() throws Exception {
+        printAndroidDisclaimer();
         super.initTrader();
     }
 

@@ -1,94 +1,137 @@
 package com.tecknobit.traderbot.Routines.Android;
 
+import com.tecknobit.traderbot.Exceptions.SaveData;
+import org.json.JSONObject;
+
+import static com.tecknobit.traderbot.Routines.Android.ServerRequest.*;
+import static org.apache.commons.validator.routines.EmailValidator.getInstance;
+
 public interface AndroidCoreRoutines {
 
-    /*
-     The credentials regarding the registration and login for the Android
-    interfaces will be requested only at the time of starting this service, but on other occasions Tecknobit will not
-    ask you to enter any data so do not even share the credentials for the Tecknobit account. storing and managing
-    the credentials to be entered is your responsibility.*/
+    default void checkCredentialsValidity(Credentials credentials){
+        if(credentials == null)
+            throw new IllegalArgumentException("Credentials object cannot be null");
+    }
 
     final class Credentials{
 
-        private String authToken;
-        private String mail;
-        private String password;
-        private String token;
-        private String ivSpec;
-        private String secretKey;
+        public static final int MAX_TOKEN_LENGTH = 32;
+        public static final int MIN_TOKEN_LENGTH = 8;
+        private ServerRequest serverRequest;
+        private final String authToken;
+        private final String mail;
+        private final String password;
+        private final String token;
+        private final String ivSpec;
+        private final String secretKey;
 
-        //registration
-        public Credentials(String mail, String password) {
-            this.mail = mail;
-            this.password = password;
+        /**
+         * {
+         *     "secret_key": "cbDMC1jgNI1XpXVT/tG0ebydi6jleMpwRW65b1GdxpQ=",
+         *     "password": "agaggagaga",
+         *     "mail": "gaaaaucho_javier@alibero.it",
+         *     "iv_spec": "IklkXsEA/Up5wisDjTUVIA==",
+         *     "auth_token": "fb1ac02555f540adbc21045bdefa932b",
+         *     "token": "cc470995ba8a457c980a8106495e256c"
+         * }
+         * **/
+
+        public Credentials(String mail, String password) throws Exception {
+            if(!getInstance().isValid(mail))
+                throw new IllegalArgumentException("Mail must be a valid mail");
+            else
+                this.mail = mail;
+            if(wrongPasswordValidity(password))
+                throw new IllegalArgumentException("Password must be 8 - 32 characters length");
+            else
+                this.password = password;
+            serverRequest = new ServerRequest();
+            serverRequest.sendRequest(new JSONObject(), GET_KEYS_OPE);
+            response = serverRequest.readRequest();
+            serverRequest = new ServerRequest(response.getString(IV_SPEC_KEY), response.getString(SECRET_KEY));
+            serverRequest.sendRequest(new JSONObject().put(MAIL_KEY, mail).put(PASSWORD_KEY, password), REGISTRATION_OPE);
+            response = serverRequest.readRequest();
+            switch (response.getInt(STATUS_CODE)){
+                case SUCCESSFUL_RESPONSE:
+                    throw new SaveData(new JSONObject().put(TOKEN_KEY, response.getString(TOKEN_KEY))
+                            .put(AUTH_TOKEN_KEY, response.getString(AUTH_TOKEN_KEY))
+                            .put(IV_SPEC_KEY, response.getString(IV_SPEC_KEY))
+                            .put(SECRET_KEY, response.getString(SECRET_KEY))
+                            .put(MAIL_KEY, mail)
+                            .put(PASSWORD_KEY, password));
+                case GENERIC_ERROR_RESPONSE: throw new IllegalAccessException("Mail not available");
+                default: throw new IllegalAccessException("Operation failed");
+            }
         }
 
-        //login
-        public Credentials(String authToken, String mail, String password) {
-            this.authToken = authToken;
-            this.mail = mail;
-            this.password = password;
-            //pass device token to null
-        }
-
-        //default
-        public Credentials(String authToken, String mail, String password, String token, String ivSpec, String secretKey) {
+        public Credentials(String authToken, String mail, String password, String token, String ivSpec,
+                           String secretKey) throws Exception {
             this.authToken = authToken;
             this.mail = mail;
             this.password = password;
             this.token = token;
             this.ivSpec = ivSpec;
             this.secretKey = secretKey;
+            serverRequest = new ServerRequest(ivSpec, secretKey, authToken, token);
+            serverRequest.sendTokenRequest(new JSONObject().put(MAIL_KEY, mail).put(PASSWORD_KEY, password), LOGIN_OPE);
+            response = serverRequest.readRequest();
+            switch (response.getInt(STATUS_CODE)){
+                case SUCCESSFUL_RESPONSE:
+                    if(!ivSpec.equals(response.getString(IV_SPEC_KEY)) || !secretKey.equals(response.getString(SECRET_KEY)))
+                        throw new IllegalAccessException("Wrong credentials inserted");
+                    break;
+                case GENERIC_ERROR_RESPONSE: throw new IllegalAccessException("Wrong credentials inserted");
+                default: throw new IllegalAccessException("Operation failed");
+            }
         }
 
-        public String getToken() {
-            return token;
+        private boolean wrongPasswordValidity(String password){
+            if(password == null)
+                return true;
+            int length = password.length();
+            return length < MIN_TOKEN_LENGTH || length > MAX_TOKEN_LENGTH;
         }
 
-        public void setToken(String token) {
-            this.token = token;
-        }
-
-        public String getIvSpec() {
-            return ivSpec;
-        }
-
-        public void setIvSpec(String ivSpec) {
-            this.ivSpec = ivSpec;
-        }
-
-        public String getSecretKey() {
-            return secretKey;
-        }
-
-        public void setSecretKey(String secretKey) {
-            this.secretKey = secretKey;
+        public ServerRequest getServerRequest() {
+            return serverRequest;
         }
 
         public String getAuthToken() {
             return authToken;
         }
 
-        public void setAuthToken(String authToken) {
-            this.authToken = authToken;
-        }
-
         public String getMail() {
             return mail;
-        }
-
-        public void setMail(String mail) {
-            this.mail = mail;
         }
 
         public String getPassword() {
             return password;
         }
 
-        public void setPassword(String password) {
-            this.password = password;
+        public String getToken() {
+            return token;
         }
 
+        public String getIvSpec() {
+            return ivSpec;
+        }
+
+        public String getSecretKey() {
+            return secretKey;
+        }
+
+    }
+
+    default void printAndroidDisclaimer(){
+        System.out.println("""
+                ############################### DISCLAIMER ALERT #################################\s
+                ## Note: The credentials regarding the registration and login for the Android   ##\s
+                ## interfaces will be requested only at the time of starting this service, but  ##\s   
+                ## on other occasions Tecknobit will not ask you to enter any data so do not    ##\s
+                ## share the credentials for the Tecknobit account. The storing and managing    ##\s
+                ## about the credentials to be entered is your responsibility.                  ##\s
+                ##################################################################################
+                """);
     }
 
 }
