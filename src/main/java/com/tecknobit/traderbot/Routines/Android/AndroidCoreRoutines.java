@@ -12,7 +12,18 @@ public interface AndroidCoreRoutines {
         if(credentials == null)
             throw new IllegalArgumentException("Credentials object cannot be null");
     }
-
+    
+    default void printAndroidDisclaimer(){
+        System.out.println("""
+                ############################### DISCLAIMER ALERT #################################\s
+                ## Note: The credentials regarding the registration and login for the Android   ##\s
+                ## interfaces will be requested only at the time of starting this service, but  ##\s   
+                ## on other occasions Tecknobit will not ask you to enter any data so do not    ##\s
+                ## share the credentials for the Tecknobit account. The storing and managing    ##\s
+                ## about the credentials to be entered is your responsibility.                  ##\s
+                ##################################################################################
+                """);
+    }
     final class Credentials{
 
         public static final int MAX_TOKEN_LENGTH = 32;
@@ -120,18 +131,6 @@ public interface AndroidCoreRoutines {
             return secretKey;
         }
 
-    }
-
-    default void printAndroidDisclaimer(){
-        System.out.println("""
-                ############################### DISCLAIMER ALERT #################################\s
-                ## Note: The credentials regarding the registration and login for the Android   ##\s
-                ## interfaces will be requested only at the time of starting this service, but  ##\s   
-                ## on other occasions Tecknobit will not ask you to enter any data so do not    ##\s
-                ## share the credentials for the Tecknobit account. The storing and managing    ##\s
-                ## about the credentials to be entered is your responsibility.                  ##\s
-                ##################################################################################
-                """);
     }
 
 }
