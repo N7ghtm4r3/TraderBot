@@ -12,7 +12,7 @@ public interface AndroidCoreRoutines {
         if(credentials == null)
             throw new IllegalArgumentException("Credentials object cannot be null");
     }
-    
+
     default void printAndroidDisclaimer(){
         System.out.println("""
                 ############################### DISCLAIMER ALERT #################################\s
