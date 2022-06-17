@@ -1,4 +1,4 @@
-package com.tecknobit.traderbot.Routines;
+package com.tecknobit.traderbot.Routines.Autonomous;
 
 import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency;
 
@@ -129,14 +129,14 @@ public interface AutoTraderCoreRoutines {
     }
 
     /**
-     * This method is used to print disclaimer alert to warn user of terms and conditions using our services.
-     * Is used in autonomous traders and in Android's interfaces. <br>
+     * This method is used to print disclaimer alert to warn user of terms and conditions using our services. <br>
+     * It is printed in autonomous traders. <br>
      * Any params required
      * **/
     default void printDisclaimer(){
         System.out.println("""
                 ############################### DISCLAIMER ALERT #################################\s
-                ## This is an auto trader bot made by Tecknobit and all rights are deserved.    ##\s
+                ## This is an auto trader bot made by Tecknobit and all rights are reserved.    ##\s
                 ## By deciding to use this auto trader bot, you declare that you are aware of   ##\s
                 ## the possible risks associated with the world of crypto investments and how   ##\s
                 ## there may be possible losses, large or small, due to market trends. You also ##\s

@@ -10,7 +10,7 @@ import com.tecknobit.binancemanager.Managers.SignedManagers.Wallet.Records.Asset
 import com.tecknobit.traderbot.Records.Portfolio.Asset;
 import com.tecknobit.traderbot.Records.Portfolio.Coin;
 import com.tecknobit.traderbot.Records.Portfolio.Transaction;
-import com.tecknobit.traderbot.Routines.TraderCoreRoutines;
+import com.tecknobit.traderbot.Routines.Interfaces.TraderCoreRoutines;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -210,6 +210,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
      * **/
     @Override
     protected void initTrader() throws Exception {
+        printCredentialsDisclaimer();
         tradingPairsList = new HashMap<>();
         allTransactions = new ArrayList<>();
         if(quoteCurrencies == null)

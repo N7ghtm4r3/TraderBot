@@ -12,7 +12,7 @@ import com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.Records.Tradi
 import com.tecknobit.traderbot.Records.Portfolio.Asset;
 import com.tecknobit.traderbot.Records.Portfolio.Coin;
 import com.tecknobit.traderbot.Records.Portfolio.Transaction;
-import com.tecknobit.traderbot.Routines.TraderCoreRoutines;
+import com.tecknobit.traderbot.Routines.Interfaces.TraderCoreRoutines;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -385,6 +385,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * **/
     @Override
     protected void initTrader() throws Exception {
+        printCredentialsDisclaimer();
         tradingPairsList = new HashMap<>();
         allTransactions = new ArrayList<>();
         if(quoteCurrencies == null)

@@ -1,11 +1,11 @@
 package com.tecknobit.traderbot.Records.Portfolio;
 
-import com.tecknobit.traderbot.Routines.RoutineMessages;
-import com.tecknobit.traderbot.Routines.AutoTraderCoreRoutines.TradingConfig;
+import com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages;
+import com.tecknobit.traderbot.Routines.Autonomous.AutoTraderCoreRoutines.TradingConfig;
 
 import java.util.ArrayList;
 
-import static com.tecknobit.traderbot.Routines.TraderCoreRoutines.tradingTools;
+import static com.tecknobit.traderbot.Routines.Interfaces.TraderCoreRoutines.tradingTools;
 import static java.lang.System.out;
 
 /**

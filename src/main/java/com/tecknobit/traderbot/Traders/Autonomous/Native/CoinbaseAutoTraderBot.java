@@ -6,7 +6,7 @@ import com.tecknobit.traderbot.Helpers.Orders.MarketOrder;
 import com.tecknobit.traderbot.Records.Portfolio.Coin;
 import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency;
 import com.tecknobit.traderbot.Records.Portfolio.Transaction;
-import com.tecknobit.traderbot.Routines.AutoTraderCoreRoutines;
+import com.tecknobit.traderbot.Routines.Autonomous.AutoTraderCoreRoutines;
 import com.tecknobit.traderbot.Records.Account.TraderAccount;
 import com.tecknobit.traderbot.Traders.Interfaces.Native.CoinbaseTraderBot;
 
@@ -15,8 +15,8 @@ import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.Records.Candle.GRANULARITY_1d;
-import static com.tecknobit.traderbot.Routines.RoutineMessages.*;
-import static com.tecknobit.traderbot.Routines.RoutineMessages.ANSI_RESET;
+import static com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages.*;
+import static com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages.ANSI_RESET;
 import static java.lang.Math.abs;
 import static java.lang.Math.ceil;
 
@@ -121,7 +121,6 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
-        printDisclaimer();
     }
 
     /** Constructor to init CoinbaseTraderBot
@@ -143,7 +142,6 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
-        printDisclaimer();
     }
 
     /** Constructor to init CoinbaseTraderBot
@@ -165,7 +163,6 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
-        printDisclaimer();
     }
 
     /** Constructor to init CoinbaseTraderBot
@@ -186,7 +183,6 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
-        printDisclaimer();
     }
 
     /** Constructor to init CoinbaseTraderBot
@@ -211,7 +207,6 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
-        printDisclaimer();
     }
 
     /** Constructor to init CoinbaseTraderBot
@@ -235,7 +230,6 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
-        printDisclaimer();
     }
 
     /** Constructor to init CoinbaseTraderBot
@@ -259,7 +253,6 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
-        printDisclaimer();
     }
 
     /** Constructor to init CoinbaseTraderBot
@@ -281,7 +274,6 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
-        printDisclaimer();
     }
 
     /** Constructor to init CoinbaseTraderBot
@@ -307,7 +299,6 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
-        printDisclaimer();
     }
 
     /** Constructor to init CoinbaseTraderBot
@@ -331,7 +322,6 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
-        printDisclaimer();
     }
 
     /** Constructor to init CoinbaseTraderBot
@@ -356,7 +346,6 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
-        printDisclaimer();
     }
 
     /** Constructor to init CoinbaseTraderBot
@@ -379,7 +368,6 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
-        printDisclaimer();
     }
 
     /** Constructor to init CoinbaseTraderBot
@@ -406,7 +394,6 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
-        printDisclaimer();
     }
 
     /** Constructor to init CoinbaseTraderBot
@@ -432,7 +419,6 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
-        printDisclaimer();
     }
 
     /** Constructor to init CoinbaseTraderBot
@@ -458,7 +444,6 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
-        printDisclaimer();
     }
 
     /** Constructor to init CoinbaseTraderBot
@@ -483,7 +468,6 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
         runningBot = true;
-        printDisclaimer();
     }
 
     /**
@@ -494,6 +478,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
      * **/
     @Override
     public void start() {
+        printDisclaimer();
         tradingConfig = fetchTradingConfig();
         previousBuying = System.currentTimeMillis();
         new Thread(){

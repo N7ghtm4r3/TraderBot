@@ -1,4 +1,4 @@
-package com.tecknobit.traderbot.Routines;
+package com.tecknobit.traderbot.Routines.Interfaces;
 
 import com.tecknobit.apimanager.Tools.Trading.TradingTools;
 import com.tecknobit.traderbot.Records.Portfolio.Asset;
@@ -12,8 +12,8 @@ import java.lang.String;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.tecknobit.traderbot.Routines.TraderCoreRoutines.FormatResponseType.String;
-import static com.tecknobit.traderbot.Routines.TraderCoreRoutines.FormatResponseType.*;
+import static com.tecknobit.traderbot.Routines.Interfaces.TraderCoreRoutines.FormatResponseType.String;
+import static com.tecknobit.traderbot.Routines.Interfaces.TraderCoreRoutines.FormatResponseType.*;
 
 /**
  * The {@code TraderCoreRoutines} class defines base routines methods for all traders. <br>
@@ -345,5 +345,24 @@ public abstract class TraderCoreRoutines {
      * will print {@link Exception} error message
      * **/
     protected abstract void printError(String symbol, Exception e);
+
+    /**
+     * This method is used to print disclaimer alert to warn user of responsibility of storage and manage
+     * api keys create on exchange platforms. <br>
+     * It is printed in all traders. <br>
+     * Any params required
+     * **/
+    protected void printCredentialsDisclaimer(){
+        System.out.println("""
+                ############################### DISCLAIMER ALERT #################################\s
+                ## Note: You are solely responsible for storing and using your api keys created ##\s
+                ## on the exchange platforms, this is because they will never be saved in our   ##\s   
+                ## infrastructures. Never share these personal credentials with anyone,         ##\s
+                ## Tecknobit will never ask you for any of the credentials external to our      ##\s
+                ## service outside of starting the interfaces, therefore not by email, messages,##\s 
+                ## forums or social networks.                                                   ##\s
+                ##################################################################################
+                """);
+    }
 
 }

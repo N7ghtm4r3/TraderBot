@@ -1,10 +1,10 @@
 package com.tecknobit.traderbot.Records.Portfolio;
 
-import com.tecknobit.traderbot.Routines.RoutineMessages;
+import com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages;
 
 import static com.tecknobit.binancemanager.Managers.SignedManagers.Trade.Common.TradeConstants.BUY;
 import static com.tecknobit.binancemanager.Managers.SignedManagers.Trade.Common.TradeConstants.SELL;
-import static com.tecknobit.traderbot.Routines.TraderCoreRoutines.tradingTools;
+import static com.tecknobit.traderbot.Routines.Interfaces.TraderCoreRoutines.tradingTools;
 import static java.lang.System.out;
 
 /**

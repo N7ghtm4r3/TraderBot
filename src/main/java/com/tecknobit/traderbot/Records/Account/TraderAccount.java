@@ -1,12 +1,12 @@
 package com.tecknobit.traderbot.Records.Account;
 
-import com.tecknobit.traderbot.Routines.RoutineMessages;
+import com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages;
 
 import java.util.ArrayList;
 import java.util.Date;
 
-import static com.tecknobit.traderbot.Routines.AutoTraderCoreRoutines.ASSET_NOT_TRADABLE;
-import static com.tecknobit.traderbot.Routines.TraderCoreRoutines.tradingTools;
+import static com.tecknobit.traderbot.Routines.Autonomous.AutoTraderCoreRoutines.ASSET_NOT_TRADABLE;
+import static com.tecknobit.traderbot.Routines.Interfaces.TraderCoreRoutines.tradingTools;
 import static java.lang.System.out;
 
 /**
