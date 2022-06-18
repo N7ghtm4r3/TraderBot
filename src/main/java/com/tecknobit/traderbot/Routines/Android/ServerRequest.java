@@ -18,6 +18,9 @@ public final class ServerRequest {
     public static final String CHANGE_PASSWORD_OPE = "change_password_ope";
     public static final String CHANGE_REFRESH_TIME_PRICES_OPE = "change_refresh_prices_time_ope";
     public static final String CHANGE_TRADER_STATUS_OPE = "change_trader_status_ope";
+    public static final String CHANGE_LANGUAGE_OPE = "change_language_ope";
+    public static final String CHANGE_CURRENCY_OPE = "change_currency_ope";
+    public static final String CHANGE_ACCOUNT_TIME_DELETION_OPE = "change_account_time_deletion_ope";
     public static final String LOGOUT_ACCOUNT_OPE = "logout_account_ope";
     public static final String DELETE_ACCOUNT_OPE = "delete_account_ope";
     public static final String STATUS_CODE = "status_code";
@@ -27,11 +30,17 @@ public final class ServerRequest {
     public static final int ERROR_RESPONSE = 500;
     public static final String TOKEN_KEY = "token";
     public static final String MAIL_KEY = "mail";
+    public static final String NEW_MAIL_KEY = "new_mail";
     public static final String PASSWORD_KEY = "password";
+    public static final String NEW_PASSWORD_KEY = "new_password";
     public static final String IV_SPEC_KEY = "iv_spec";
     public static final String SECRET_KEY = "secret_key";
     public static final String DEVICE_TOKEN_KEY = "device_token";
-    public static final String AUTH_TOKEN_KEY = "auth_token";public static JSONObject response;
+    public static final String AUTH_TOKEN_KEY = "auth_token";
+    public static final String LANGUAGE_KEY = "language";
+    public static final String CURRENCY_KEY = "currency";
+    public static final String TIME_DELETION_KEY = "time_deletion";
+    public static JSONObject response;
     private final ClientCipher clientCipher;
     private final PrintWriter printWriter;
     private final boolean ciphered;

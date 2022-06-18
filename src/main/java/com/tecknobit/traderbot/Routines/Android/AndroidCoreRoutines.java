@@ -44,12 +44,12 @@ public interface AndroidCoreRoutines {
 
         /**
          * {
-         *     "secret_key": "6twuq9DEiBqLsC/AXEImioDOa1QcX5dvSm5M2QhrNUE=",
+         *     "secret_key": "bTOT4xze9FmgyK7+L5vELrJLH62U3644dvIkPy7CvPU=",
          *     "password": "gagagagaga",
-         *     "mail": "aaa@gmail.com",
-         *     "iv_spec": "/HiQv8/L0QonaE1R1i9/HA==",
-         *     "auth_token": "c4895653444c4a84ba598bf806f23a19",
-         *     "token": "ed0f0bb5a3f343fabcff7040e3343bb0"
+         *     "mail": "aaaaa@gmail.com",
+         *     "iv_spec": "V0r9wGpo3T+d/1uF2anxhw==",
+         *     "auth_token": "3240b3a1839d4fd7aa434dad613b4931",
+         *     "token": "783a5acc98b44acc877d6e04e195c12b"
          * }
          * **/
 
