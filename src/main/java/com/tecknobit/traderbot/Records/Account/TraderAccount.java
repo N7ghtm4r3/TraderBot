@@ -235,7 +235,7 @@ public final class TraderAccount extends Trader implements RoutineMessages {
             double totalIncome = 0;
             for (double income : incomes)
                 totalIncome += income;
-            return tradingTools.roundValue(totalIncome / incomes.size(), 2);
+            return totalIncome / incomes.size();
         }
         return totalIncome;
     }
