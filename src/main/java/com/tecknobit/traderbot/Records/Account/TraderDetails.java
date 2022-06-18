@@ -3,6 +3,7 @@ package com.tecknobit.traderbot.Records.Account;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 import static java.text.DateFormat.DATE_FIELD;
 import static java.text.DateFormat.getDateInstance;
@@ -75,6 +76,36 @@ public final class TraderDetails {
      * {@code STOPPED_TRADER_STATUS} is instance that memorize STOPPED trader current status
      * **/
     public static final String STOPPED_TRADER_STATUS = "STOPPED";
+
+    /**
+     * {@code TRADER_STATUS_KEY} is instance that memorize trader status key
+     * **/
+    public static final String TRADER_STATUS_KEY = "trader_status";
+
+    /**
+     * {@code TRADER_PLATFORM_KEY} is instance that memorize trader platform key
+     * **/
+    public static final String TRADER_PLATFORM_KEY = "trader_platform";
+
+    /**
+     * {@code TRADER_TYPE_KEY} is instance that memorize trader type key
+     * **/
+    public static final String TRADER_TYPE_KEY = "trader_type";
+
+    /**
+     * {@code REFRESH_PRICES_TIME_KEY} is instance that memorize refresh time key
+     * **/
+    public static final String REFRESH_PRICES_TIME_KEY = "refresh_time";
+
+    /**
+     * {@code LAST_TRADER_ACTIVITY_KEY} is instance that memorize last trader activity key
+     * **/
+    public static final String LAST_TRADER_ACTIVITY_KEY = "last_trader_activity";
+
+    /**
+     * {@code RUNNING_FROM_DATE_KEY} is instance that memorize running from date key
+     * **/
+    public static final String RUNNING_FROM_DATE_KEY = "running_from_date";
 
     /**
      * {@code dayPassFormat} is instance that memorize format of {@link #lastTraderActivity} when a day from last activity
@@ -273,6 +304,22 @@ public final class TraderDetails {
      * **/
     public String getRunningDate(){
         return dayPassFormat.format(runningFromDate);
+    }
+
+    /**
+     * This method is used to get trader details <br>
+     * Any params required
+     * @return trader details as {@link HashMap} of {@link Object}
+     * **/
+    public HashMap<String, Object> getTrader() {
+        HashMap<String, Object> trader = new HashMap<>();
+        trader.put(RUNNING_FROM_DATE_KEY, runningFromDate);
+        trader.put(TRADER_TYPE_KEY, traderType);
+        trader.put(LAST_TRADER_ACTIVITY_KEY, lastTraderActivityTimestamp);
+        trader.put(REFRESH_PRICES_TIME_KEY, refreshPricesTime);
+        trader.put(TRADER_PLATFORM_KEY, traderPlatform);
+        trader.put(TRADER_STATUS_KEY, traderStatus);
+        return trader;
     }
 
 }

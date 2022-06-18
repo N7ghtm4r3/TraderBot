@@ -1,8 +1,10 @@
 package com.tecknobit.traderbot.Routines.Android;
 
 import com.tecknobit.traderbot.Exceptions.SaveData;
+import com.tecknobit.traderbot.Records.Account.TraderDetails;
 import org.json.JSONObject;
 
+import static com.tecknobit.traderbot.Records.Account.TraderDetails.*;
 import static com.tecknobit.traderbot.Routines.Android.ServerRequest.*;
 import static org.apache.commons.validator.routines.EmailValidator.getInstance;
 
@@ -25,6 +27,8 @@ public interface AndroidCoreRoutines {
                 """);
     }
 
+    void initCredentials() throws Exception;
+
     final class Credentials{
 
         public static final int MAX_TOKEN_LENGTH = 32;
@@ -36,18 +40,20 @@ public interface AndroidCoreRoutines {
         private final String token;
         private final String ivSpec;
         private final String secretKey;
+        private TraderDetails traderDetails;
 
-        /**{
-             "secret_key": "FIjcWNCXx3sfbjQaSbIa1UyNNS2+ectb1WxnqwFSMxk=",
-             "password": "agaggagaga",
-             "mail": "gaaaaucho_javier@alibero.it",
-             "iv_spec": "3MPPgYx/cdzMRw5SYksaIA==",
-             "auth_token": "4c74bdd2f97944b79b4013bea1340617",
-             "token": "42bdb0c384c74ba8a94dd995df5a28fe"
-             }
+        /**
+         * {
+         *     "secret_key": "lDxSdT3SSRT8T+Lvubo5ytbxoL4CM03Od2vSNXc1CBE=",
+         *     "password": "gagagagaga",
+         *     "mail": "gaaaaAagAuacaaho_javier@alibero.it",
+         *     "iv_spec": "ctlFSqJ/e3FiIAg/MIXizw==",
+         *     "auth_token": "7681506a2a6e43929aa62870965d0af5",
+         *     "token": "91305bcfd1d8465ab9377602994d3b7c"
+         * }
          * **/
 
-        public Credentials(String mail, String password) throws Exception {
+        public Credentials(String mail, String password) {
             if(!getInstance().isValid(mail))
                 throw new IllegalArgumentException("Mail must be a valid mail");
             else
@@ -56,22 +62,34 @@ public interface AndroidCoreRoutines {
                 throw new IllegalArgumentException("Password must be 8 - 32 characters length");
             else
                 this.password = password;
-            serverRequest = new ServerRequest();
-            serverRequest.sendRequest(new JSONObject(), GET_KEYS_OPE);
-            response = serverRequest.readRequest();
-            serverRequest = new ServerRequest(response.getString(IV_SPEC_KEY), response.getString(SECRET_KEY));
-            serverRequest.sendRequest(new JSONObject().put(MAIL_KEY, mail).put(PASSWORD_KEY, password), REGISTRATION_OPE);
-            response = serverRequest.readRequest();
-            switch (response.getInt(STATUS_CODE)){
-                case SUCCESSFUL_RESPONSE:
-                    throw new SaveData(new JSONObject().put(TOKEN_KEY, response.getString(TOKEN_KEY))
-                            .put(AUTH_TOKEN_KEY, response.getString(AUTH_TOKEN_KEY))
-                            .put(IV_SPEC_KEY, response.getString(IV_SPEC_KEY))
-                            .put(SECRET_KEY, response.getString(SECRET_KEY))
-                            .put(MAIL_KEY, mail)
-                            .put(PASSWORD_KEY, password));
-                case GENERIC_ERROR_RESPONSE: throw new IllegalAccessException("Mail not available");
-                default: throw new IllegalAccessException("Operation failed");
+            authToken = null;
+            token = null;
+            ivSpec = null;
+            secretKey = null;
+        }
+
+        public void sendRegistrationRequest() throws Exception {
+            if(traderDetails != null && token == null){
+                getPublicKeys();
+                serverRequest.sendRequest(new JSONObject().put(MAIL_KEY, mail).put(PASSWORD_KEY, password)
+                        .put(TRADER_STATUS_KEY, traderDetails.getTraderStatus())
+                        .put(REFRESH_PRICES_TIME_KEY, traderDetails.getRefreshPricesTime())
+                        .put(TRADER_PLATFORM_KEY, traderDetails.getTraderPlatform())
+                        .put(LAST_TRADER_ACTIVITY_KEY, traderDetails.getLastTraderActivity())
+                        .put(RUNNING_FROM_DATE_KEY, traderDetails.getRunningFromDate())
+                        .put(TRADER_TYPE_KEY, traderDetails.getTraderType()), REGISTRATION_OPE);
+                response = serverRequest.readRequest();
+                switch (response.getInt(STATUS_CODE)){
+                    case SUCCESSFUL_RESPONSE:
+                        throw new SaveData(new JSONObject().put(TOKEN_KEY, response.getString(TOKEN_KEY))
+                                .put(AUTH_TOKEN_KEY, response.getString(AUTH_TOKEN_KEY))
+                                .put(IV_SPEC_KEY, response.getString(IV_SPEC_KEY))
+                                .put(SECRET_KEY, response.getString(SECRET_KEY))
+                                .put(MAIL_KEY, mail)
+                                .put(PASSWORD_KEY, password));
+                    case GENERIC_ERROR_RESPONSE: throw new IllegalAccessException("Mail not available");
+                    default: throw new IllegalAccessException("Operation failed");
+                }
             }
         }
 
@@ -83,17 +101,27 @@ public interface AndroidCoreRoutines {
             this.token = token;
             this.ivSpec = ivSpec;
             this.secretKey = secretKey;
-            serverRequest = new ServerRequest(ivSpec, secretKey, authToken, token);
-            serverRequest.sendTokenRequest(new JSONObject().put(MAIL_KEY, mail).put(PASSWORD_KEY, password), LOGIN_OPE);
+            getPublicKeys();
+            serverRequest.sendRequest(new JSONObject().put(MAIL_KEY, mail).put(PASSWORD_KEY, password)
+                    .put(AUTH_TOKEN_KEY, authToken), LOGIN_OPE);
             response = serverRequest.readRequest();
             switch (response.getInt(STATUS_CODE)){
                 case SUCCESSFUL_RESPONSE:
-                    if(!ivSpec.equals(response.getString(IV_SPEC_KEY)) || !secretKey.equals(response.getString(SECRET_KEY)))
+                    if(!token.equals(response.getString(TOKEN_KEY)) || !ivSpec.equals(response.getString(IV_SPEC_KEY))
+                            || !secretKey.equals(response.getString(SECRET_KEY))) {
                         throw new IllegalAccessException("Wrong credentials inserted");
+                    }
                     break;
                 case GENERIC_ERROR_RESPONSE: throw new IllegalAccessException("Wrong credentials inserted");
                 default: throw new IllegalAccessException("Operation failed");
             }
+        }
+
+        private void getPublicKeys() throws Exception {
+            serverRequest = new ServerRequest();
+            serverRequest.sendRequest(new JSONObject(), GET_KEYS_OPE);
+            response = serverRequest.readRequest();
+            serverRequest = new ServerRequest(response.getString(IV_SPEC_KEY), response.getString(SECRET_KEY));
         }
 
         private boolean wrongPasswordValidity(String password){
@@ -129,6 +157,10 @@ public interface AndroidCoreRoutines {
 
         public String getSecretKey() {
             return secretKey;
+        }
+
+        public void setTraderDetails(TraderDetails traderDetails){
+            this.traderDetails = traderDetails;
         }
 
     }
