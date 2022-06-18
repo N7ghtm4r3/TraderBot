@@ -4,6 +4,7 @@ import com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import static com.tecknobit.traderbot.Routines.Autonomous.AutoTraderCoreRoutines.ASSET_NOT_TRADABLE;
 import static com.tecknobit.traderbot.Routines.Interfaces.TraderCoreRoutines.tradingTools;
@@ -15,7 +16,32 @@ import static java.lang.System.out;
  * @author Tecknobit N7ghtm4r3
  * **/
 
-public final class TraderAccount implements RoutineMessages {
+public final class TraderAccount extends Trader implements RoutineMessages {
+
+    /**
+     * {@code ACTIVATION_DATE_KEY} is instance that memorize activation date key
+     * **/
+    public static final String ACTIVATION_DATE_KEY = "activation_date";
+
+    /**
+     * {@code GAINS_KEY} is instance that memorize sales at gain key
+     * **/
+    public static final String GAINS_KEY = "sales_at_gain";
+
+    /**
+     * {@code LOSSES_KEY} is instance that memorize sales at loss key
+     * **/
+    public static final String LOSSES_KEY = "sales_at_loss";
+
+    /**
+     * {@code PAIRS_KEY} is instance that memorize sales at pair key
+     * **/
+    public static final String PAIRS_KEY = "sales_at_pair";
+
+    /**
+     * {@code TOTAL_INCOME_KEY} is instance that memorize total income key
+     * **/
+    public static final String TOTAL_INCOME_KEY = "total_income";
 
     /**
      * {@code salesAtLoss} is instance that memorize sales at loss for account
@@ -35,7 +61,7 @@ public final class TraderAccount implements RoutineMessages {
     /**
      * {@code activationDate} is instance that memorize activation date for account
      * **/
-    private String activationDate;
+    private long activationDate;
 
     /**
      * {@code incomes} is instance that memorize list of incomes from orders
@@ -45,7 +71,7 @@ public final class TraderAccount implements RoutineMessages {
     /**
      * {@code totalIncome} is instance that memorize total income for account
      * **/
-    double totalIncome;
+    private double totalIncome;
 
     /** Constructor to init {@link TraderAccount}
      * @param salesAtLoss: sales at loss for account
@@ -54,12 +80,13 @@ public final class TraderAccount implements RoutineMessages {
      * @param activationDate: date when trader has been activated
      * @param totalIncome: total income gained for account
      * **/
-    public TraderAccount(int salesAtLoss, int salesAtGain, int salesAtPair, String activationDate, double totalIncome) {
+    public TraderAccount(int salesAtLoss, int salesAtGain, int salesAtPair, long activationDate, double totalIncome) {
         this.salesAtLoss = salesAtLoss;
         this.salesAtGain = salesAtGain;
         this.salesAtPair = salesAtPair;
         this.activationDate = activationDate;
         this.totalIncome = totalIncome;
+        initTimeFormatters();
     }
 
     /** Constructor to init {@link TraderAccount}
@@ -69,13 +96,14 @@ public final class TraderAccount implements RoutineMessages {
      * @param activationDate: date when trader has been activated
      * @param incomes: list of past incomes
      * **/
-    public TraderAccount(int salesAtLoss, int salesAtGain, int salesAtPair, String activationDate,
+    public TraderAccount(int salesAtLoss, int salesAtGain, int salesAtPair, long activationDate,
                          ArrayList<Double> incomes) {
         this.salesAtLoss = salesAtLoss;
         this.salesAtGain = salesAtGain;
         this.salesAtPair = salesAtPair;
         this.activationDate = activationDate;
         this.incomes = incomes;
+        initTimeFormatters();
     }
 
     /** Constructor to init {@link TraderAccount} <br>
@@ -83,6 +111,7 @@ public final class TraderAccount implements RoutineMessages {
      * **/
     public TraderAccount() {
         fetchAccountInformation();
+        initTimeFormatters();
     }
 
     /**
@@ -146,8 +175,17 @@ public final class TraderAccount implements RoutineMessages {
      * Any params required
      * @return {@link #activationDate} as activation date of account as {@link String}
      * **/
-    public String getActivationDate() {
+    public long getActivationDateTimestamp() {
         return activationDate;
+    }
+
+    /**
+     * This method is used to get activation date of account <br>
+     * Any params required
+     * @return {@link #activationDate} as activation date of account as {@link String}
+     * **/
+    public String getActivationDate() {
+        return timeFormat.format(new Date(activationDate));
     }
 
     /**
@@ -159,7 +197,7 @@ public final class TraderAccount implements RoutineMessages {
         salesAtGain = 0;
         salesAtLoss = 0;
         salesAtPair = 0;
-        activationDate = new Date(System.currentTimeMillis()).toString();
+        activationDate = System.currentTimeMillis();
         incomes = new ArrayList<>();
         totalIncome = ASSET_NOT_TRADABLE;
     }
@@ -276,6 +314,22 @@ public final class TraderAccount implements RoutineMessages {
             return tail + ANSI_RED + textIncome + ANSI_RESET + "\n";
         else
             return tail + textIncome + "\n";
+    }
+
+
+    /**
+     * This method is used to get account details <br>
+     * Any params required
+     * @return account details as {@link HashMap} of {@link Object}
+     * **/
+    public HashMap<String, Object> getAccount() {
+        HashMap<String, Object> trader = new HashMap<>();
+        trader.put(ACTIVATION_DATE_KEY, activationDate);
+        trader.put(GAINS_KEY, salesAtGain);
+        trader.put(LOSSES_KEY, salesAtLoss);
+        trader.put(PAIRS_KEY, salesAtPair);
+        trader.put(TOTAL_INCOME_KEY, totalIncome);
+        return trader;
     }
 
 }

@@ -1,13 +1,7 @@
 package com.tecknobit.traderbot.Records.Account;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-
-import static java.text.DateFormat.DATE_FIELD;
-import static java.text.DateFormat.getDateInstance;
-import static java.util.Locale.getDefault;
 
 /**
  * The {@code TraderDetails} class is useful to contains details of trader used. <br>
@@ -15,7 +9,7 @@ import static java.util.Locale.getDefault;
  * @author Tecknobit N7ghtm4r3
  * **/
 
-public final class TraderDetails {
+public final class TraderDetails extends Trader{
 
     /**
      * {@code CUSTOM_DEF_COLOR} is instance that memorize default color to use for example when asset is at pair
@@ -106,17 +100,6 @@ public final class TraderDetails {
      * {@code RUNNING_FROM_DATE_KEY} is instance that memorize running from date key
      * **/
     public static final String RUNNING_FROM_DATE_KEY = "running_from_date";
-
-    /**
-     * {@code dayPassFormat} is instance that memorize format of {@link #lastTraderActivity} when a day from last activity
-     * is passed
-     * **/
-    private static DateFormat dayPassFormat;
-
-    /**
-     * {@code timeFormat} is instance that memorize default format of {@link #lastTraderActivity}
-     * **/
-    private static SimpleDateFormat timeFormat;
 
     /**
      * {@code lastTraderActivity} is instance that memorize last time when bot contact server
@@ -219,16 +202,6 @@ public final class TraderDetails {
             throw new IllegalArgumentException("Running from date timestamp cannot be less than 0");
         else
             this.runningFromDate = runningFromDate;
-    }
-
-    /**
-     * This method is used to init {@link #dayPassFormat} and {@link #timeFormat} time formatters
-     * Any params required <br>
-     * Any return
-     * **/
-    private void initTimeFormatters(){
-        dayPassFormat = getDateInstance(DATE_FIELD, getDefault());
-        timeFormat = new SimpleDateFormat("HH:mm:ss", getDefault());
     }
 
     public String getLastTraderActivity() {
