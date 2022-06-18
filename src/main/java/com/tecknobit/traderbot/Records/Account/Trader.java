@@ -7,6 +7,12 @@ import static java.text.DateFormat.DATE_FIELD;
 import static java.text.DateFormat.getDateInstance;
 import static java.util.Locale.getDefault;
 
+/**
+ * The {@code Trader} class is useful for {@link TraderDetails} and {@link TraderAccount} objects<br>
+ * Is useful for Android's type traders.
+ * @author Tecknobit N7ghtm4r3
+ * **/
+
 public abstract class Trader {
 
     /**
