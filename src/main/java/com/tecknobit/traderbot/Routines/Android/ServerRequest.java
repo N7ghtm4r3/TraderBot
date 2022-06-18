@@ -90,7 +90,7 @@ public final class ServerRequest {
         printWriter.flush();
     }
 
-    public JSONObject readRequest() throws Exception {
+    public JSONObject readResponse() throws Exception {
         String response = new BufferedReader(new InputStreamReader(socket.getInputStream())).readLine();
         if(ciphered)
             response = clientCipher.decryptResponse(response);

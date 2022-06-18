@@ -78,7 +78,7 @@ public interface AndroidCoreRoutines {
                         .put(LAST_TRADER_ACTIVITY_KEY, traderDetails.getLastTraderActivity())
                         .put(RUNNING_FROM_DATE_KEY, traderDetails.getRunningFromDate())
                         .put(TRADER_TYPE_KEY, traderDetails.getTraderType()), REGISTRATION_OPE);
-                response = serverRequest.readRequest();
+                response = serverRequest.readResponse();
                 switch (response.getInt(STATUS_CODE)){
                     case SUCCESSFUL_RESPONSE:
                         throw new SaveData(new JSONObject().put(TOKEN_KEY, response.getString(TOKEN_KEY))
@@ -104,7 +104,7 @@ public interface AndroidCoreRoutines {
             getPublicKeys();
             serverRequest.sendRequest(new JSONObject().put(MAIL_KEY, mail).put(PASSWORD_KEY, password)
                     .put(AUTH_TOKEN_KEY, authToken), LOGIN_OPE);
-            response = serverRequest.readRequest();
+            response = serverRequest.readResponse();
             switch (response.getInt(STATUS_CODE)){
                 case SUCCESSFUL_RESPONSE:
                     if(!token.equals(response.getString(TOKEN_KEY)) || !ivSpec.equals(response.getString(IV_SPEC_KEY))
@@ -120,7 +120,7 @@ public interface AndroidCoreRoutines {
         private void getPublicKeys() throws Exception {
             serverRequest = new ServerRequest();
             serverRequest.sendRequest(new JSONObject(), GET_KEYS_OPE);
-            response = serverRequest.readRequest();
+            response = serverRequest.readResponse();
             serverRequest = new ServerRequest(response.getString(IV_SPEC_KEY), response.getString(SECRET_KEY));
         }
 
