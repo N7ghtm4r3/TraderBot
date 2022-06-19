@@ -2,6 +2,7 @@ package com.tecknobit.traderbot.Traders.Interfaces.Android;
 
 import com.tecknobit.traderbot.Records.Account.TraderAccount;
 import com.tecknobit.traderbot.Records.Account.TraderDetails;
+import com.tecknobit.traderbot.Records.Android.Routine;
 import com.tecknobit.traderbot.Records.Portfolio.Asset;
 import com.tecknobit.traderbot.Records.Portfolio.Transaction;
 import com.tecknobit.traderbot.Routines.Android.AndroidCoreRoutines;
@@ -11,20 +12,20 @@ import com.tecknobit.traderbot.Traders.Interfaces.Native.BinanceTraderBot;
 import java.util.ArrayList;
 
 import static com.tecknobit.traderbot.Records.Account.TraderDetails.*;
+import static com.tecknobit.traderbot.Records.Account.TraderDetails.BINANCE_TRADER_PLATFORM;
+import static com.tecknobit.traderbot.Routines.Android.ServerRequest.*;
+import static java.lang.Integer.parseInt;
 import static java.lang.Math.toIntExact;
 
 public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCoreRoutines {
 
-    private TraderDetails traderDetails;
+    private final TraderDetails traderDetails;
     private final TraderAccount traderAccount;
     private final Credentials credentials;
     private final String authToken;
-    private String mail;
-    private String password;
     private final String token;
     private final String ivSpec;
     private final String secretKey;
-    private ServerRequest serverRequest;
 
     /**
      * {@code runningTrader} is instance that memorize flag that indicates if the trader is running
@@ -40,14 +41,16 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         super(apiKey, secretKey);
         this.credentials = credentials;
         this.baseCurrency = baseCurrency;
+        long timestamp = System.currentTimeMillis();
+        traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
+                toIntExact(REFRESH_PRICES_TIME), timestamp);
         initCredentials();
         authToken = credentials.getAuthToken();
-        mail = credentials.getMail();
-        password = credentials.getPassword();
         token = credentials.getToken();
         ivSpec = credentials.getIvSpec();
         this.secretKey = credentials.getSecretKey();
         traderAccount = new TraderAccount(new ServerRequest(ivSpec, this.secretKey, authToken, token));
+        workflowHandler();
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint,
@@ -55,14 +58,16 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         super(apiKey, secretKey, baseEndpoint);
         this.credentials = credentials;
         this.baseCurrency = baseCurrency;
+        long timestamp = System.currentTimeMillis();
+        traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
+                toIntExact(REFRESH_PRICES_TIME), timestamp);
         initCredentials();
         authToken = credentials.getAuthToken();
-        mail = credentials.getMail();
-        password = credentials.getPassword();
         token = credentials.getToken();
         ivSpec = credentials.getIvSpec();
         this.secretKey = credentials.getSecretKey();
         traderAccount = new TraderAccount(new ServerRequest(ivSpec, this.secretKey, authToken, token));
+        workflowHandler();
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, int refreshPricesTime,
@@ -71,14 +76,16 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         this.baseCurrency = baseCurrency;
         checkCredentialsValidity(credentials);
         this.credentials = credentials;
+        long timestamp = System.currentTimeMillis();
+        traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
+                toIntExact(REFRESH_PRICES_TIME), timestamp);
         initCredentials();
         authToken = credentials.getAuthToken();
-        mail = credentials.getMail();
-        password = credentials.getPassword();
         token = credentials.getToken();
         ivSpec = credentials.getIvSpec();
         this.secretKey = credentials.getSecretKey();
         traderAccount = new TraderAccount(new ServerRequest(ivSpec, this.secretKey, authToken, token));
+        workflowHandler();
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint, int refreshPricesTime,
@@ -86,14 +93,16 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         super(apiKey, secretKey, baseEndpoint, refreshPricesTime);
         this.credentials = credentials;
         this.baseCurrency = baseCurrency;
+        long timestamp = System.currentTimeMillis();
+        traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
+                toIntExact(REFRESH_PRICES_TIME), timestamp);
         initCredentials();
         authToken = credentials.getAuthToken();
-        mail = credentials.getMail();
-        password = credentials.getPassword();
         token = credentials.getToken();
         ivSpec = credentials.getIvSpec();
         this.secretKey = credentials.getSecretKey();
         traderAccount = new TraderAccount(new ServerRequest(ivSpec, this.secretKey, authToken, token));
+        workflowHandler();
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, ArrayList<String> quoteCurrencies, int refreshPricesTime,
@@ -101,14 +110,16 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         super(apiKey, secretKey, quoteCurrencies, refreshPricesTime);
         this.credentials = credentials;
         this.baseCurrency = baseCurrency;
+        long timestamp = System.currentTimeMillis();
+        traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
+                toIntExact(REFRESH_PRICES_TIME), timestamp);
         initCredentials();
         authToken = credentials.getAuthToken();
-        mail = credentials.getMail();
-        password = credentials.getPassword();
         token = credentials.getToken();
         ivSpec = credentials.getIvSpec();
         this.secretKey = credentials.getSecretKey();
         traderAccount = new TraderAccount(new ServerRequest(ivSpec, this.secretKey, authToken, token));
+        workflowHandler();
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint, ArrayList<String> quoteCurrencies,
@@ -116,14 +127,16 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies, refreshPricesTime);
         this.credentials = credentials;
         this.baseCurrency = baseCurrency;
+        long timestamp = System.currentTimeMillis();
+        traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
+                toIntExact(REFRESH_PRICES_TIME), timestamp);
         initCredentials();
         authToken = credentials.getAuthToken();
-        mail = credentials.getMail();
-        password = credentials.getPassword();
         token = credentials.getToken();
         ivSpec = credentials.getIvSpec();
         this.secretKey = credentials.getSecretKey();
         traderAccount = new TraderAccount(new ServerRequest(ivSpec, this.secretKey, authToken, token));
+        workflowHandler();
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, ArrayList<String> quoteCurrencies,
@@ -131,14 +144,16 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         super(apiKey, secretKey, quoteCurrencies);
         this.credentials = credentials;
         this.baseCurrency = baseCurrency;
+        long timestamp = System.currentTimeMillis();
+        traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
+                toIntExact(REFRESH_PRICES_TIME), timestamp);
         initCredentials();
         authToken = credentials.getAuthToken();
-        mail = credentials.getMail();
-        password = credentials.getPassword();
         token = credentials.getToken();
         ivSpec = credentials.getIvSpec();
         this.secretKey = credentials.getSecretKey();
         traderAccount = new TraderAccount(new ServerRequest(ivSpec, this.secretKey, authToken, token));
+        workflowHandler();
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint, ArrayList<String> quoteCurrencies,
@@ -146,14 +161,16 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies);
         this.credentials = credentials;
         this.baseCurrency = baseCurrency;
+        long timestamp = System.currentTimeMillis();
+        traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
+                toIntExact(REFRESH_PRICES_TIME), timestamp);
         initCredentials();
         authToken = credentials.getAuthToken();
-        mail = credentials.getMail();
-        password = credentials.getPassword();
         token = credentials.getToken();
         ivSpec = credentials.getIvSpec();
         this.secretKey = credentials.getSecretKey();
         traderAccount = new TraderAccount(new ServerRequest(ivSpec, this.secretKey, authToken, token));
+        workflowHandler();
     }
 
     @Override
@@ -166,30 +183,25 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
     public void initCredentials() throws Exception {
         checkCredentialsValidity(credentials);
         if(credentials.getToken() == null) {
-            long timestamp = System.currentTimeMillis();
-            traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
-                    toIntExact(REFRESH_PRICES_TIME), timestamp);
             credentials.setTraderDetails(traderDetails);
             credentials.sendRegistrationRequest();
         }
-        workflowHandler();
     }
 
     @Override
     public void workflowHandler() {
+        runningTrader = true;
         new Thread(){
             @Override
             public void run() {
                 super.run();
                 try {
                     while (true){
-                        /*while (runningTrader){
-                            getRoutines(AndroidBinanceTrader.this, new ServerRequest(ivSpec, secretKey,
-                                    authToken, token));
+                        while (runningTrader){
+                            performRoutines();
                             sleep(2000);
-                        }*/
-                        getRoutines(AndroidBinanceTrader.this, new ServerRequest(ivSpec, secretKey,
-                                authToken, token));
+                        }
+                        performRoutines();
                         sleep(2000);
                     }
                 } catch (Exception e) {
@@ -197,6 +209,37 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
                 }
             }
         }.start();
+    }
+
+    @Override
+    public void performRoutines() throws Exception {
+        for (Routine routine : getRoutines(new ServerRequest(ivSpec, secretKey, authToken, token))){
+            switch (routine.getRoutine()){
+                case CHANGE_MAIL_OPE:
+                    credentials.setMail(routine.getExtraValue());
+                    break;
+                case CHANGE_PASSWORD_OPE:
+                    credentials.setPassword(routine.getExtraValue());
+                    break;
+                case CHANGE_REFRESH_TIME_PRICES_OPE:
+                    setRefreshPricesTime(parseInt(routine.getExtraValue()));
+                    break;
+                case CHANGE_TRADER_STATUS_OPE:
+                    if(routine.getExtraValue().equals(STOPPED_TRADER_STATUS))
+                        disableTrader();
+                    else
+                        enableTrader();
+                    break;
+                case CHANGE_CURRENCY_OPE:
+                    setBaseCurrency(routine.getExtraValue());
+                    break;
+                case INSERT_QUOTE_OPE:
+                    insertQuoteCurrency(routine.getExtraValue());
+                    break;
+                case REMOVE_QUOTE_OPE:
+                    removeQuoteCurrency(routine.getExtraValue());
+            }
+        }
     }
 
     @Override

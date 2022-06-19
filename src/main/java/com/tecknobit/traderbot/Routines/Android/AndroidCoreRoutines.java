@@ -3,8 +3,6 @@ package com.tecknobit.traderbot.Routines.Android;
 import com.tecknobit.traderbot.Exceptions.SaveData;
 import com.tecknobit.traderbot.Records.Account.TraderDetails;
 import com.tecknobit.traderbot.Records.Android.Routine;
-import com.tecknobit.traderbot.Routines.Interfaces.TraderCoreRoutines;
-import com.tecknobit.traderbot.Traders.Interfaces.Android.AndroidBinanceTrader;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -19,7 +17,6 @@ import static com.tecknobit.traderbot.Records.Android.Routine.*;
 import static com.tecknobit.traderbot.Routines.Android.ServerRequest.*;
 import static com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages.ANSI_RED;
 import static com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages.ANSI_RESET;
-import static java.lang.Integer.parseInt;
 import static org.apache.commons.validator.routines.EmailValidator.getInstance;
 
 public interface AndroidCoreRoutines extends TraderManager {
@@ -45,35 +42,18 @@ public interface AndroidCoreRoutines extends TraderManager {
 
     void workflowHandler();
 
-    default void getRoutines(TraderCoreRoutines traderCoreRoutines, ServerRequest serverRequest){
+    void performRoutines() throws Exception;
+
+    default ArrayList<Routine> getRoutines(ServerRequest serverRequest){
         ArrayList<Routine> routines = new ArrayList<>();
         try {
             try {
-                serverRequest.sendTokenRequest(new JSONObject(), GET_ROUTINE_TRADER_OPE);
+                serverRequest.sendTokenRequest(new JSONObject(), GET_ROUTINES_TRADER_OPE);
                 response = serverRequest.readResponse();
                 JSONArray jsonRoutines = response.getJSONArray(ROUTINES_KEY);
                 for (int j = 0; j < jsonRoutines.length(); j++) {
                     JSONObject routine = jsonRoutines.getJSONObject(j);
                     routines.add(new Routine(routine.getString(ROUTINE_KEY), routine.getString(ROUTINE_EXTRA_VALUE_KEY)));
-                }
-                if(traderCoreRoutines instanceof AndroidBinanceTrader) {
-                    //|| traderCoreRoutines instanceof AndroidCoinbaseTrader){
-                    for (Routine routine : routines){
-                        switch (routine.getRoutine()){
-                            case CHANGE_REFRESH_TIME_PRICES_OPE:
-                                traderCoreRoutines.setRefreshPricesTime(parseInt(routine.getExtraValue()));
-                                break;
-                            case CHANGE_TRADER_STATUS_OPE:
-                                if(routine.getExtraValue().equals(STOPPED_TRADER_STATUS))
-                                    disableTrader();
-                                else
-                                    enableTrader();
-                                break;
-                            case CHANGE_CURRENCY_OPE:
-                                setBaseCurrency(routine.getExtraValue());
-                                break;
-                        }
-                    }
                 }
             }catch (IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException
                     | InvalidKeyException e){
@@ -83,6 +63,7 @@ public interface AndroidCoreRoutines extends TraderManager {
         } catch (Exception e) {
             printError("[ROUTINE REQUEST] Operation failed");
         }
+        return routines;
     }
 
     default void printError(String message){

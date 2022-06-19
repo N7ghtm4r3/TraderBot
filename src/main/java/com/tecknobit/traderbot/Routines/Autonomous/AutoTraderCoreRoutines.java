@@ -2,6 +2,8 @@ package com.tecknobit.traderbot.Routines.Autonomous;
 
 import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import static com.tecknobit.traderbot.Records.Account.Trader.TraderManager;
 
 /**
@@ -177,6 +179,13 @@ public interface AutoTraderCoreRoutines extends TraderManager {
     default boolean makeRoutine(long previousGap, long gap){
         return (System.currentTimeMillis() - previousGap) >= gap;
     }
+
+    /**
+     * This method is used to init wallet list when autonomous trader is started from second time onwards<br>
+     * @param walletList: wallet list of your cryptocurrencies, stored by you <br>
+     * Any return
+     * **/
+    void setWallet(ConcurrentHashMap<String, Cryptocurrency> walletList);
 
     /**
      * This method is used to start autonomous trader<br>

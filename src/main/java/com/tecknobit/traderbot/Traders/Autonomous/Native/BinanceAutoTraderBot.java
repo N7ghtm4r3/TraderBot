@@ -33,9 +33,6 @@ import static java.lang.Math.ceil;
 
 public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTraderCoreRoutines, MarketOrder {
 
-
-    // TODO: 19/06/2022 CHECK AUTO TRADER FLOWS
-
     /**
      * {@code TraderAccount} is instance that memorize and manage account information and trading reports of auto trader
      * account
@@ -57,7 +54,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
      * as value of map.
      * @implNote is used in {@link #buyCryptocurrencies()} and {@link #updateWallet()} routines
      * **/
-    private final ConcurrentHashMap<String, Cryptocurrency> walletList;
+    private ConcurrentHashMap<String, Cryptocurrency> walletList;
 
     /**
      * {@code checkingList} is a map that contains checking list assets and index (es. BTCBUSD) as key {@link String} and {@link Cryptocurrency}
@@ -122,7 +119,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
-        runningTrader = true;
     }
 
     /** Constructor to init {@link BinanceAutoTraderBot}
@@ -142,7 +138,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
-        runningTrader = true;
     }
 
     /** Constructor to init {@link BinanceTraderBot}
@@ -163,7 +158,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
-        runningTrader = true;
     }
 
     /** Constructor to init {@link BinanceTraderBot}
@@ -185,7 +179,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
-        runningTrader = true;
     }
 
     /** Constructor to init {@link BinanceTraderBot}
@@ -207,7 +200,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
-        runningTrader = true;
     }
 
     /** Constructor to init {@link BinanceTraderBot}
@@ -231,7 +223,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
-        runningTrader = true;
     }
 
     /** Constructor to init {@link BinanceTraderBot}
@@ -251,7 +242,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
-        runningTrader = true;
     }
 
     /** Constructor to init {@link BinanceTraderBot}
@@ -272,7 +262,18 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
-        runningTrader = true;
+    }
+
+    /**
+     * This method is used to init wallet list when autonomous trader is started from second time onwards<br>
+     * @param walletList: wallet list of your cryptocurrencies, stored by you <br>
+     * Any return
+     * **/
+    @Override
+    public void setWallet(ConcurrentHashMap<String, Cryptocurrency> walletList) {
+        if(walletList == null)
+            throw new IllegalArgumentException("Wallet cannot be null");
+        this.walletList = walletList;
     }
 
     /**
@@ -283,6 +284,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
      * **/
     @Override
     public void start() {
+        runningTrader = true;
         printDisclaimer();
         tradingConfig = fetchTradingConfig();
         previousBuying = System.currentTimeMillis();

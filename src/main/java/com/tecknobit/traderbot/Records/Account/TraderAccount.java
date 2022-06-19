@@ -12,6 +12,7 @@ import java.util.HashMap;
 import static com.tecknobit.traderbot.Routines.Android.ServerRequest.*;
 import static com.tecknobit.traderbot.Routines.Autonomous.AutoTraderCoreRoutines.ASSET_NOT_TRADABLE;
 import static com.tecknobit.traderbot.Routines.Interfaces.TraderCoreRoutines.tradingTools;
+import static java.lang.System.*;
 import static java.lang.System.out;
 
 /**
@@ -142,6 +143,22 @@ public final class TraderAccount extends Trader implements RoutineMessages {
             initTimeFormatters();
         }else
             throw new IllegalAccessException("Operation failed");
+    }
+
+    /** Constructor to init {@link TraderAccount} <br>
+     * @implNote this constructor must call to init autonomous traders at their first start, in next starts you will
+     * have to call {@link #TraderAccount(int salesAtLoss, int salesAtGain, int salesAtPair, long activationDate, ArrayList incomes)}
+     * constructor with your data from you stored to start normal flow of autonomous traders
+     * **/
+    public TraderAccount() {
+        salesAtLoss = 0;
+        salesAtGain = 0;
+        salesAtPair = 0;
+        activationDate = currentTimeMillis();
+        totalIncome = 0;
+        serverRequest = null;
+        incomes = new ArrayList<>();
+        initTimeFormatters();
     }
 
     /**
