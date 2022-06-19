@@ -197,10 +197,6 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
                 super.run();
                 try {
                     while (true){
-                        while (runningTrader){
-                            performRoutines();
-                            sleep(2000);
-                        }
                         performRoutines();
                         sleep(2000);
                     }
@@ -244,47 +240,63 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
 
     @Override
     public double getWalletBalance(String currency, boolean forceRefresh) throws Exception {
-        return super.getWalletBalance(currency, forceRefresh);
+        if(runningTrader)
+            return super.getWalletBalance(currency, forceRefresh);
+        return -1;
     }
 
     @Override
     public double getWalletBalance(String currency, boolean forceRefresh, int decimals) throws Exception {
-        return super.getWalletBalance(currency, forceRefresh, decimals);
+        if(runningTrader)
+            return super.getWalletBalance(currency, forceRefresh, decimals);
+        return -1;
     }
 
     @Override
     public ArrayList<Asset> getAssetsList(String currency, boolean forceRefresh) throws Exception {
-        return super.getAssetsList(currency, forceRefresh);
+        if(runningTrader)
+            return super.getAssetsList(currency, forceRefresh);
+        return null;
     }
 
     @Override
     public ArrayList<Transaction> getAllTransactions(String dateFormat, boolean forceRefresh) throws Exception {
-        return super.getAllTransactions(dateFormat, forceRefresh);
+        if(runningTrader)
+            return super.getAllTransactions(dateFormat, forceRefresh);
+        return null;
     }
 
     @Override
     public ArrayList<Transaction> getAllTransactions(boolean forceRefresh) throws Exception {
-        return super.getAllTransactions(forceRefresh);
+        if(runningTrader)
+            return super.getAllTransactions(forceRefresh);
+        return null;
     }
 
     @Override
     public ArrayList<Transaction> getTransactionsList(String quoteCurrency, String dateFormat, boolean forceRefresh) throws Exception {
-        return super.getTransactionsList(quoteCurrency, dateFormat, forceRefresh);
+        if(runningTrader)
+            return super.getTransactionsList(quoteCurrency, dateFormat, forceRefresh);
+        return null;
     }
 
     @Override
     public ArrayList<Transaction> getTransactionsList(String quoteCurrency, boolean forceRefresh) throws Exception {
-        return super.getTransactionsList(quoteCurrency, forceRefresh);
+        if(runningTrader)
+            return super.getTransactionsList(quoteCurrency, forceRefresh);
+        return null;
     }
 
     @Override
     public void buyMarket(String symbol, double quantity) throws Exception {
-        super.buyMarket(symbol, quantity);
+        if(runningTrader)
+            super.buyMarket(symbol, quantity);
     }
 
     @Override
     public void sellMarket(String symbol, double quantity) throws Exception {
-        super.sellMarket(symbol, quantity);
+        if(runningTrader)
+            super.sellMarket(symbol, quantity);
     }
 
     @Override
@@ -317,22 +329,30 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
 
     @Override
     public double getSalesAtLoss() {
-        return traderAccount.getSalesAtLoss();
+        if(runningTrader)
+            return traderAccount.getSalesAtLoss();
+        return -1;
     }
 
     @Override
     public double getSalesAtGain() {
-        return traderAccount.getSalesAtGain();
+        if(runningTrader)
+            return traderAccount.getSalesAtGain();
+        return -1;
     }
 
     @Override
     public double getSalesInPair() {
-        return traderAccount.getSalesAtPair();
+        if(runningTrader)
+            return traderAccount.getSalesAtPair();
+        return -1;
     }
 
     @Override
     public double getTotalSales() {
-        return traderAccount.getTotalSales();
+        if(runningTrader)
+            return traderAccount.getTotalSales();
+        return -1;
     }
 
     @Override
@@ -344,7 +364,9 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
 
     @Override
     public String getBaseCurrency() {
-        return baseCurrency;
+        if(runningTrader)
+            return baseCurrency;
+        return null;
     }
 
     public Credentials getCredentials() {

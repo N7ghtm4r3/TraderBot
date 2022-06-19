@@ -1,5 +1,6 @@
 package com.tecknobit.traderbot.Routines.Autonomous;
 
+import com.tecknobit.traderbot.Records.Account.TraderAccount;
 import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -299,5 +300,17 @@ public interface AutoTraderCoreRoutines extends TraderManager {
      * @return flag that indicates the possibility or not to print or not routine messages
      * **/
     boolean canPrintRoutineMessages();
+
+    /**
+     * This method is used to get trader account object
+     * @return trader account as {@link TraderAccount} object
+     * **/
+    TraderAccount getTraderAccount();
+
+    /**
+     * This method is used to get wallet list
+     * @return wallet list as {@link ConcurrentHashMap} object of {@link Cryptocurrency}
+     * **/
+    ConcurrentHashMap<String, Cryptocurrency> getWallet();
 
 }

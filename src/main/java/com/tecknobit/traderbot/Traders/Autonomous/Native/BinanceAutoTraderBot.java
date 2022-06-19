@@ -723,4 +723,22 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         return baseCurrency;
     }
 
+    /**
+     * This method is used to get trader account object
+     * @return trader account as {@link TraderAccount} object
+     * **/
+    @Override
+    public TraderAccount getTraderAccount() {
+        return traderAccount;
+    }
+
+    /**
+     * This method is used to get wallet list
+     * @return wallet list as {@link ConcurrentHashMap} object of {@link Cryptocurrency}
+     * **/
+    @Override
+    public ConcurrentHashMap<String, Cryptocurrency> getWallet() {
+        return walletList;
+    }
+
 }
