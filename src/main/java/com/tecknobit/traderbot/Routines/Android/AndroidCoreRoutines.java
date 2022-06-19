@@ -2,13 +2,27 @@ package com.tecknobit.traderbot.Routines.Android;
 
 import com.tecknobit.traderbot.Exceptions.SaveData;
 import com.tecknobit.traderbot.Records.Account.TraderDetails;
+import com.tecknobit.traderbot.Records.Android.Routine;
+import com.tecknobit.traderbot.Routines.Interfaces.TraderCoreRoutines;
+import com.tecknobit.traderbot.Traders.Interfaces.Android.AndroidBinanceTrader;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.util.ArrayList;
+
 import static com.tecknobit.traderbot.Records.Account.TraderDetails.*;
+import static com.tecknobit.traderbot.Records.Android.Routine.*;
 import static com.tecknobit.traderbot.Routines.Android.ServerRequest.*;
+import static com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages.ANSI_RED;
+import static com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages.ANSI_RESET;
+import static java.lang.Integer.parseInt;
 import static org.apache.commons.validator.routines.EmailValidator.getInstance;
 
-public interface AndroidCoreRoutines extends TraderManager{
+public interface AndroidCoreRoutines extends TraderManager {
 
     default void checkCredentialsValidity(Credentials credentials){
         if(credentials == null)
@@ -29,14 +43,60 @@ public interface AndroidCoreRoutines extends TraderManager{
 
     void initCredentials() throws Exception;
 
+    void workflowHandler();
+
+    default void getRoutines(TraderCoreRoutines traderCoreRoutines, ServerRequest serverRequest){
+        ArrayList<Routine> routines = new ArrayList<>();
+        try {
+            try {
+                serverRequest.sendTokenRequest(new JSONObject(), GET_ROUTINE_TRADER_OPE);
+                response = serverRequest.readResponse();
+                JSONArray jsonRoutines = response.getJSONArray(ROUTINES_KEY);
+                for (int j = 0; j < jsonRoutines.length(); j++) {
+                    JSONObject routine = jsonRoutines.getJSONObject(j);
+                    routines.add(new Routine(routine.getString(ROUTINE_KEY), routine.getString(ROUTINE_EXTRA_VALUE_KEY)));
+                }
+                if(traderCoreRoutines instanceof AndroidBinanceTrader) {
+                    //|| traderCoreRoutines instanceof AndroidCoinbaseTrader){
+                    for (Routine routine : routines){
+                        switch (routine.getRoutine()){
+                            case CHANGE_REFRESH_TIME_PRICES_OPE:
+                                traderCoreRoutines.setRefreshPricesTime(parseInt(routine.getExtraValue()));
+                                break;
+                            case CHANGE_TRADER_STATUS_OPE:
+                                if(routine.getExtraValue().equals(STOPPED_TRADER_STATUS))
+                                    disableTrader();
+                                else
+                                    enableTrader();
+                                break;
+                            case CHANGE_CURRENCY_OPE:
+                                setBaseCurrency(routine.getExtraValue());
+                                break;
+                        }
+                    }
+                }
+            }catch (IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException
+                    | InvalidKeyException e){
+                printError("[ACCOUNT DELETED] You deleted account for trader, we hope to see you again soon!");
+                System.exit(0);
+            }
+        } catch (Exception e) {
+            printError("[ROUTINE REQUEST] Operation failed");
+        }
+    }
+
+    default void printError(String message){
+        System.out.println(ANSI_RED + message + ANSI_RESET);
+    }
+
     final class Credentials{
 
         public static final int MAX_TOKEN_LENGTH = 32;
         public static final int MIN_TOKEN_LENGTH = 8;
         private ServerRequest serverRequest;
         private final String authToken;
-        private final String mail;
-        private final String password;
+        private String mail;
+        private String password;
         private final String token;
         private final String ivSpec;
         private final String secretKey;
@@ -143,8 +203,20 @@ public interface AndroidCoreRoutines extends TraderManager{
             return mail;
         }
 
+        public void setMail(String mail) {
+            if(!getInstance().isValid(mail))
+                throw new IllegalArgumentException("Mail must be a valid mail");
+            this.mail = mail;
+        }
+
         public String getPassword() {
             return password;
+        }
+
+        public void setPassword(String password) {
+            if(wrongPasswordValidity(password))
+                throw new IllegalArgumentException("Password must be 8 - 32 characters length");
+            this.password = password;
         }
 
         public String getToken() {

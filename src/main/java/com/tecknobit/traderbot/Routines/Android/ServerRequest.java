@@ -15,6 +15,7 @@ public final class ServerRequest {
     public static final String REGISTRATION_OPE = "registration_ope";
     public static final String LOGIN_OPE = "login_ope";
     public static final String GET_TRADER_ACCOUNT_OPE = "get_trader_account_ope";
+    public static final String GET_ROUTINE_TRADER_OPE = "get_routine_trader_ope";
     public static final String CHANGE_MAIL_OPE = "change_mail_ope";
     public static final String CHANGE_PASSWORD_OPE = "change_password_ope";
     public static final String CHANGE_REFRESH_TIME_PRICES_OPE = "change_refresh_prices_time_ope";

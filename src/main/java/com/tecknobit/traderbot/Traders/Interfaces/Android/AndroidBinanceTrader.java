@@ -172,6 +172,31 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
             credentials.setTraderDetails(traderDetails);
             credentials.sendRegistrationRequest();
         }
+        workflowHandler();
+    }
+
+    @Override
+    public void workflowHandler() {
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                try {
+                    while (true){
+                        /*while (runningTrader){
+                            getRoutines(AndroidBinanceTrader.this, new ServerRequest(ivSpec, secretKey,
+                                    authToken, token));
+                            sleep(2000);
+                        }*/
+                        getRoutines(AndroidBinanceTrader.this, new ServerRequest(ivSpec, secretKey,
+                                authToken, token));
+                        sleep(2000);
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }.start();
     }
 
     @Override
