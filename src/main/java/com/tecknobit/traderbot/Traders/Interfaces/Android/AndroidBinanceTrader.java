@@ -42,7 +42,8 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
      * **/
     private String baseCurrency;
 
-    public AndroidBinanceTrader(String apiKey, String secretKey, Credentials credentials, boolean printRoutineMessages, String baseCurrency) throws Exception {
+    public AndroidBinanceTrader(String apiKey, String secretKey, Credentials credentials, boolean printRoutineMessages,
+                                String baseCurrency) throws Exception {
         super(apiKey, secretKey);
         this.credentials = credentials;
         this.printRoutineMessages = printRoutineMessages;
@@ -59,8 +60,8 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         workflowHandler();
     }
 
-    public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint,
-                                Credentials credentials, boolean printRoutineMessages, String baseCurrency) throws Exception {
+    public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint, Credentials credentials,
+                                boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, secretKey, baseEndpoint);
         this.credentials = credentials;
         this.printRoutineMessages = printRoutineMessages;
@@ -133,7 +134,8 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint, ArrayList<String> quoteCurrencies,
-                                int refreshPricesTime, Credentials credentials, boolean printRoutineMessages, String baseCurrency) throws Exception {
+                                int refreshPricesTime, Credentials credentials, boolean printRoutineMessages,
+                                String baseCurrency) throws Exception {
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies, refreshPricesTime);
         this.credentials = credentials;
         this.printRoutineMessages = printRoutineMessages;
