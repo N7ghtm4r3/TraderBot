@@ -1,10 +1,5 @@
 package com.tecknobit.traderbot.Routines.Interfaces;
 
-/**
- * The {@code RoutineMessages} interface defines base routine methods to print routine messages.<br>
- * @author Tecknobit N7ghtm4r3
- * **/
-
 public interface RoutineMessages {
 
     /**
@@ -23,9 +18,23 @@ public interface RoutineMessages {
     String ANSI_GREEN = "\033[0;32m";
 
     /**
-     * This method is used to print details of an object <br>
-     * Any params required
+     * This method is used to set flag to print routine messages
+     * @param printRoutineMessages: flag to insert to print or not routine messages
      * **/
-    void printDetails();
+    void setPrintRoutineMessages(boolean printRoutineMessages);
+
+    /**
+     * This method is used to get flag to print or not routine messages
+     * @return flag that indicates the possibility or not to print or not routine messages
+     * **/
+    boolean canPrintRoutineMessages();
+
+    default void printRed(String message){
+        System.out.println(ANSI_RED + message + ANSI_RESET);
+    }
+
+    default void printGreen(String message){
+        System.out.println(ANSI_GREEN + message + ANSI_RESET);
+    }
 
 }

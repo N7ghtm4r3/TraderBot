@@ -19,7 +19,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static com.tecknobit.binancemanager.Managers.Market.Records.Stats.Candlestick.*;
 import static com.tecknobit.binancemanager.Managers.Market.Records.Stats.ExchangeInformation.Symbol;
-import static com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages.*;
 import static java.lang.Math.abs;
 import static java.lang.Math.ceil;
 
@@ -490,15 +489,15 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
             case LOSS_SELL:
                 traderAccount.addLoss();
                 if(printRoutineMessages) {
-                    System.out.println(ANSI_RED + "## Selling at loss [" + cryptocurrency.getSymbol() + "], " +
-                            "income: [" + cryptocurrency.getTextIncomePercent(2) +  "]" + ANSI_RESET);
+                    printRed("## Selling at loss [" + cryptocurrency.getSymbol() + "], " +
+                            "income: [" + cryptocurrency.getTextIncomePercent(2) + "]");
                 }
                 break;
             case GAIN_SELL:
                 traderAccount.addGain();
                 if(printRoutineMessages) {
-                    System.out.println(ANSI_GREEN + "## Selling at gain [" + cryptocurrency.getSymbol() + "], " +
-                            "income: [" + cryptocurrency.getTextIncomePercent(2) +  "]" + ANSI_RESET);
+                    printGreen("## Selling at gain [" + cryptocurrency.getSymbol() + "], " +
+                            "income: [" + cryptocurrency.getTextIncomePercent(2) +  "]");
                 }
                 break;
             default:

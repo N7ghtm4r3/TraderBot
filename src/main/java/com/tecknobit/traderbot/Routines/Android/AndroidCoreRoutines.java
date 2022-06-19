@@ -3,23 +3,19 @@ package com.tecknobit.traderbot.Routines.Android;
 import com.tecknobit.traderbot.Exceptions.SaveData;
 import com.tecknobit.traderbot.Records.Account.TraderDetails;
 import com.tecknobit.traderbot.Records.Android.Routine;
+import com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.util.ArrayList;
 
 import static com.tecknobit.traderbot.Records.Account.TraderDetails.*;
 import static com.tecknobit.traderbot.Records.Android.Routine.*;
 import static com.tecknobit.traderbot.Routines.Android.ServerRequest.*;
-import static com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages.ANSI_RED;
-import static com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages.ANSI_RESET;
 import static org.apache.commons.validator.routines.EmailValidator.getInstance;
 
-public interface AndroidCoreRoutines extends TraderManager {
+public interface AndroidCoreRoutines extends TraderManager, RoutineMessages {
 
     default void checkCredentialsValidity(Credentials credentials){
         if(credentials == null)
@@ -50,25 +46,29 @@ public interface AndroidCoreRoutines extends TraderManager {
             try {
                 serverRequest.sendTokenRequest(new JSONObject(), GET_ROUTINES_TRADER_OPE);
                 response = serverRequest.readResponse();
+                assert response != null;
                 JSONArray jsonRoutines = response.getJSONArray(ROUTINES_KEY);
                 for (int j = 0; j < jsonRoutines.length(); j++) {
                     JSONObject routine = jsonRoutines.getJSONObject(j);
                     routines.add(new Routine(routine.getString(ROUTINE_KEY), routine.getString(ROUTINE_EXTRA_VALUE_KEY)));
                 }
-            }catch (IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException
-                    | InvalidKeyException e){
-                printError("[ACCOUNT DELETED] You deleted account for trader, we hope to see you again soon!");
+            }catch (BadPaddingException e){
+                printRed("[ACCOUNT DELETED] You deleted account for trader, we hope to see you again soon!");
                 System.exit(0);
             }
         } catch (Exception e) {
-            printError("[ROUTINE REQUEST] Operation failed");
+            printRed("[ROUTINE REQUEST] Operation failed");
         }
         return routines;
     }
 
-    default void printError(String message){
-        System.out.println(ANSI_RED + message + ANSI_RESET);
-    }
+    void printOperationStatus(String msg, boolean greenPrint);
+
+    /**
+     * This method is used to get credentials inserted for trader login
+     * @return trader credentials as {@link Credentials} object
+     * **/
+    Credentials getCredentials();
 
     final class Credentials{
 
@@ -120,17 +120,20 @@ public interface AndroidCoreRoutines extends TraderManager {
                         .put(RUNNING_FROM_DATE_KEY, traderDetails.getRunningFromDate())
                         .put(TRADER_TYPE_KEY, traderDetails.getTraderType()), REGISTRATION_OPE);
                 response = serverRequest.readResponse();
-                switch (response.getInt(STATUS_CODE)){
-                    case SUCCESSFUL_RESPONSE:
-                        throw new SaveData(new JSONObject().put(TOKEN_KEY, response.getString(TOKEN_KEY))
-                                .put(AUTH_TOKEN_KEY, response.getString(AUTH_TOKEN_KEY))
-                                .put(IV_SPEC_KEY, response.getString(IV_SPEC_KEY))
-                                .put(SECRET_KEY, response.getString(SECRET_KEY))
-                                .put(MAIL_KEY, mail)
-                                .put(PASSWORD_KEY, password));
-                    case GENERIC_ERROR_RESPONSE: throw new IllegalAccessException("Mail not available");
-                    default: throw new IllegalAccessException("Operation failed");
-                }
+                if(response != null){
+                    switch (response.getInt(STATUS_CODE)){
+                        case SUCCESSFUL_RESPONSE:
+                            throw new SaveData(new JSONObject().put(TOKEN_KEY, response.getString(TOKEN_KEY))
+                                    .put(AUTH_TOKEN_KEY, response.getString(AUTH_TOKEN_KEY))
+                                    .put(IV_SPEC_KEY, response.getString(IV_SPEC_KEY))
+                                    .put(SECRET_KEY, response.getString(SECRET_KEY))
+                                    .put(MAIL_KEY, mail)
+                                    .put(PASSWORD_KEY, password));
+                        case GENERIC_ERROR_RESPONSE: throw new IllegalAccessException("Mail not available");
+                        default: throw new IllegalAccessException("Operation failed");
+                    }
+                }else
+                    throw new IllegalStateException(ANSI_RED + "Service is not available for serve your request, wait" + ANSI_RESET);
             }
         }
 
@@ -146,23 +149,31 @@ public interface AndroidCoreRoutines extends TraderManager {
             serverRequest.sendRequest(new JSONObject().put(MAIL_KEY, mail).put(PASSWORD_KEY, password)
                     .put(AUTH_TOKEN_KEY, authToken), LOGIN_OPE);
             response = serverRequest.readResponse();
-            switch (response.getInt(STATUS_CODE)){
-                case SUCCESSFUL_RESPONSE:
-                    if(!token.equals(response.getString(TOKEN_KEY)) || !ivSpec.equals(response.getString(IV_SPEC_KEY))
-                            || !secretKey.equals(response.getString(SECRET_KEY))) {
-                        throw new IllegalAccessException("Wrong credentials inserted");
-                    }
-                    break;
-                case GENERIC_ERROR_RESPONSE: throw new IllegalAccessException("Wrong credentials inserted");
-                default: throw new IllegalAccessException("Operation failed");
-            }
+            if(response != null) {
+                switch (response.getInt(STATUS_CODE)){
+                    case SUCCESSFUL_RESPONSE:
+                        if(!token.equals(response.getString(TOKEN_KEY)) || !ivSpec.equals(response.getString(IV_SPEC_KEY))
+                                || !secretKey.equals(response.getString(SECRET_KEY))) {
+                            throw new IllegalAccessException("Wrong credentials inserted");
+                        }
+                        break;
+                    case GENERIC_ERROR_RESPONSE: throw new IllegalAccessException("Wrong credentials inserted");
+                    default: throw new IllegalAccessException("Operation failed");
+                }
+            }else
+                throw new IllegalStateException(ANSI_RED + "Service is not available for serve your request, wait" + ANSI_RESET);
         }
 
-        private void getPublicKeys() throws Exception {
-            serverRequest = new ServerRequest();
-            serverRequest.sendRequest(new JSONObject(), GET_KEYS_OPE);
-            response = serverRequest.readResponse();
-            serverRequest = new ServerRequest(response.getString(IV_SPEC_KEY), response.getString(SECRET_KEY));
+        private void getPublicKeys() {
+            try {
+                serverRequest = new ServerRequest();
+                serverRequest.sendRequest(new JSONObject(), GET_KEYS_OPE);
+                response = serverRequest.readResponse();
+                if(response != null)
+                    serverRequest = new ServerRequest(response.getString(IV_SPEC_KEY), response.getString(SECRET_KEY));
+            }catch (Exception e){
+                throw new IllegalStateException(ANSI_RED + "Service is not available for serve your request, wait" + ANSI_RESET);
+            }
         }
 
         private boolean wrongPasswordValidity(String password){

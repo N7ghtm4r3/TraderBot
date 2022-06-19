@@ -1,9 +1,10 @@
 package com.tecknobit.traderbot.Records.Portfolio;
 
-import com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages;
+import com.tecknobit.traderbot.Routines.Interfaces.RecordDetails;
 
 import static com.tecknobit.binancemanager.Managers.SignedManagers.Trade.Common.TradeConstants.BUY;
 import static com.tecknobit.binancemanager.Managers.SignedManagers.Trade.Common.TradeConstants.SELL;
+import static com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages.*;
 import static com.tecknobit.traderbot.Routines.Interfaces.TraderCoreRoutines.tradingTools;
 import static java.lang.System.out;
 
@@ -13,7 +14,7 @@ import static java.lang.System.out;
  * @author Tecknobit N7ghtm4r3
  * **/
 
-public final class Transaction implements RoutineMessages {
+public final class Transaction implements RecordDetails {
 
     /**
      * {@code symbol} is instance that memorize symbol of transaction es. BTCBUSD or BTC-USD

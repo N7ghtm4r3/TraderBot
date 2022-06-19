@@ -1,7 +1,7 @@
 package com.tecknobit.traderbot.Records.Account;
 
 import com.tecknobit.traderbot.Routines.Android.ServerRequest;
-import com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages;
+import com.tecknobit.traderbot.Routines.Interfaces.RecordDetails;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -11,6 +11,7 @@ import java.util.HashMap;
 
 import static com.tecknobit.traderbot.Routines.Android.ServerRequest.*;
 import static com.tecknobit.traderbot.Routines.Autonomous.AutoTraderCoreRoutines.ASSET_NOT_TRADABLE;
+import static com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages.*;
 import static com.tecknobit.traderbot.Routines.Interfaces.TraderCoreRoutines.tradingTools;
 import static java.lang.System.*;
 import static java.lang.System.out;
@@ -21,7 +22,7 @@ import static java.lang.System.out;
  * @author Tecknobit N7ghtm4r3
  * **/
 
-public final class TraderAccount extends Trader implements RoutineMessages {
+public final class TraderAccount extends Trader implements RecordDetails {
 
     /**
      * {@code ACTIVATION_DATE_KEY} is instance that memorize activation date key
@@ -71,7 +72,7 @@ public final class TraderAccount extends Trader implements RoutineMessages {
     /**
      * {@code activationDate} is instance that memorize activation date for account
      * **/
-    private final long activationDate;
+    private long activationDate;
 
     /**
      * {@code incomes} is instance that memorize list of incomes from orders
@@ -130,19 +131,21 @@ public final class TraderAccount extends Trader implements RoutineMessages {
         this.serverRequest = serverRequest;
         serverRequest.sendTokenRequest(new JSONObject(), GET_TRADER_ACCOUNT_OPE);
         response = serverRequest.readResponse();
-        if(response.getInt(STATUS_CODE) == SUCCESSFUL_RESPONSE){
-            salesAtLoss = response.getInt(LOSSES_KEY);
-            salesAtGain = response.getInt(GAINS_KEY);
-            salesAtPair = response.getInt(PAIRS_KEY);
-            activationDate = response.getLong(ACTIVATION_DATE_KEY);
-            incomes = new ArrayList<>();
-            JSONArray incomesList = response.getJSONArray(INCOMES_KEY);
-            for (int j=0; j < incomesList.length(); j++)
-                incomes.add(incomesList.getDouble(j));
-            totalIncome = ASSET_NOT_TRADABLE;
-            initTimeFormatters();
-        }else
-            throw new IllegalAccessException("Operation failed");
+        if(response != null) {
+            if(response.getInt(STATUS_CODE) == SUCCESSFUL_RESPONSE){
+                salesAtLoss = response.getInt(LOSSES_KEY);
+                salesAtGain = response.getInt(GAINS_KEY);
+                salesAtPair = response.getInt(PAIRS_KEY);
+                activationDate = response.getLong(ACTIVATION_DATE_KEY);
+                incomes = new ArrayList<>();
+                JSONArray incomesList = response.getJSONArray(INCOMES_KEY);
+                for (int j=0; j < incomesList.length(); j++)
+                    incomes.add(incomesList.getDouble(j));
+                totalIncome = ASSET_NOT_TRADABLE;
+                initTimeFormatters();
+            }else
+                throw new IllegalAccessException("Operation failed");
+        }
     }
 
     /** Constructor to init {@link TraderAccount} <br>

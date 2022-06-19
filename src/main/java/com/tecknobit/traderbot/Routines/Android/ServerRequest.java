@@ -7,7 +7,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.ConnectException;
 import java.net.Socket;
+
+import static com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages.ANSI_RED;
+import static com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages.ANSI_RESET;
 
 public final class ServerRequest {
 
@@ -47,28 +51,36 @@ public final class ServerRequest {
     public static final String QUOTE_KEY = "quote";
     public static JSONObject response;
     private final ClientCipher clientCipher;
-    private final PrintWriter printWriter;
-    private final boolean ciphered;
-    private final Socket socket;
+    private PrintWriter printWriter;
+    private boolean ciphered;
+    private Socket socket;
     private String authToken;
     private String tokenId;
 
     public ServerRequest(String ivSpec, String secretKey, String authToken, String tokenId) throws Exception {
         clientCipher = new ClientCipher(ivSpec, secretKey);
-        socket = new Socket("localhost", 7898);
-        printWriter = new PrintWriter(socket.getOutputStream(), true);
-        ciphered = true;
-        this.authToken = authToken;
-        this.tokenId = tokenId;
+        try {
+            socket = new Socket("localhost", 7898);
+            printWriter = new PrintWriter(socket.getOutputStream(), true);
+            ciphered = true;
+            this.authToken = authToken;
+            this.tokenId = tokenId;
+        }catch (ConnectException e){
+            System.out.println(ANSI_RED + "Service is not available for serve your request, wait" + ANSI_RESET);
+        }
     }
 
     public ServerRequest(String ivSpec, String secretKey) throws Exception {
         clientCipher = new ClientCipher(ivSpec, secretKey);
-        socket = new Socket("localhost", 7898);
-        printWriter = new PrintWriter(socket.getOutputStream(), true);
-        ciphered = true;
-        authToken = null;
-        tokenId = null;
+        try {
+            socket = new Socket("localhost", 7898);
+            printWriter = new PrintWriter(socket.getOutputStream(), true);
+            ciphered = true;
+            authToken = null;
+            tokenId = null;
+        }catch (ConnectException e){
+            System.out.println(ANSI_RED + "Service is not available for serve your request, wait" + ANSI_RESET);
+        }
     }
 
     public ServerRequest() throws IOException {
@@ -79,27 +91,37 @@ public final class ServerRequest {
     }
 
     public void sendRequest(JSONObject message, String operation) throws Exception {
-        message.put("ope", operation);
-        String messageToSent = message.toString();
-        if(ciphered)
-            messageToSent = clientCipher.encryptRequest(messageToSent);
-        printWriter.println(messageToSent);
-        printWriter.flush();
+        try {
+            message.put("ope", operation);
+            String messageToSent = message.toString();
+            if (ciphered)
+                messageToSent = clientCipher.encryptRequest(messageToSent);
+            printWriter.println(messageToSent);
+            printWriter.flush();
+        }catch (NullPointerException ignored){
+        }
     }
 
     public void sendTokenRequest(JSONObject message, String operation) throws Exception {
-        message.put("ope", operation);
-        message.put(AUTH_TOKEN_KEY, authToken);
-        String messageToSent = clientCipher.encrypt(message.toString()) + "#" + tokenId;
-        printWriter.println(messageToSent);
-        printWriter.flush();
+        try {
+            message.put("ope", operation);
+            message.put(AUTH_TOKEN_KEY, authToken);
+            String messageToSent = clientCipher.encrypt(message.toString()) + "#" + tokenId;
+            printWriter.println(messageToSent);
+            printWriter.flush();
+        }catch (NullPointerException ignored){
+        }
     }
 
     public JSONObject readResponse() throws Exception {
-        String response = new BufferedReader(new InputStreamReader(socket.getInputStream())).readLine();
-        if(ciphered)
-            response = clientCipher.decryptResponse(response);
-        return new JSONObject(response);
+        try {
+            String response = new BufferedReader(new InputStreamReader(socket.getInputStream())).readLine();
+            if(ciphered)
+                response = clientCipher.decryptResponse(response);
+            return new JSONObject(response);
+        }catch (NullPointerException e){
+            return null;
+        }
     }
 
 }

@@ -2,6 +2,7 @@ package com.tecknobit.traderbot.Routines.Autonomous;
 
 import com.tecknobit.traderbot.Records.Account.TraderAccount;
 import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency;
+import com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -13,7 +14,7 @@ import static com.tecknobit.traderbot.Records.Account.Trader.TraderManager;
  * @author Tecknobit N7ghtm4r3
  * **/
 
-public interface AutoTraderCoreRoutines extends TraderManager {
+public interface AutoTraderCoreRoutines extends TraderManager, RoutineMessages {
 
     /**
      * {@code CHECKING_GAP_TIME} is instance that memorize time gap for checking routine
@@ -288,18 +289,6 @@ public interface AutoTraderCoreRoutines extends TraderManager {
      * @return flag that indicates the possibility or not to send stats reports
      * **/
     boolean canSendStatsReport();
-
-    /**
-     * This method is used to set flag to print routine messages
-     * @param printRoutineMessages: flag to insert to print or not routine messages
-     * **/
-    void setPrintRoutineMessages(boolean printRoutineMessages);
-
-    /**
-     * This method is used to get flag to print or not routine messages
-     * @return flag that indicates the possibility or not to print or not routine messages
-     * **/
-    boolean canPrintRoutineMessages();
 
     /**
      * This method is used to get trader account object

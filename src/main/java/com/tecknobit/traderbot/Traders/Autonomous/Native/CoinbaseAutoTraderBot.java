@@ -4,11 +4,11 @@ import com.tecknobit.coinbasemanager.Managers.ExchangePro.CoinbaseManager;
 import com.tecknobit.coinbasemanager.Managers.ExchangePro.Currencies.Records.Currency;
 import com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.Records.Ticker;
 import com.tecknobit.traderbot.Helpers.Orders.MarketOrder;
+import com.tecknobit.traderbot.Records.Account.TraderAccount;
 import com.tecknobit.traderbot.Records.Portfolio.Coin;
 import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency;
 import com.tecknobit.traderbot.Records.Portfolio.Transaction;
 import com.tecknobit.traderbot.Routines.Autonomous.AutoTraderCoreRoutines;
-import com.tecknobit.traderbot.Records.Account.TraderAccount;
 import com.tecknobit.traderbot.Traders.Interfaces.Native.CoinbaseTraderBot;
 
 import java.util.ArrayList;
@@ -16,8 +16,6 @@ import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.Records.Candle.GRANULARITY_1d;
-import static com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages.*;
-import static com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages.ANSI_RESET;
 import static java.lang.Math.abs;
 import static java.lang.Math.ceil;
 
@@ -748,15 +746,15 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
             case LOSS_SELL:
                 traderAccount.addLoss();
                 if(printRoutineMessages) {
-                    System.out.println(ANSI_RED + "## Selling at loss [" + cryptocurrency.getSymbol() + "], " +
-                            "income: [" + cryptocurrency.getTextIncomePercent(2) +  "]" + ANSI_RESET);
+                    printRed("## Selling at loss [" + cryptocurrency.getSymbol() + "], " +
+                            "income: [" + cryptocurrency.getTextIncomePercent(2) + "]");
                 }
                 break;
             case GAIN_SELL:
                 traderAccount.addGain();
                 if(printRoutineMessages) {
-                    System.out.println(ANSI_GREEN + "## Selling at gain [" + cryptocurrency.getSymbol() + "], " +
-                            "income: [" + cryptocurrency.getTextIncomePercent(2) +  "]" + ANSI_RESET);
+                    printGreen("## Selling at gain [" + cryptocurrency.getSymbol() + "], " +
+                            "income: [" + cryptocurrency.getTextIncomePercent(2) +  "]");
                 }
                 break;
             default:

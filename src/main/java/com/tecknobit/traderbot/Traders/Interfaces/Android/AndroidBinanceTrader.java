@@ -28,6 +28,11 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
     private final String secretKey;
 
     /**
+     * {@code printRoutineMessages} is instance that memorize flag to insert to print or not routine messages
+     * **/
+    private boolean printRoutineMessages;
+
+    /**
      * {@code runningTrader} is instance that memorize flag that indicates if the trader is running
      * **/
     private boolean runningTrader;
@@ -37,9 +42,10 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
      * **/
     private String baseCurrency;
 
-    public AndroidBinanceTrader(String apiKey, String secretKey, Credentials credentials, String baseCurrency) throws Exception {
+    public AndroidBinanceTrader(String apiKey, String secretKey, Credentials credentials, boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, secretKey);
         this.credentials = credentials;
+        this.printRoutineMessages = printRoutineMessages;
         this.baseCurrency = baseCurrency;
         long timestamp = System.currentTimeMillis();
         traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
@@ -54,9 +60,10 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint,
-                                Credentials credentials, String baseCurrency) throws Exception {
+                                Credentials credentials, boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, secretKey, baseEndpoint);
         this.credentials = credentials;
+        this.printRoutineMessages = printRoutineMessages;
         this.baseCurrency = baseCurrency;
         long timestamp = System.currentTimeMillis();
         traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
@@ -71,8 +78,9 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, int refreshPricesTime,
-                                Credentials credentials, String baseCurrency) throws Exception {
+                                Credentials credentials, boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, secretKey, refreshPricesTime);
+        this.printRoutineMessages = printRoutineMessages;
         this.baseCurrency = baseCurrency;
         checkCredentialsValidity(credentials);
         this.credentials = credentials;
@@ -89,9 +97,10 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint, int refreshPricesTime,
-                                Credentials credentials, String baseCurrency) throws Exception {
+                                Credentials credentials, boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, secretKey, baseEndpoint, refreshPricesTime);
         this.credentials = credentials;
+        this.printRoutineMessages = printRoutineMessages;
         this.baseCurrency = baseCurrency;
         long timestamp = System.currentTimeMillis();
         traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
@@ -106,9 +115,10 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, ArrayList<String> quoteCurrencies, int refreshPricesTime,
-                                Credentials credentials, String baseCurrency) throws Exception {
+                                Credentials credentials, boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, secretKey, quoteCurrencies, refreshPricesTime);
         this.credentials = credentials;
+        this.printRoutineMessages = printRoutineMessages;
         this.baseCurrency = baseCurrency;
         long timestamp = System.currentTimeMillis();
         traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
@@ -123,9 +133,10 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint, ArrayList<String> quoteCurrencies,
-                                int refreshPricesTime, Credentials credentials, String baseCurrency) throws Exception {
+                                int refreshPricesTime, Credentials credentials, boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies, refreshPricesTime);
         this.credentials = credentials;
+        this.printRoutineMessages = printRoutineMessages;
         this.baseCurrency = baseCurrency;
         long timestamp = System.currentTimeMillis();
         traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
@@ -140,9 +151,10 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, ArrayList<String> quoteCurrencies,
-                                Credentials credentials, String baseCurrency) throws Exception {
+                                Credentials credentials, boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, secretKey, quoteCurrencies);
         this.credentials = credentials;
+        this.printRoutineMessages = printRoutineMessages;
         this.baseCurrency = baseCurrency;
         long timestamp = System.currentTimeMillis();
         traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
@@ -157,9 +169,10 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint, ArrayList<String> quoteCurrencies,
-                                Credentials credentials, String baseCurrency) throws Exception {
+                                Credentials credentials, boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies);
         this.credentials = credentials;
+        this.printRoutineMessages = printRoutineMessages;
         this.baseCurrency = baseCurrency;
         long timestamp = System.currentTimeMillis();
         traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
@@ -213,28 +226,53 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
             switch (routine.getRoutine()){
                 case CHANGE_MAIL_OPE:
                     credentials.setMail(routine.getExtraValue());
+                    printOperationStatus("[" + CHANGE_MAIL_OPE + "] Mail successfully changed", true);
                     break;
                 case CHANGE_PASSWORD_OPE:
                     credentials.setPassword(routine.getExtraValue());
+                    printOperationStatus("[" + CHANGE_PASSWORD_OPE + "] Password successfully changed", true);
                     break;
                 case CHANGE_REFRESH_TIME_PRICES_OPE:
                     setRefreshPricesTime(parseInt(routine.getExtraValue()));
+                    printOperationStatus("[" + CHANGE_REFRESH_TIME_PRICES_OPE + "] Refresh prices time successfully changed",
+                            true);
                     break;
                 case CHANGE_TRADER_STATUS_OPE:
-                    if(routine.getExtraValue().equals(STOPPED_TRADER_STATUS))
+                    printOperationStatus("[" + CHANGE_TRADER_STATUS_OPE + "] Trader status successfully changed",
+                            true);
+                    if(routine.getExtraValue().equals(STOPPED_TRADER_STATUS)){
                         disableTrader();
-                    else
+                        printOperationStatus("Trader status: [" + STOPPED_TRADER_STATUS + "]", false);
+                    }else{
                         enableTrader();
+                        printOperationStatus("Trader status: [" + RUNNING_TRADER_STATUS+ "]", true);
+                    }
                     break;
                 case CHANGE_CURRENCY_OPE:
                     setBaseCurrency(routine.getExtraValue());
+                    printOperationStatus("[" + CHANGE_CURRENCY_OPE + "] Base currency successfully changed",
+                            true);
                     break;
                 case INSERT_QUOTE_OPE:
                     insertQuoteCurrency(routine.getExtraValue());
+                    printOperationStatus("[" + INSERT_QUOTE_OPE + "] Base currency successfully inserted",
+                            true);
                     break;
                 case REMOVE_QUOTE_OPE:
                     removeQuoteCurrency(routine.getExtraValue());
+                    printOperationStatus("[" + REMOVE_QUOTE_OPE + "] Base currency successfully removed",
+                            true);
             }
+        }
+    }
+
+    @Override
+    public void printOperationStatus(String msg, boolean greenPrint) {
+        if(printRoutineMessages){
+            if(greenPrint)
+                printGreen(msg);
+            else
+                printRed(msg);
         }
     }
 
@@ -369,8 +407,31 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         return null;
     }
 
+    /**
+     * This method is used to get credentials inserted for trader login
+     * @return trader credentials as {@link Credentials} object
+     * **/
+    @Override
     public Credentials getCredentials() {
         return credentials;
+    }
+
+    /**
+     * This method is used to set flag to print routine messages
+     * @param printRoutineMessages: flag to insert to print or not routine messages
+     * **/
+    @Override
+    public void setPrintRoutineMessages(boolean printRoutineMessages) {
+        this.printRoutineMessages = printRoutineMessages;
+    }
+
+    /**
+     * This method is used to get flag to print or not routine messages
+     * @return flag that indicates the possibility or not to print or not routine messages
+     * **/
+    @Override
+    public boolean canPrintRoutineMessages() {
+        return printRoutineMessages;
     }
 
 }

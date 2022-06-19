@@ -1,10 +1,11 @@
 package com.tecknobit.traderbot.Records.Portfolio;
 
-import com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages;
+import com.tecknobit.traderbot.Routines.Interfaces.RecordDetails;
 import com.tecknobit.traderbot.Routines.Autonomous.AutoTraderCoreRoutines.TradingConfig;
 
 import java.util.ArrayList;
 
+import static com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages.*;
 import static com.tecknobit.traderbot.Routines.Interfaces.TraderCoreRoutines.tradingTools;
 import static java.lang.System.out;
 
@@ -15,7 +16,7 @@ import static java.lang.System.out;
  * @author Tecknobit N7ghtm4r3
  * **/
 
-public class Cryptocurrency extends Token implements RoutineMessages {
+public class Cryptocurrency extends Token implements RecordDetails {
 
     /**
      * {@code symbol} is instance that memorize symbol of cryptocurrency es. BTCBUSD or BTC-USD
