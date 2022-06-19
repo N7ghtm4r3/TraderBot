@@ -26,8 +26,11 @@ import static java.lang.Math.ceil;
 /**
  * The {@code BinanceAutoTraderBot} class is trader for {@link BinanceManager} library.<br>
  * This trader bot allow to manage user wallet, get transactions and make orders (BUY and SELL side) for a Binance's account autonomously.<br>
- * Is derived class of {@code BinanceTraderBot} class from inherit all core routines methods and instances.
- * @implNote for autonomous operations use {@link AutoTraderCoreRoutines} and {@link MarketOrder} routines.
+ * Is derived class of {@link BinanceTraderBot} class from inherit all core routines methods and instances.
+ * @implNote for autonomous operations uses {@link AutoTraderCoreRoutines} and {@link MarketOrder} routines.
+ * @implSpec {@link TraderAccount} and {@link #walletList} are objects that you have to save their data like losses, gains,
+ * total income or cryptocurrencies that trader has bought, by yourself if not their data
+ * will be not fetch autonomously, and they will be not more available if not restored by you.
  * @author Tecknobit N7ghtm4r3
  * **/
 

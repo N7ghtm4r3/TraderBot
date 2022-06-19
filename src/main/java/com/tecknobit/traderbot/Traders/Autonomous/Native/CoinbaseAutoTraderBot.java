@@ -1,5 +1,6 @@
 package com.tecknobit.traderbot.Traders.Autonomous.Native;
 
+import com.tecknobit.coinbasemanager.Managers.ExchangePro.CoinbaseManager;
 import com.tecknobit.coinbasemanager.Managers.ExchangePro.Currencies.Records.Currency;
 import com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.Records.Ticker;
 import com.tecknobit.traderbot.Helpers.Orders.MarketOrder;
@@ -21,10 +22,13 @@ import static java.lang.Math.abs;
 import static java.lang.Math.ceil;
 
 /**
- * The {@code CoinbaseAutoTraderBot} class is trader for {@link CoinbaseTraderBot} library.<br>
+ * The {@code CoinbaseAutoTraderBot} class is trader for {@link CoinbaseManager} library.<br>
  * This trader bot allow to manage user wallet, get transactions and make orders (BUY and SELL side) for a Coinbase's account autonomously.<br>
- * Is derived class of {@code CoinbaseTraderBot} class from inherit all core routines methods and instances.
- * @implNote for autonomous operations use {@link AutoTraderCoreRoutines} and {@link MarketOrder} routines.
+ * Is derived class of {@link CoinbaseTraderBot} class from inherit all core routines methods and instances.
+ * @implNote for autonomous operations uses {@link AutoTraderCoreRoutines} and {@link MarketOrder} routines.
+ * @implSpec {@link TraderAccount} and {@link #walletList} are objects that you have to save their data like losses, gains,
+ * total income or cryptocurrencies that trader has bought, by yourself if not their data
+ * will be not fetch autonomously, and they will be not more available if not restored by you.
  * @author Tecknobit N7ghtm4r3
  * **/
 
