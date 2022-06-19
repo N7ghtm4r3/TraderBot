@@ -33,11 +33,14 @@ import static java.lang.Math.ceil;
 
 public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTraderCoreRoutines, MarketOrder {
 
+
+    // TODO: 19/06/2022 CHECK AUTO TRADER FLOWS
+
     /**
      * {@code TraderAccount} is instance that memorize and manage account information and trading reports of auto trader
      * account
      * **/
-    protected final TraderAccount traderAccount = new TraderAccount();
+    protected final TraderAccount traderAccount = new TraderAccount(0,0,0,0,0);
 
     /**
      * {@code MIN_NOTIONAL_FILTER} is instance that contains key for {@code MIN_NOTIONAL} filter
@@ -79,9 +82,9 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     private boolean printRoutineMessages;
 
     /**
-     * {@code runningBot} is instance that memorize flag that indicates if the bot is running
+     * {@code runningTrader} is instance that memorize flag that indicates if the trader is running
      * **/
-    private boolean runningBot;
+    private boolean runningTrader;
 
     /**
      * {@code previousChecking} is instance that memorize previous timestamp when {@link #checkCryptocurrencies()} is called
@@ -119,7 +122,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
-        runningBot = true;
+        runningTrader = true;
     }
 
     /** Constructor to init {@link BinanceAutoTraderBot}
@@ -139,7 +142,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
-        runningBot = true;
+        runningTrader = true;
     }
 
     /** Constructor to init {@link BinanceTraderBot}
@@ -160,7 +163,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
-        runningBot = true;
+        runningTrader = true;
     }
 
     /** Constructor to init {@link BinanceTraderBot}
@@ -182,7 +185,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
-        runningBot = true;
+        runningTrader = true;
     }
 
     /** Constructor to init {@link BinanceTraderBot}
@@ -204,7 +207,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
-        runningBot = true;
+        runningTrader = true;
     }
 
     /** Constructor to init {@link BinanceTraderBot}
@@ -228,7 +231,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
-        runningBot = true;
+        runningTrader = true;
     }
 
     /** Constructor to init {@link BinanceTraderBot}
@@ -248,7 +251,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
-        runningBot = true;
+        runningTrader = true;
     }
 
     /** Constructor to init {@link BinanceTraderBot}
@@ -269,14 +272,14 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         this.baseCurrency = baseCurrency;
         checkingList = new HashMap<>();
         walletList = new ConcurrentHashMap<>();
-        runningBot = true;
+        runningTrader = true;
     }
 
     /**
      * This method is used to start {@link BinanceAutoTraderBot}<br>
      * Any params required
-     * @implNote the running mode if is disabled (using {@link #disableBot()}) trader will not do more trading operations, but trader will continue to listen for reactivation of the running mode
-     * (using {@link #enableBot()}) and trading operations will start again.
+     * @implNote the running mode if is disabled (using {@link #disableTrader()}) trader will not do more trading operations, but trader will continue to listen for reactivation of the running mode
+     * (using {@link #enableTrader()}) and trading operations will start again.
      * **/
     @Override
     public void start() {
@@ -289,7 +292,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                 super.run();
                 try {
                     while (true){
-                        while (runningBot){
+                        while (runningTrader){
                             if(makeRoutine(previousChecking, CHECKING_GAP_TIME)) {
                                 previousChecking = System.currentTimeMillis();
                                 checkCryptocurrencies();
@@ -570,24 +573,24 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
      * @return flag that indicates if the bot is running
      * **/
     @Override
-    public boolean isRunningBot() {
-        return runningBot;
+    public boolean isTraderRunning() {
+        return runningTrader;
     }
 
     /**
      * This method is used to disable running mode of bot
      * **/
     @Override
-    public void disableBot() {
-        runningBot = false;
+    public void disableTrader() {
+        runningTrader = false;
     }
 
     /**
      * This method is used to enable running mode of bot
      * **/
     @Override
-    public void enableBot(){
-        runningBot = true;
+    public void enableTrader(){
+        runningTrader = true;
     }
 
     /**

@@ -1,9 +1,11 @@
 package com.tecknobit.traderbot.Traders.Interfaces.Android;
 
+import com.tecknobit.traderbot.Records.Account.TraderAccount;
 import com.tecknobit.traderbot.Records.Account.TraderDetails;
 import com.tecknobit.traderbot.Records.Portfolio.Asset;
 import com.tecknobit.traderbot.Records.Portfolio.Transaction;
 import com.tecknobit.traderbot.Routines.Android.AndroidCoreRoutines;
+import com.tecknobit.traderbot.Routines.Android.ServerRequest;
 import com.tecknobit.traderbot.Traders.Interfaces.Native.BinanceTraderBot;
 
 import java.util.ArrayList;
@@ -14,62 +16,144 @@ import static java.lang.Math.toIntExact;
 public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCoreRoutines {
 
     private TraderDetails traderDetails;
+    private final TraderAccount traderAccount;
     private final Credentials credentials;
+    private final String authToken;
+    private String mail;
+    private String password;
+    private final String token;
+    private final String ivSpec;
+    private final String secretKey;
+    private ServerRequest serverRequest;
 
-    public AndroidBinanceTrader(String apiKey, String secretKey, Credentials credentials) throws Exception {
+    /**
+     * {@code runningTrader} is instance that memorize flag that indicates if the trader is running
+     * **/
+    private boolean runningTrader;
+
+    /**
+     * {@code baseCurrency} is instance that memorize base currency to get all amount value of traders routine es. EUR
+     * **/
+    private String baseCurrency;
+
+    public AndroidBinanceTrader(String apiKey, String secretKey, Credentials credentials, String baseCurrency) throws Exception {
         super(apiKey, secretKey);
         this.credentials = credentials;
+        this.baseCurrency = baseCurrency;
         initCredentials();
+        authToken = credentials.getAuthToken();
+        mail = credentials.getMail();
+        password = credentials.getPassword();
+        token = credentials.getToken();
+        ivSpec = credentials.getIvSpec();
+        this.secretKey = credentials.getSecretKey();
+        traderAccount = new TraderAccount(new ServerRequest(ivSpec, this.secretKey, authToken, token));
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint,
-                                Credentials credentials) throws Exception {
+                                Credentials credentials, String baseCurrency) throws Exception {
         super(apiKey, secretKey, baseEndpoint);
         this.credentials = credentials;
+        this.baseCurrency = baseCurrency;
         initCredentials();
+        authToken = credentials.getAuthToken();
+        mail = credentials.getMail();
+        password = credentials.getPassword();
+        token = credentials.getToken();
+        ivSpec = credentials.getIvSpec();
+        this.secretKey = credentials.getSecretKey();
+        traderAccount = new TraderAccount(new ServerRequest(ivSpec, this.secretKey, authToken, token));
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, int refreshPricesTime,
-                                Credentials credentials) throws Exception {
+                                Credentials credentials, String baseCurrency) throws Exception {
         super(apiKey, secretKey, refreshPricesTime);
+        this.baseCurrency = baseCurrency;
         checkCredentialsValidity(credentials);
         this.credentials = credentials;
         initCredentials();
+        authToken = credentials.getAuthToken();
+        mail = credentials.getMail();
+        password = credentials.getPassword();
+        token = credentials.getToken();
+        ivSpec = credentials.getIvSpec();
+        this.secretKey = credentials.getSecretKey();
+        traderAccount = new TraderAccount(new ServerRequest(ivSpec, this.secretKey, authToken, token));
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint, int refreshPricesTime,
-                                Credentials credentials) throws Exception {
+                                Credentials credentials, String baseCurrency) throws Exception {
         super(apiKey, secretKey, baseEndpoint, refreshPricesTime);
         this.credentials = credentials;
+        this.baseCurrency = baseCurrency;
         initCredentials();
+        authToken = credentials.getAuthToken();
+        mail = credentials.getMail();
+        password = credentials.getPassword();
+        token = credentials.getToken();
+        ivSpec = credentials.getIvSpec();
+        this.secretKey = credentials.getSecretKey();
+        traderAccount = new TraderAccount(new ServerRequest(ivSpec, this.secretKey, authToken, token));
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, ArrayList<String> quoteCurrencies, int refreshPricesTime,
-                                Credentials credentials) throws Exception {
+                                Credentials credentials, String baseCurrency) throws Exception {
         super(apiKey, secretKey, quoteCurrencies, refreshPricesTime);
         this.credentials = credentials;
+        this.baseCurrency = baseCurrency;
         initCredentials();
+        authToken = credentials.getAuthToken();
+        mail = credentials.getMail();
+        password = credentials.getPassword();
+        token = credentials.getToken();
+        ivSpec = credentials.getIvSpec();
+        this.secretKey = credentials.getSecretKey();
+        traderAccount = new TraderAccount(new ServerRequest(ivSpec, this.secretKey, authToken, token));
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint, ArrayList<String> quoteCurrencies,
-                                int refreshPricesTime, Credentials credentials) throws Exception {
+                                int refreshPricesTime, Credentials credentials, String baseCurrency) throws Exception {
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies, refreshPricesTime);
         this.credentials = credentials;
+        this.baseCurrency = baseCurrency;
         initCredentials();
+        authToken = credentials.getAuthToken();
+        mail = credentials.getMail();
+        password = credentials.getPassword();
+        token = credentials.getToken();
+        ivSpec = credentials.getIvSpec();
+        this.secretKey = credentials.getSecretKey();
+        traderAccount = new TraderAccount(new ServerRequest(ivSpec, this.secretKey, authToken, token));
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, ArrayList<String> quoteCurrencies,
-                                Credentials credentials) throws Exception {
+                                Credentials credentials, String baseCurrency) throws Exception {
         super(apiKey, secretKey, quoteCurrencies);
         this.credentials = credentials;
+        this.baseCurrency = baseCurrency;
         initCredentials();
+        authToken = credentials.getAuthToken();
+        mail = credentials.getMail();
+        password = credentials.getPassword();
+        token = credentials.getToken();
+        ivSpec = credentials.getIvSpec();
+        this.secretKey = credentials.getSecretKey();
+        traderAccount = new TraderAccount(new ServerRequest(ivSpec, this.secretKey, authToken, token));
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint, ArrayList<String> quoteCurrencies,
-                                Credentials credentials) throws Exception {
+                                Credentials credentials, String baseCurrency) throws Exception {
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies);
         this.credentials = credentials;
+        this.baseCurrency = baseCurrency;
         initCredentials();
+        authToken = credentials.getAuthToken();
+        mail = credentials.getMail();
+        password = credentials.getPassword();
+        token = credentials.getToken();
+        ivSpec = credentials.getIvSpec();
+        this.secretKey = credentials.getSecretKey();
+        traderAccount = new TraderAccount(new ServerRequest(ivSpec, this.secretKey, authToken, token));
     }
 
     @Override
@@ -138,6 +222,61 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
     @Override
     protected void insertCoin(String index, String name, double quantity) {
         super.insertCoin(index, name, quantity);
+    }
+
+    @Override
+    public void setRefreshPricesTime(int refreshPricesTime) {
+        super.setRefreshPricesTime(refreshPricesTime);
+        traderDetails.setRefreshPricesTime(refreshPricesTime);
+    }
+
+    @Override
+    public boolean isTraderRunning() {
+        return runningTrader;
+    }
+
+    @Override
+    public void disableTrader() {
+        runningTrader = false;
+        traderDetails.setTraderStatus(STOPPED_TRADER_STATUS);
+    }
+
+    @Override
+    public void enableTrader() {
+        runningTrader = true;
+        traderDetails.setTraderStatus(RUNNING_TRADER_STATUS);
+    }
+
+    @Override
+    public double getSalesAtLoss() {
+        return traderAccount.getSalesAtLoss();
+    }
+
+    @Override
+    public double getSalesAtGain() {
+        return traderAccount.getSalesAtGain();
+    }
+
+    @Override
+    public double getSalesInPair() {
+        return traderAccount.getSalesAtPair();
+    }
+
+    @Override
+    public double getTotalSales() {
+        return traderAccount.getTotalSales();
+    }
+
+    @Override
+    public void setBaseCurrency(String baseCurrency) {
+        if(baseCurrency == null || baseCurrency.isEmpty())
+            throw new IllegalArgumentException("Currency cannot be null or empty, but for example EUR or USDT");
+        this.baseCurrency = baseCurrency;
+    }
+
+    @Override
+    public String getBaseCurrency() {
+        return baseCurrency;
     }
 
     public Credentials getCredentials() {

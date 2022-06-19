@@ -36,4 +36,75 @@ public abstract class Trader {
         timeFormat = new SimpleDateFormat("HH:mm:ss", getDefault());
     }
 
+    public interface TraderManager {
+
+        /**
+         * {@code LOSS_SELL} is code to indicate a sell in losing
+         * **/
+        int LOSS_SELL = 0;
+
+        /**
+         * {@code GAIN_SELL} is code to indicate a sell in gaining
+         * **/
+        int GAIN_SELL = 1;
+
+        /**
+         * {@code GAIN_SELL} is code to indicate a sell in pairing
+         * **/
+        int PAIR_SELL = 2;
+
+        /**
+         * This method is used to get if bot is in running mode
+         * @return flag that indicates if the bot is running
+         * **/
+        boolean isTraderRunning();
+
+        /**
+         * This method is used to disable running mode of bot
+         * **/
+        void disableTrader();
+
+        /**
+         * This method is used to enable running mode of bot
+         * **/
+        void enableTrader();
+
+        /**
+         * This method is used to get sales at loss
+         * @return sales at loss
+         * **/
+        double getSalesAtLoss();
+
+        /**
+         * This method is used to get sales at gain
+         * @return sales at gain
+         * **/
+        double getSalesAtGain();
+
+        /**
+         * This method is used to get sales at pair
+         * @return sales at pair
+         * **/
+        double getSalesInPair();
+
+        /**
+         * This method is used to get total sales
+         * @return total sales
+         * **/
+        double getTotalSales();
+
+        /**
+         * This method is used to set base currency for change amount value
+         * @param baseCurrency: base currency to get all amount value of traders routine es. EUR
+         * **/
+        void setBaseCurrency(String baseCurrency);
+
+        /**
+         * This method is used to get base currency for change amount value <br>
+         * Any params required
+         * **/
+        String getBaseCurrency();
+
+    }
+
 }

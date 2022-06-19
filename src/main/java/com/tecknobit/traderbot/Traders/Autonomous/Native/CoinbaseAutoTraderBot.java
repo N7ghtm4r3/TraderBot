@@ -30,11 +30,14 @@ import static java.lang.Math.ceil;
 
 public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTraderCoreRoutines, MarketOrder {
 
+
+    // TODO: 19/06/2022 CHECK AUTO TRADER FLOWS
+
     /**
      * {@code TraderAccount} is instance that memorize and manage account information and trading reports of auto trader
      * account
      * **/
-    protected final TraderAccount traderAccount = new TraderAccount();
+    protected final TraderAccount traderAccount = new TraderAccount(0,0,0,0,0);
 
     /**
      * {@code MIN_NOTIONAL_FILTER} is instance that contains key for {@code MIN_NOTIONAL} filter
@@ -473,8 +476,8 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     /**
      * This method is used to start {@link CoinbaseAutoTraderBot}<br>
      * Any params required
-     * @implNote the running mode if is disabled (using {@link #disableBot()}) trader will not do more trading operations, but trader will continue to listen for reactivation of the running mode
-     * (using {@link #enableBot()}) and trading operations will start again.
+     * @implNote the running mode if is disabled (using {@link #disableTrader()}) trader will not do more trading operations, but trader will continue to listen for reactivation of the running mode
+     * (using {@link #enableTrader()}) and trading operations will start again.
      * **/
     @Override
     public void start() {
@@ -765,7 +768,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
      * @return flag that indicates if the bot is running
      * **/
     @Override
-    public boolean isRunningBot() {
+    public boolean isTraderRunning() {
         return runningBot;
     }
 
@@ -773,7 +776,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
      * This method is used to disable running mode of bot
      * **/
     @Override
-    public void disableBot() {
+    public void disableTrader() {
         runningBot = false;
     }
 
@@ -781,7 +784,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
      * This method is used to enable running mode of bot
      * **/
     @Override
-    public void enableBot() {
+    public void enableTrader() {
         runningBot = true;
     }
 

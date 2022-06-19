@@ -8,7 +8,7 @@ import static com.tecknobit.traderbot.Records.Account.TraderDetails.*;
 import static com.tecknobit.traderbot.Routines.Android.ServerRequest.*;
 import static org.apache.commons.validator.routines.EmailValidator.getInstance;
 
-public interface AndroidCoreRoutines {
+public interface AndroidCoreRoutines extends TraderManager{
 
     default void checkCredentialsValidity(Credentials credentials){
         if(credentials == null)

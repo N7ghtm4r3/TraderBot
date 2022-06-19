@@ -1,11 +1,15 @@
 package com.tecknobit.traderbot.Records.Account;
 
+import com.tecknobit.traderbot.Routines.Android.ServerRequest;
 import com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+import static com.tecknobit.traderbot.Routines.Android.ServerRequest.*;
 import static com.tecknobit.traderbot.Routines.Autonomous.AutoTraderCoreRoutines.ASSET_NOT_TRADABLE;
 import static com.tecknobit.traderbot.Routines.Interfaces.TraderCoreRoutines.tradingTools;
 import static java.lang.System.out;
@@ -44,6 +48,11 @@ public final class TraderAccount extends Trader implements RoutineMessages {
     public static final String TOTAL_INCOME_KEY = "total_income";
 
     /**
+     * {@code INCOMES_KEY} is instance that memorize incomes key
+     * **/
+    public static final String INCOMES_KEY = "incomes";
+
+    /**
      * {@code salesAtLoss} is instance that memorize sales at loss for account
      * **/
     private int salesAtLoss;
@@ -61,7 +70,7 @@ public final class TraderAccount extends Trader implements RoutineMessages {
     /**
      * {@code activationDate} is instance that memorize activation date for account
      * **/
-    private long activationDate;
+    private final long activationDate;
 
     /**
      * {@code incomes} is instance that memorize list of incomes from orders
@@ -72,6 +81,11 @@ public final class TraderAccount extends Trader implements RoutineMessages {
      * {@code totalIncome} is instance that memorize total income for account
      * **/
     private double totalIncome;
+
+    /**
+     * {@code serverRequest} is instance that memorize server request for {@code Android's interfaces}
+     * **/
+    private final ServerRequest serverRequest;
 
     /** Constructor to init {@link TraderAccount}
      * @param salesAtLoss: sales at loss for account
@@ -86,6 +100,7 @@ public final class TraderAccount extends Trader implements RoutineMessages {
         this.salesAtPair = salesAtPair;
         this.activationDate = activationDate;
         this.totalIncome = totalIncome;
+        serverRequest = null;
         initTimeFormatters();
     }
 
@@ -103,15 +118,30 @@ public final class TraderAccount extends Trader implements RoutineMessages {
         this.salesAtPair = salesAtPair;
         this.activationDate = activationDate;
         this.incomes = incomes;
+        serverRequest = null;
         initTimeFormatters();
     }
 
     /** Constructor to init {@link TraderAccount} <br>
      * Any params required
      * **/
-    public TraderAccount() {
-        fetchAccountInformation();
-        initTimeFormatters();
+    public TraderAccount(ServerRequest serverRequest) throws Exception {
+        this.serverRequest = serverRequest;
+        serverRequest.sendTokenRequest(new JSONObject(), GET_TRADER_ACCOUNT_OPE);
+        response = serverRequest.readResponse();
+        if(response.getInt(STATUS_CODE) == SUCCESSFUL_RESPONSE){
+            salesAtLoss = response.getInt(LOSSES_KEY);
+            salesAtGain = response.getInt(GAINS_KEY);
+            salesAtPair = response.getInt(PAIRS_KEY);
+            activationDate = response.getLong(ACTIVATION_DATE_KEY);
+            incomes = new ArrayList<>();
+            JSONArray incomesList = response.getJSONArray(INCOMES_KEY);
+            for (int j=0; j < incomesList.length(); j++)
+                incomes.add(incomesList.getDouble(j));
+            totalIncome = ASSET_NOT_TRADABLE;
+            initTimeFormatters();
+        }else
+            throw new IllegalAccessException("Operation failed");
     }
 
     /**
@@ -128,6 +158,9 @@ public final class TraderAccount extends Trader implements RoutineMessages {
      * **/
     public void addLoss(){
         salesAtLoss++;
+        if(serverRequest != null){
+            // TODO: 19/06/2022  request to add loss
+        }
     }
 
     /**
@@ -144,6 +177,9 @@ public final class TraderAccount extends Trader implements RoutineMessages {
      * **/
     public void addGain(){
         salesAtGain++;
+        if(serverRequest != null){
+            // TODO: 19/06/2022  request to add gain
+        }
     }
 
     /**
@@ -160,6 +196,9 @@ public final class TraderAccount extends Trader implements RoutineMessages {
      * **/
     public void addPair(){
         salesAtPair++;
+        if(serverRequest != null){
+            // TODO: 19/06/2022  request to add pair
+        }
     }
 
     /**
@@ -188,20 +227,6 @@ public final class TraderAccount extends Trader implements RoutineMessages {
         return timeFormat.format(new Date(activationDate));
     }
 
-    /**
-     * This method is used to init account information <br>
-     * Any params required
-     * **/
-    private void fetchAccountInformation(){
-        // TODO: 22/05/2022 REQUEST TO GET ACCOUNT INFORMATION
-        salesAtGain = 0;
-        salesAtLoss = 0;
-        salesAtPair = 0;
-        activationDate = System.currentTimeMillis();
-        incomes = new ArrayList<>();
-        totalIncome = ASSET_NOT_TRADABLE;
-    }
-
     public ArrayList<Double> getIncomes() {
         return incomes;
     }
@@ -211,6 +236,9 @@ public final class TraderAccount extends Trader implements RoutineMessages {
      * @param newIncome: new income to insert
      * **/
     public void addIncome(double newIncome){
+        if(serverRequest != null){
+            // TODO: 19/06/2022  request to add income
+        }
         if(newIncome < -100)
             throw new IllegalArgumentException("Income value cannot be less than -100");
         incomes.add(newIncome);
@@ -315,7 +343,6 @@ public final class TraderAccount extends Trader implements RoutineMessages {
         else
             return tail + textIncome + "\n";
     }
-
 
     /**
      * This method is used to get account details <br>

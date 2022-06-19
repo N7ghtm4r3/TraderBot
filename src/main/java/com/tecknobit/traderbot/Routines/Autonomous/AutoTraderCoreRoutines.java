@@ -2,13 +2,15 @@ package com.tecknobit.traderbot.Routines.Autonomous;
 
 import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency;
 
+import static com.tecknobit.traderbot.Records.Account.Trader.TraderManager;
+
 /**
  * The {@code AutoTraderCoreRoutines} interface defines base routines methods for auto traders bot.<br>
  * These routines allow the different auto traders to do some operations about wallet info and make trading operations autonomously.
  * @author Tecknobit N7ghtm4r3
  * **/
 
-public interface AutoTraderCoreRoutines {
+public interface AutoTraderCoreRoutines extends TraderManager {
 
     /**
      * {@code CHECKING_GAP_TIME} is instance that memorize time gap for checking routine
@@ -29,21 +31,6 @@ public interface AutoTraderCoreRoutines {
      * {@code ASSET_NOT_TRADABLE} is code to indicate an asset that is not tradable because is not in parameters range
      * **/
     int ASSET_NOT_TRADABLE = -999;
-
-    /**
-     * {@code LOSS_SELL} is code to indicate a sell in losing
-     * **/
-    int LOSS_SELL = 0;
-
-    /**
-     * {@code GAIN_SELL} is code to indicate a sell in gaining
-     * **/
-    int GAIN_SELL = 1;
-
-    /**
-     * {@code GAIN_SELL} is code to indicate a sell in pairing
-     * **/
-    int PAIR_SELL = 2;
 
     /**
      * The {@code TradingConfig} class is useful for trading operation.<br>
@@ -262,6 +249,13 @@ public interface AutoTraderCoreRoutines {
     }
 
     /**
+     * This method is used to get coin balance
+     * @param quote: string of quote currency to return amount value of balance
+     * @return balance of coin inserted
+     * **/
+    double getCoinBalance(String quote);
+
+    /**
      * This method is used to send stats report of trading using {@link TradingConfig} fetched.
      * This is very helpful to make A.I. for automatic trader better and more efficiently.
      * @implNote any personal data will be sent in this method and any personal data will be saved in our systems anywhere. Data that will be passed are
@@ -296,64 +290,5 @@ public interface AutoTraderCoreRoutines {
      * @return flag that indicates the possibility or not to print or not routine messages
      * **/
     boolean canPrintRoutineMessages();
-
-    /**
-     * This method is used to get if bot is in running mode
-     * @return flag that indicates if the bot is running
-     * **/
-    boolean isRunningBot();
-
-    /**
-     * This method is used to disable running mode of bot
-     * **/
-    void disableBot();
-
-    /**
-     * This method is used to enable running mode of bot
-     * **/
-    void enableBot();
-
-    /**
-     * This method is used to get coin balance
-     * @param quote: string of quote currency to return amount value of balance
-     * @return balance of coin inserted
-     * **/
-    double getCoinBalance(String quote);
-
-    /**
-     * This method is used to get sales at loss
-     * @return sales at loss
-     * **/
-    double getSalesAtLoss();
-
-    /**
-     * This method is used to get sales at gain
-     * @return sales at gain
-     * **/
-    double getSalesAtGain();
-
-    /**
-     * This method is used to get sales at pair
-     * @return sales at pair
-     * **/
-    double getSalesInPair();
-
-    /**
-     * This method is used to get total sales
-     * @return total sales
-     * **/
-    double getTotalSales();
-
-    /**
-     * This method is used to set base currency for change amount value
-     * @param baseCurrency: base currency to get all amount value of traders routine es. EUR
-     * **/
-    void setBaseCurrency(String baseCurrency);
-
-    /**
-     * This method is used to get base currency for change amount value <br>
-     * Any params required
-     * **/
-    String getBaseCurrency();
 
 }
