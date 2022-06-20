@@ -15,6 +15,8 @@ import static com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages.ANSI_R
 
 public final class ServerRequest {
 
+    public static final String SERVICE_UNAVAILABLE = ANSI_RED + "Service is not available for serve your request, wait"
+            + ANSI_RESET;
     public static final String GET_KEYS_OPE = "get_keys_ope";
     public static final String REGISTRATION_OPE = "registration_ope";
     public static final String LOGIN_OPE = "login_ope";
@@ -53,7 +55,6 @@ public final class ServerRequest {
     public static final String TIME_DELETION_KEY = "time_deletion";
     public static final String QUOTE_KEY = "quote";
     public static final String BALANCE_KEY = "balance";
-    public static final String SERVICE_UNAVAILABLE = ANSI_RED + "Service is not available for serve your request, wait" + ANSI_RESET;
     public static JSONObject response;
     private final ClientCipher clientCipher;
     private PrintWriter printWriter;

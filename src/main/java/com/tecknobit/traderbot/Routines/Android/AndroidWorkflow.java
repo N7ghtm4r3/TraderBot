@@ -53,9 +53,6 @@ public final class AndroidWorkflow implements RoutineMessages {
                 try {
                     while (true){
                         performRoutines();
-                        insertCryptocurrency("BTC", 0, "VETEUR", 90, -1,
-                                null, 2, "EUR", 0, new TradingConfig(
-                                        0, 0, 1, 1, 2, 1));
                         sleep(2000);
                     }
                 } catch (Exception e) {
