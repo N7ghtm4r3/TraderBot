@@ -1,12 +1,14 @@
 package com.tecknobit.traderbot.Traders.Autonomous.Native;
 
 import com.tecknobit.coinbasemanager.Managers.ExchangePro.CoinbaseManager;
+import com.tecknobit.coinbasemanager.Managers.ExchangePro.Currencies.CoinbaseCurrenciesManager;
 import com.tecknobit.coinbasemanager.Managers.ExchangePro.Currencies.Records.Currency;
 import com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.Records.Ticker;
 import com.tecknobit.traderbot.Helpers.Orders.MarketOrder;
 import com.tecknobit.traderbot.Records.Account.TraderAccount;
 import com.tecknobit.traderbot.Records.Portfolio.Coin;
 import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency;
+import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency.TradingConfig;
 import com.tecknobit.traderbot.Records.Portfolio.Transaction;
 import com.tecknobit.traderbot.Routines.Autonomous.AutoTraderCoreRoutines;
 import com.tecknobit.traderbot.Traders.Interfaces.Native.CoinbaseTraderBot;
@@ -103,6 +105,12 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     private String baseCurrency;
 
     /**
+     * {@code coinbaseCurrenciesManager} is instance of {@link CoinbaseCurrenciesManager} helpful to fetch details about
+     * cryptocurrencies
+     * **/
+    protected final CoinbaseCurrenciesManager coinbaseCurrenciesManager;
+
+    /**
      * Constructor to init CoinbaseTraderBot
      *
      * @param apiKey               : your Coinbase's api key
@@ -120,6 +128,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                                  int timeout, TraderAccount traderAccount, boolean sendStatsReport, boolean printRoutineMessages,
                                  String baseCurrency) throws Exception {
         super(apiKey, apiSecret, passphrase, defaultErrorMessage, timeout);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
         this.traderAccount = traderAccount;
         this.sendStatsReport = sendStatsReport;
         this.printRoutineMessages = printRoutineMessages;
@@ -145,6 +154,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                                  TraderAccount traderAccount, boolean sendStatsReport, boolean printRoutineMessages,
                                  String baseCurrency) throws Exception {
         super(apiKey, apiSecret, passphrase, timeout);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, timeout);
         this.traderAccount = traderAccount;
         this.sendStatsReport = sendStatsReport;
         this.printRoutineMessages = printRoutineMessages;
@@ -170,6 +180,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                                  TraderAccount traderAccount, boolean sendStatsReport, boolean printRoutineMessages,
                                  String baseCurrency) throws Exception {
         super(apiKey, apiSecret, passphrase, defaultErrorMessage);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
         this.traderAccount = traderAccount;
         this.sendStatsReport = sendStatsReport;
         this.printRoutineMessages = printRoutineMessages;
@@ -193,6 +204,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     public CoinbaseAutoTraderBot(String apiKey, String apiSecret, String passphrase, TraderAccount traderAccount,
                                  boolean sendStatsReport, boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, apiSecret, passphrase);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase);
         this.traderAccount = traderAccount;
         this.sendStatsReport = sendStatsReport;
         this.printRoutineMessages = printRoutineMessages;
@@ -220,6 +232,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                                  int timeout, ArrayList<String> quoteCurrencies, TraderAccount traderAccount,
                                  boolean sendStatsReport, boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, apiSecret, passphrase, defaultErrorMessage, timeout, quoteCurrencies);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, defaultErrorMessage, timeout);
         this.traderAccount = traderAccount;
         this.sendStatsReport = sendStatsReport;
         this.printRoutineMessages = printRoutineMessages;
@@ -246,6 +259,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                                  TraderAccount traderAccount, boolean sendStatsReport, boolean printRoutineMessages,
                                  String baseCurrency) throws Exception {
         super(apiKey, apiSecret, passphrase, timeout, quoteCurrencies);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, timeout);
         this.traderAccount = traderAccount;
         this.sendStatsReport = sendStatsReport;
         this.printRoutineMessages = printRoutineMessages;
@@ -272,6 +286,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                                  ArrayList<String> quoteCurrencies, TraderAccount traderAccount, boolean sendStatsReport,
                                  boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, apiSecret, passphrase, defaultErrorMessage, quoteCurrencies);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
         this.traderAccount = traderAccount;
         this.sendStatsReport = sendStatsReport;
         this.printRoutineMessages = printRoutineMessages;
@@ -297,6 +312,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                                  TraderAccount traderAccount, boolean sendStatsReport, boolean printRoutineMessages,
                                  String baseCurrency) throws Exception {
         super(apiKey, apiSecret, passphrase, quoteCurrencies);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase);
         this.traderAccount = traderAccount;
         this.sendStatsReport = sendStatsReport;
         this.printRoutineMessages = printRoutineMessages;
@@ -325,6 +341,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                                  int timeout, int refreshPricesTime, TraderAccount traderAccount, boolean sendStatsReport,
                                  boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, apiSecret, passphrase, defaultErrorMessage, timeout, refreshPricesTime);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
         this.traderAccount = traderAccount;
         this.sendStatsReport = sendStatsReport;
         this.printRoutineMessages = printRoutineMessages;
@@ -352,6 +369,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                                  TraderAccount traderAccount, boolean sendStatsReport, boolean printRoutineMessages,
                                  String baseCurrency) throws Exception {
         super(apiKey, apiSecret, passphrase, timeout, refreshPricesTime);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, timeout);
         this.traderAccount = traderAccount;
         this.sendStatsReport = sendStatsReport;
         this.printRoutineMessages = printRoutineMessages;
@@ -379,6 +397,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                                  short refreshPricesTime, TraderAccount traderAccount, boolean sendStatsReport,
                                  boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, apiSecret, passphrase, defaultErrorMessage, refreshPricesTime);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
         this.traderAccount = traderAccount;
         this.sendStatsReport = sendStatsReport;
         this.printRoutineMessages = printRoutineMessages;
@@ -405,6 +424,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                                  TraderAccount traderAccount, boolean sendStatsReport, boolean printRoutineMessages,
                                  String baseCurrency) throws Exception {
         super(apiKey, apiSecret, passphrase, refreshPricesTime);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase);
         this.traderAccount = traderAccount;
         this.sendStatsReport = sendStatsReport;
         this.printRoutineMessages = printRoutineMessages;
@@ -435,6 +455,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                                  TraderAccount traderAccount, boolean sendStatsReport,
                                  boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, apiSecret, passphrase, defaultErrorMessage, timeout, quoteCurrencies, refreshPricesTime);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, defaultErrorMessage, timeout);
         this.traderAccount = traderAccount;
         this.sendStatsReport = sendStatsReport;
         this.printRoutineMessages = printRoutineMessages;
@@ -463,6 +484,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                                  ArrayList<String> quoteCurrencies, int refreshPricesTime, TraderAccount traderAccount,
                                  boolean sendStatsReport, boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, apiSecret, passphrase, timeout, quoteCurrencies, refreshPricesTime);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, timeout);
         this.traderAccount = traderAccount;
         this.sendStatsReport = sendStatsReport;
         this.printRoutineMessages = printRoutineMessages;
@@ -491,6 +513,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                                  ArrayList<String> quoteCurrencies, int refreshPricesTime, TraderAccount traderAccount,
                                  boolean sendStatsReport, boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, apiSecret, passphrase, defaultErrorMessage, quoteCurrencies, refreshPricesTime);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
         this.traderAccount = traderAccount;
         this.sendStatsReport = sendStatsReport;
         this.printRoutineMessages = printRoutineMessages;
@@ -518,6 +541,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                                  int refreshPricesTime, TraderAccount traderAccount, boolean sendStatsReport,
                                  boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, apiSecret, passphrase, quoteCurrencies, refreshPricesTime);
+        coinbaseCurrenciesManager = new CoinbaseCurrenciesManager(apiKey, apiSecret, passphrase);
         this.traderAccount = traderAccount;
         this.sendStatsReport = sendStatsReport;
         this.printRoutineMessages = printRoutineMessages;

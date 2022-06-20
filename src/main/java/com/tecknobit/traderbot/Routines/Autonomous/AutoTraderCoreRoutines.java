@@ -2,6 +2,7 @@ package com.tecknobit.traderbot.Routines.Autonomous;
 
 import com.tecknobit.traderbot.Records.Account.TraderAccount;
 import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency;
+import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency.TradingConfig;
 import com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,89 +36,6 @@ public interface AutoTraderCoreRoutines extends TraderManager, RoutineMessages {
      * {@code ASSET_NOT_TRADABLE} is code to indicate an asset that is not tradable because is not in parameters range
      * **/
     int ASSET_NOT_TRADABLE = -999;
-
-    /**
-     * The {@code TradingConfig} class is useful for trading operation.<br>
-     * Represent model to use for a {@link Cryptocurrency} in trading phases. (BUY and SELL)
-     * @author Tecknobit N7ghtm4r3
-     * **/
-    final class TradingConfig{
-
-        /**
-         * {@code marketPhase} is instance that memorize market phase when buy a {@link Cryptocurrency}
-         * **/
-        private final double marketPhase;
-
-        /**
-         * {@code wasteRange} is instance that memorize waste range gap to buy and to make forecast for {@link Cryptocurrency}
-         * **/
-        private final double wasteRange;
-
-        /**
-         * {@code daysGap} is instance that memorize days gap to make forecast for {@link Cryptocurrency}
-         * **/
-        private final int daysGap;
-
-        /**
-         * {@code minGainForOrder} is instance that memorize minimum gain to obtain by an order. This is used in sell phase.
-         * **/
-        private final double minGainForOrder;
-
-        /**
-         * {@code maxLoss} is instance that memorize maximum loss for a {@link Cryptocurrency} and is used in buy phase to check <br>
-         * if a cryptocurrency is in correct range to be bought, and is used in sell phase to sell when cryptocurrency is dropping.
-         * **/
-        private final double maxLoss;
-
-        /**
-         * {@code maxGain} is instance that memorize maximum gain for a {@link Cryptocurrency} and is used in buy phase to check
-         * if a cryptocurrency is in correct range to be bought.
-         * **/
-        private final double maxGain;
-
-        /** Constructor to init {@link TradingConfig}
-         * @param marketPhase: market phase when buy a {@link Cryptocurrency}
-         * @param wasteRange: waste range gap to buy and to make forecast for {@link Cryptocurrency}
-         * @param daysGap: days gap to make forecast for {@link Cryptocurrency}
-         * @param minGainForOrder: minimum gain to obtain by an order. This is used in sell phase.
-         * @param maxLoss: maximum loss for a {@link Cryptocurrency}
-         * @param maxGain: maximum gain for a {@link Cryptocurrency} in checking phase
-         * **/
-        public TradingConfig(double marketPhase, double wasteRange, int daysGap, double minGainForOrder, double maxLoss,
-                             double maxGain) {
-            this.marketPhase = marketPhase;
-            this.wasteRange = wasteRange;
-            this.daysGap = daysGap;
-            this.minGainForOrder = minGainForOrder;
-            this.maxLoss = maxLoss;
-            this.maxGain = maxGain;
-        }
-
-        public double getMarketPhase() {
-            return marketPhase;
-        }
-
-        public double getWasteRange() {
-            return wasteRange;
-        }
-
-        public int getDaysGap() {
-            return daysGap;
-        }
-
-        public double getMinGainForOrder() {
-            return minGainForOrder;
-        }
-
-        public double getMaxLoss() {
-            return maxLoss;
-        }
-
-        public double getMaxGain() {
-            return maxGain;
-        }
-
-    }
 
     /**
      * This method is used to print disclaimer alert to warn user of terms and conditions using our services. <br>

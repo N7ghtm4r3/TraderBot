@@ -28,6 +28,8 @@ public final class ServerRequest {
     public static final String CHANGE_CURRENCY_OPE = "change_currency_ope";
     public static final String CHANGE_ACCOUNT_TIME_DELETION_OPE = "change_account_time_deletion_ope";
     public static final String INSERT_WALLET_BALANCE_OPE = "insert_wallet_balance_ope";
+    public static final String INSERT_CRYPTOCURRENCY_OPE = "insert_cryptocurrency_ope";
+    public static final String DELETE_CRYPTOCURRENCY_OPE = "delete_cryptocurrency_ope";
     public static final String INSERT_QUOTE_OPE = "insert_quote_ope";
     public static final String REMOVE_QUOTE_OPE = "remove_quote_ope";
     public static final String LOGOUT_ACCOUNT_OPE = "logout_account_ope";
@@ -51,53 +53,46 @@ public final class ServerRequest {
     public static final String TIME_DELETION_KEY = "time_deletion";
     public static final String QUOTE_KEY = "quote";
     public static final String BALANCE_KEY = "balance";
+    public static final String SERVICE_UNAVAILABLE = ANSI_RED + "Service is not available for serve your request, wait" + ANSI_RESET;
     public static JSONObject response;
     private final ClientCipher clientCipher;
     private PrintWriter printWriter;
-    private boolean ciphered;
-    private Socket socket;
+    private final boolean ciphered;
+    private volatile Socket socket;
     private String authToken;
     private String tokenId;
+    private String token;
+    private String secretKey;
 
     public ServerRequest(String ivSpec, String secretKey, String authToken, String tokenId) throws Exception {
         clientCipher = new ClientCipher(ivSpec, secretKey);
-        try {
-            socket = new Socket("localhost", 7898);
-            printWriter = new PrintWriter(socket.getOutputStream(), true);
-            ciphered = true;
-            this.authToken = authToken;
-            this.tokenId = tokenId;
-        }catch (ConnectException e){
-            System.out.println(ANSI_RED + "Service is not available for serve your request, wait" + ANSI_RESET);
-        }
+        ciphered = true;
+        this.authToken = authToken;
+        this.tokenId = tokenId;
     }
 
     public ServerRequest(String ivSpec, String secretKey) throws Exception {
         clientCipher = new ClientCipher(ivSpec, secretKey);
-        try {
-            socket = new Socket("localhost", 7898);
-            printWriter = new PrintWriter(socket.getOutputStream(), true);
-            ciphered = true;
-            authToken = null;
-            tokenId = null;
-        }catch (ConnectException e){
-            System.out.println(ANSI_RED + "Service is not available for serve your request, wait" + ANSI_RESET);
-        }
+        ciphered = true;
+        authToken = null;
+        tokenId = null;
     }
 
-    public ServerRequest() throws IOException {
+    public ServerRequest() {
         clientCipher = null;
-        socket = new Socket("localhost", 7898);
-        printWriter = new PrintWriter(socket.getOutputStream(), true);
         ciphered = false;
     }
 
     public void sendRequest(JSONObject message, String operation) throws Exception {
         try {
+            createSocket();
             message.put("ope", operation);
             String messageToSent = message.toString();
-            if (ciphered)
+            if (ciphered) {
+                assert clientCipher != null;
                 messageToSent = clientCipher.encryptRequest(messageToSent);
+            }
+            printWriter = new PrintWriter(socket.getOutputStream(), true);
             printWriter.println(messageToSent);
             printWriter.flush();
         }catch (NullPointerException ignored){
@@ -106,23 +101,37 @@ public final class ServerRequest {
 
     public void sendTokenRequest(JSONObject message, String operation) throws Exception {
         try {
+            createSocket();
             message.put("ope", operation);
             message.put(AUTH_TOKEN_KEY, authToken);
+            assert clientCipher != null;
             String messageToSent = clientCipher.encrypt(message.toString()) + "#" + tokenId;
+            printWriter = new PrintWriter(socket.getOutputStream(), true);
             printWriter.println(messageToSent);
             printWriter.flush();
         }catch (NullPointerException ignored){
         }
     }
 
-    public JSONObject readResponse() throws Exception {
+    public JSONObject readResponse() {
         try {
             String response = new BufferedReader(new InputStreamReader(socket.getInputStream())).readLine();
-            if(ciphered)
+            if(ciphered) {
+                assert clientCipher != null;
                 response = clientCipher.decryptResponse(response);
+            }
+            socket = null;
             return new JSONObject(response);
-        }catch (NullPointerException e){
+        }catch (Exception e){
             return null;
+        }
+    }
+
+    private void createSocket() throws IOException {
+        try {
+            while (socket != null) Thread.onSpinWait();
+            socket = new Socket("localhost", 7898);
+        }catch (ConnectException ignored){
         }
     }
 

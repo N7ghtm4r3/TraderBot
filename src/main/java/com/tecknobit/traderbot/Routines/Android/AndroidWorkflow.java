@@ -1,8 +1,12 @@
 package com.tecknobit.traderbot.Routines.Android;
 
+import com.tecknobit.apimanager.Tools.Readers.JsonHelper;
+import com.tecknobit.apimanager.Tools.Trading.CryptocurrencyTool;
 import com.tecknobit.traderbot.Exceptions.SaveData;
 import com.tecknobit.traderbot.Records.Account.TraderDetails;
 import com.tecknobit.traderbot.Records.Android.Routine;
+import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency;
+import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency.TradingConfig;
 import com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages;
 import com.tecknobit.traderbot.Routines.Interfaces.TraderCoreRoutines;
 import com.tecknobit.traderbot.Traders.Interfaces.Android.AndroidBinanceTrader;
@@ -10,34 +14,35 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.crypto.BadPaddingException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.tecknobit.traderbot.Records.Account.TraderDetails.*;
-import static com.tecknobit.traderbot.Records.Account.TraderDetails.TRADER_TYPE_KEY;
 import static com.tecknobit.traderbot.Records.Android.Routine.*;
+import static com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency.CRYPTOCURRENCY_KEY;
 import static com.tecknobit.traderbot.Routines.Android.ServerRequest.*;
 import static java.lang.Integer.parseInt;
 import static org.apache.commons.validator.routines.EmailValidator.getInstance;
 
 public final class AndroidWorkflow implements RoutineMessages {
 
+    /**
+     * {@code cryptocurrencyTool} is instance helpful to manage cryptocurrencies details
+     * **/
+    private final CryptocurrencyTool cryptocurrencyTool;
+    private final ServerRequest serverRequest;
     private final TraderCoreRoutines trader;
     private final Credentials credentials;
     private boolean printRoutineMessages;
     private boolean workflowStarted;
-    private final String authToken;
-    private final String token;
-    private final String ivSpec;
-    private final String secretKey;
 
-    public AndroidWorkflow(TraderCoreRoutines traderCoreRoutines, Credentials credentials, boolean printRoutineMessages) {
+    public AndroidWorkflow(ServerRequest serverRequest, TraderCoreRoutines traderCoreRoutines, Credentials credentials,
+                           boolean printRoutineMessages) throws IOException {
+        this.serverRequest = serverRequest;
         this.printRoutineMessages = printRoutineMessages;
         this.credentials = credentials;
         this.trader = traderCoreRoutines;
-        authToken = credentials.getAuthToken();
-        token = credentials.getToken();
-        ivSpec = credentials.getIvSpec();
-        secretKey = credentials.getSecretKey();
+        cryptocurrencyTool = new CryptocurrencyTool();
     }
 
     public void startWorkflow(){
@@ -48,6 +53,9 @@ public final class AndroidWorkflow implements RoutineMessages {
                 try {
                     while (true){
                         performRoutines();
+                        insertCryptocurrency("BTC", 0, "VETEUR", 90, -1,
+                                null, 2, "EUR", 0, new TradingConfig(
+                                        0, 0, 1, 1, 2, 1));
                         sleep(2000);
                     }
                 } catch (Exception e) {
@@ -57,7 +65,7 @@ public final class AndroidWorkflow implements RoutineMessages {
         }.start();
     }
 
-    private void performRoutines() throws Exception {
+    private void performRoutines() {
         for (Routine routine : getRoutines()){
             switch (routine.getRoutine()){
                 case CHANGE_MAIL_OPE:
@@ -105,32 +113,31 @@ public final class AndroidWorkflow implements RoutineMessages {
         }
     }
 
-    private ArrayList<Routine> getRoutines() throws Exception {
-        ServerRequest serverRequest = getServerRequest();
+    private ArrayList<Routine> getRoutines() {
         ArrayList<Routine> routines = new ArrayList<>();
         try {
             try {
                 serverRequest.sendTokenRequest(new JSONObject(), GET_ROUTINES_TRADER_OPE);
                 response = serverRequest.readResponse();
                 assert response != null;
-                JSONArray jsonRoutines = response.getJSONArray(ROUTINES_KEY);
-                for (int j = 0; j < jsonRoutines.length(); j++) {
-                    JSONObject routine = jsonRoutines.getJSONObject(j);
-                    routines.add(new Routine(routine.getString(ROUTINE_KEY), routine.getString(ROUTINE_EXTRA_VALUE_KEY)));
+                JSONArray jsonRoutines = new JsonHelper(response).getJSONArray(ROUTINES_KEY);
+                if(jsonRoutines != null){
+                    for (int j = 0; j < jsonRoutines.length(); j++) {
+                        JSONObject routine = jsonRoutines.getJSONObject(j);
+                        routines.add(new Routine(routine.getString(ROUTINE_KEY), routine.getString(ROUTINE_EXTRA_VALUE_KEY)));
+                    }
                 }
             }catch (BadPaddingException e){
                 printRed("[ACCOUNT DELETED] You deleted account for trader, we hope to see you again soon!");
                 System.exit(0);
             }
         } catch (Exception e) {
-            printOperationFailed("ROUTINE REQUEST");
+            printOperationFailed(GET_ROUTINES_TRADER_OPE);
         }
         return routines;
     }
 
-    public void insertWalletBalance(double balance) throws Exception {
-        String ope = "WALLET BALANCE";
-        ServerRequest serverRequest = getServerRequest();
+    public void insertWalletBalance(double balance) {
         try {
             serverRequest.sendTokenRequest(new JSONObject().put(BALANCE_KEY, balance), INSERT_WALLET_BALANCE_OPE);
             response = serverRequest.readResponse();
@@ -138,19 +145,70 @@ public final class AndroidWorkflow implements RoutineMessages {
                 switch (response.getInt(STATUS_CODE)){
                     case SUCCESSFUL_RESPONSE:
                         if(printRoutineMessages)
-                            printOperationSuccess(ope);
+                            printOperationSuccess(INSERT_WALLET_BALANCE_OPE);
                         break;
                     case GENERIC_ERROR_RESPONSE:
                         if(printRoutineMessages)
-                            printRed("[" + ope + "] Wallet balance cannot be less than 0");
+                            printRed("[" + INSERT_WALLET_BALANCE_OPE + "] Wallet balance cannot be less than 0");
                         break;
                     default:
-                        printOperationFailed(ope);
+                        printOperationFailed(INSERT_WALLET_BALANCE_OPE);
                 }
             }else
-                printOperationFailed(ope);
+                printOperationFailed(INSERT_WALLET_BALANCE_OPE);
         } catch (Exception e) {
-            printOperationFailed(ope);
+            printOperationFailed(INSERT_WALLET_BALANCE_OPE);
+        }
+    }
+
+    public void insertCryptocurrency(String assetIndex, double quantity, String symbol, double lastPrice,
+                                     double tptopIndex, Object candleGap, double priceChangePercent, String quoteAsset,
+                                     double incomePercent, TradingConfig tradingConfig) {
+        try {
+            serverRequest.sendTokenRequest(new JSONObject().put(CRYPTOCURRENCY_KEY,
+                    new Cryptocurrency(assetIndex, cryptocurrencyTool.getCryptocurrencyName(assetIndex), quantity, symbol,
+                            lastPrice, tptopIndex, candleGap, priceChangePercent, quoteAsset, incomePercent, tradingConfig)
+                            .getCryptocurrency()), INSERT_CRYPTOCURRENCY_OPE);
+            response = serverRequest.readResponse();
+            if(response != null){
+                switch (response.getInt(STATUS_CODE)){
+                    case SUCCESSFUL_RESPONSE:
+                        printOperationSuccess(INSERT_CRYPTOCURRENCY_OPE);
+                        break;
+                    case GENERIC_ERROR_RESPONSE:
+                        if(printRoutineMessages)
+                            printRed("[" + INSERT_WALLET_BALANCE_OPE + "] Insert a valid cryptocurrency value");
+                        break;
+                    default:
+                        printOperationFailed(INSERT_CRYPTOCURRENCY_OPE);
+                }
+            }else
+                printOperationFailed(INSERT_CRYPTOCURRENCY_OPE);
+        }catch (Exception e){
+            printOperationFailed(INSERT_CRYPTOCURRENCY_OPE);
+        }
+    }
+
+    public void removeCryptocurrency(String assetIndex){
+        try {
+            serverRequest.sendTokenRequest(new JSONObject().put(CRYPTOCURRENCY_KEY, assetIndex), DELETE_CRYPTOCURRENCY_OPE);
+            response = serverRequest.readResponse();
+            if(response != null){
+                switch (response.getInt(STATUS_CODE)){
+                    case SUCCESSFUL_RESPONSE:
+                        printOperationSuccess(DELETE_CRYPTOCURRENCY_OPE);
+                        break;
+                    case GENERIC_ERROR_RESPONSE:
+                        if(printRoutineMessages)
+                            printRed("[" + DELETE_CRYPTOCURRENCY_OPE + "] Insert a valid cryptocurrency index");
+                        break;
+                    default:
+                        printOperationFailed(DELETE_CRYPTOCURRENCY_OPE);
+                }
+            }else
+                printOperationFailed(DELETE_CRYPTOCURRENCY_OPE);
+        }catch (Exception e){
+            printOperationFailed(DELETE_CRYPTOCURRENCY_OPE);
         }
     }
 
@@ -163,7 +221,7 @@ public final class AndroidWorkflow implements RoutineMessages {
         }
     }
 
-    private void printOperationFailed(String ope){
+    public void printOperationFailed(String ope){
         if(printRoutineMessages)
             printRed("[" + ope + "] Operation failed");
     }
@@ -187,20 +245,11 @@ public final class AndroidWorkflow implements RoutineMessages {
         return credentials;
     }
 
-    /**
-     * This method is used to get object for make a server request
-     *
-     * @return request as {@link ServerRequest} object
-     **/
-    public ServerRequest getServerRequest() throws Exception {
-        return new ServerRequest(ivSpec, secretKey, authToken, token);
-    }
-
     public static final class Credentials{
 
+        private static boolean alreadyInstantiated = false;
         public static final int MAX_TOKEN_LENGTH = 32;
         public static final int MIN_TOKEN_LENGTH = 8;
-        public static boolean yetINmeroray = false; // TODO: 20/06/2022 LOCK MULTIPLE INSTANTIATION OF CLASS
         private ServerRequest serverRequest;
         private final String authToken;
         private String mail;
@@ -221,7 +270,11 @@ public final class AndroidWorkflow implements RoutineMessages {
          * }
          * **/
 
-        public Credentials(String mail, String password) {
+        public Credentials(String mail, String password) throws IllegalAccessException {
+            if(!alreadyInstantiated)
+                alreadyInstantiated = true;
+            else
+                throw new IllegalAccessException("Credentials object is already instantiated you cannot have multiple Credentials objects in same session");
             if(!getInstance().isValid(mail))
                 throw new IllegalArgumentException("Mail must be a valid mail");
             else
@@ -237,6 +290,10 @@ public final class AndroidWorkflow implements RoutineMessages {
         }
 
         public void sendRegistrationRequest() throws Exception {
+            if(!alreadyInstantiated)
+                alreadyInstantiated = true;
+            else
+                throw new IllegalAccessException("Credentials object is already instantiated you cannot have multiple Credentials objects in same session");
             if(traderDetails != null && token == null){
                 getPublicKeys();
                 serverRequest.sendRequest(new JSONObject().put(MAIL_KEY, mail).put(PASSWORD_KEY, password)
@@ -266,6 +323,10 @@ public final class AndroidWorkflow implements RoutineMessages {
 
         public Credentials(String authToken, String mail, String password, String token, String ivSpec,
                            String secretKey) throws Exception {
+            if(!alreadyInstantiated)
+                alreadyInstantiated = true;
+            else
+                throw new IllegalAccessException("Credentials object is already instantiated you cannot have multiple Credentials objects in same session");
             this.authToken = authToken;
             this.mail = mail;
             this.password = password;
@@ -288,7 +349,7 @@ public final class AndroidWorkflow implements RoutineMessages {
                     default: throw new IllegalAccessException("Operation failed");
                 }
             }else
-                throw new IllegalStateException(ANSI_RED + "Service is not available for serve your request, wait" + ANSI_RESET);
+                throw new IllegalStateException(SERVICE_UNAVAILABLE);
         }
 
         private void getPublicKeys() {
@@ -299,7 +360,7 @@ public final class AndroidWorkflow implements RoutineMessages {
                 if(response != null)
                     serverRequest = new ServerRequest(response.getString(IV_SPEC_KEY), response.getString(SECRET_KEY));
             }catch (Exception e){
-                throw new IllegalStateException(ANSI_RED + "Service is not available for serve your request, wait" + ANSI_RESET);
+                throw new IllegalStateException(SERVICE_UNAVAILABLE);
             }
         }
 

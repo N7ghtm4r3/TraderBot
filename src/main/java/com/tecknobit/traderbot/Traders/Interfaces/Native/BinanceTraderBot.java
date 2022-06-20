@@ -436,16 +436,12 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         Symbol coinSymbol = tradingPairsList.get(symbol);
         String baseAsset = coinSymbol.getBaseAsset();
         Coin coin = coins.get(baseAsset);
-        if(coin != null){
+        if(coin != null && coin.isTradingEnabled()){
             placeAnOrder(symbol, quantity, SELL_SIDE);
             int statusCode = binanceSpotManager.getStatusResponse();
-            if(statusCode == 200) {
-                double newQuantity = coin.getQuantity() - quantity;
-                if(newQuantity == 0)
-                    coins.remove(baseAsset);
-                else
-                    insertCoin(baseAsset, coin.getAssetName(), newQuantity);
-            }else {
+            if(statusCode == 200)
+                insertCoin(baseAsset, coin.getAssetName(), coin.getQuantity() - quantity);
+            else {
                 throw new Exception("Error during sell order status code: [" + statusCode + "]" +
                         " error message: [" + binanceSpotManager.getErrorResponse() + "]");
             }
@@ -464,21 +460,6 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         HashMap<String, Object> quantityParam = new HashMap<>();
         quantityParam.put("quantity", quantity);
         orderStatus = binanceSpotManager.sendNewOrder(symbol, side, MARKET_TYPE, quantityParam);
-    }
-
-    /**
-     * This method is used to insert or update a coin in {@link #coins} list.
-     * @param index: index of the coin es. BTC
-     * @param name: name of the coin es Bitcoin
-     * @param quantity: quantity of that coin es. 0.28
-     * **/
-    @Override
-    protected void insertCoin(String index, String name, double quantity) {
-        coins.put(index, new Coin(index,
-                name,
-                quantity,
-                true
-        ));
     }
 
     /**

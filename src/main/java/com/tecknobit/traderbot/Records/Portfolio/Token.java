@@ -9,6 +9,21 @@ package com.tecknobit.traderbot.Records.Portfolio;
 public class Token {
 
     /**
+     * {@code BASE_ASSET_KEY} is instance that memorize base asset key
+     * **/
+    public static final String BASE_ASSET_KEY = "base_asset";
+
+    /**
+     * {@code ASSET_NAME_KEY} is instance that memorize asset name key
+     * **/
+    public static final String ASSET_NAME_KEY = "asset_name";
+
+    /**
+     * {@code QUANTITY_KEY} is instance that memorize quantity key
+     * **/
+    public static final String QUANTITY_KEY = "quantity";
+
+    /**
      * {@code assetIndex} is instance that memorize index of token es. BTC
      * **/
     protected final String assetIndex;

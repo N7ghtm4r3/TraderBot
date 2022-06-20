@@ -1,12 +1,16 @@
 package com.tecknobit.traderbot.Traders.Interfaces.Android;
 
+import com.tecknobit.binancemanager.Managers.Market.Records.Stats.ExchangeInformation;
+import com.tecknobit.binancemanager.Managers.Market.Records.Tickers.TickerPriceChange;
 import com.tecknobit.traderbot.Records.Account.TraderAccount;
 import com.tecknobit.traderbot.Records.Account.TraderDetails;
 import com.tecknobit.traderbot.Records.Portfolio.Asset;
+import com.tecknobit.traderbot.Records.Portfolio.Coin;
 import com.tecknobit.traderbot.Records.Portfolio.Transaction;
 import com.tecknobit.traderbot.Routines.Android.AndroidCoreRoutines;
 import com.tecknobit.traderbot.Routines.Android.AndroidWorkflow;
 import com.tecknobit.traderbot.Routines.Android.AndroidWorkflow.Credentials;
+import com.tecknobit.traderbot.Routines.Android.ServerRequest;
 import com.tecknobit.traderbot.Traders.Interfaces.Native.BinanceTraderBot;
 
 import java.util.ArrayList;
@@ -23,6 +27,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
     private final String token;
     private final String ivSpec;
     private final String secretKey;
+    private String symbol;
 
     /**
      * {@code runningTrader} is instance that memorize flag that indicates if the trader is running
@@ -46,8 +51,9 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         token = credentials.getToken();
         ivSpec = credentials.getIvSpec();
         this.secretKey = credentials.getSecretKey();
-        androidWorkflow = new AndroidWorkflow(this, credentials, printRoutineMessages);
-        traderAccount = new TraderAccount(androidWorkflow.getServerRequest());
+        ServerRequest serverRequest = new ServerRequest(ivSpec, this.secretKey, authToken, token);
+        androidWorkflow = new AndroidWorkflow(serverRequest, this, credentials, printRoutineMessages);
+        traderAccount = new TraderAccount(serverRequest);
         workflowHandler();
     }
 
@@ -63,8 +69,9 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         token = credentials.getToken();
         ivSpec = credentials.getIvSpec();
         this.secretKey = credentials.getSecretKey();
-        androidWorkflow = new AndroidWorkflow(this, credentials, printRoutineMessages);
-        traderAccount = new TraderAccount(androidWorkflow.getServerRequest());
+        ServerRequest serverRequest = new ServerRequest(ivSpec, this.secretKey, authToken, token);
+        androidWorkflow = new AndroidWorkflow(serverRequest, this, credentials, printRoutineMessages);
+        traderAccount = new TraderAccount(serverRequest);
         workflowHandler();
     }
 
@@ -81,8 +88,9 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         token = credentials.getToken();
         ivSpec = credentials.getIvSpec();
         this.secretKey = credentials.getSecretKey();
-        androidWorkflow = new AndroidWorkflow(this, credentials, printRoutineMessages);
-        traderAccount = new TraderAccount(androidWorkflow.getServerRequest());
+        ServerRequest serverRequest = new ServerRequest(ivSpec, this.secretKey, authToken, token);
+        androidWorkflow = new AndroidWorkflow(serverRequest, this, credentials, printRoutineMessages);
+        traderAccount = new TraderAccount(serverRequest);
         workflowHandler();
     }
 
@@ -98,8 +106,9 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         token = credentials.getToken();
         ivSpec = credentials.getIvSpec();
         this.secretKey = credentials.getSecretKey();
-        androidWorkflow = new AndroidWorkflow(this, credentials, printRoutineMessages);
-        traderAccount = new TraderAccount(androidWorkflow.getServerRequest());
+        ServerRequest serverRequest = new ServerRequest(ivSpec, this.secretKey, authToken, token);
+        androidWorkflow = new AndroidWorkflow(serverRequest, this, credentials, printRoutineMessages);
+        traderAccount = new TraderAccount(serverRequest);
         workflowHandler();
     }
 
@@ -115,8 +124,9 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         token = credentials.getToken();
         ivSpec = credentials.getIvSpec();
         this.secretKey = credentials.getSecretKey();
-        androidWorkflow = new AndroidWorkflow(this, credentials, printRoutineMessages);
-        traderAccount = new TraderAccount(androidWorkflow.getServerRequest());
+        ServerRequest serverRequest = new ServerRequest(ivSpec, this.secretKey, authToken, token);
+        androidWorkflow = new AndroidWorkflow(serverRequest, this, credentials, printRoutineMessages);
+        traderAccount = new TraderAccount(serverRequest);
         workflowHandler();
     }
 
@@ -133,8 +143,9 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         token = credentials.getToken();
         ivSpec = credentials.getIvSpec();
         this.secretKey = credentials.getSecretKey();
-        androidWorkflow = new AndroidWorkflow(this, credentials, printRoutineMessages);
-        traderAccount = new TraderAccount(androidWorkflow.getServerRequest());
+        ServerRequest serverRequest = new ServerRequest(ivSpec, this.secretKey, authToken, token);
+        androidWorkflow = new AndroidWorkflow(serverRequest, this, credentials, printRoutineMessages);
+        traderAccount = new TraderAccount(serverRequest);
         workflowHandler();
     }
 
@@ -150,8 +161,9 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         token = credentials.getToken();
         ivSpec = credentials.getIvSpec();
         this.secretKey = credentials.getSecretKey();
-        androidWorkflow = new AndroidWorkflow(this, credentials, printRoutineMessages);
-        traderAccount = new TraderAccount(androidWorkflow.getServerRequest());
+        ServerRequest serverRequest = new ServerRequest(ivSpec, this.secretKey, authToken, token);
+        androidWorkflow = new AndroidWorkflow(serverRequest, this, credentials, printRoutineMessages);
+        traderAccount = new TraderAccount(serverRequest);
         workflowHandler();
     }
 
@@ -168,8 +180,9 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         token = credentials.getToken();
         ivSpec = credentials.getIvSpec();
         this.secretKey = credentials.getSecretKey();
-        androidWorkflow = new AndroidWorkflow(this, credentials, printRoutineMessages);
-        traderAccount = new TraderAccount(androidWorkflow.getServerRequest());
+        ServerRequest serverRequest = new ServerRequest(ivSpec, this.secretKey, authToken, token);
+        androidWorkflow = new AndroidWorkflow(serverRequest, this, credentials, printRoutineMessages);
+        traderAccount = new TraderAccount(serverRequest);
         workflowHandler();
     }
 
@@ -248,19 +261,32 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
 
     @Override
     public void buyMarket(String symbol, double quantity) throws Exception {
-        if(runningTrader)
+        if(runningTrader){
             super.buyMarket(symbol, quantity);
+            this.symbol = symbol;
+        }
     }
 
     @Override
     public void sellMarket(String symbol, double quantity) throws Exception {
-        if(runningTrader)
+        if(runningTrader){
             super.sellMarket(symbol, quantity);
+            this.symbol = symbol;
+        }
     }
 
     @Override
     protected void insertCoin(String index, String name, double quantity) {
         super.insertCoin(index, name, quantity);
+        TickerPriceChange ticker = lastPrices.get(symbol);
+        ExchangeInformation.Symbol asset = tradingPairsList.get(symbol);
+        Coin coin = coins.get(index);
+        if(coin.isTradingEnabled()) {
+            androidWorkflow.insertCryptocurrency(index, coin.getQuantity(), symbol, ticker.getLastPrice(), -1,
+                    null, ticker.getPriceChangePercent(), tradingPairsList.get(symbol).getQuoteAsset(),
+                    0, null);
+        }else
+            androidWorkflow.removeCryptocurrency(index);
     }
 
     @Override

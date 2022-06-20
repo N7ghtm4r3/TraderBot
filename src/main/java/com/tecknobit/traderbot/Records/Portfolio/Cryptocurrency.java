@@ -1,9 +1,9 @@
 package com.tecknobit.traderbot.Records.Portfolio;
 
 import com.tecknobit.traderbot.Routines.Interfaces.RecordDetails;
-import com.tecknobit.traderbot.Routines.Autonomous.AutoTraderCoreRoutines.TradingConfig;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages.*;
 import static com.tecknobit.traderbot.Routines.Interfaces.TraderCoreRoutines.tradingTools;
@@ -17,6 +17,56 @@ import static java.lang.System.out;
  * **/
 
 public class Cryptocurrency extends Token implements RecordDetails {
+
+    /**
+     * {@code CRYPTOCURRENCY_KEY} is instance that memorize cryptocurrency key
+     * **/
+    public static final String CRYPTOCURRENCY_KEY = "cryptocurrency";
+
+    /**
+     * {@code SYMBOL_KEY} is instance that memorize symbol key
+     * **/
+    public static final String SYMBOL_KEY = "symbol";
+
+    /**
+     * {@code LAST_PRICE_KEY} is instance that memorize last price key
+     * **/
+    public static final String LAST_PRICE_KEY = "last_price";
+
+    /**
+     * {@code FIRS_PRICE_KEY} is instance that memorize last price key
+     * **/
+    public static final String FIRS_PRICE_KEY = "firs_price";
+
+    /**
+     * {@code TPTOP_INDEX_KEY} is instance that memorize tptop index key
+     * **/
+    public static final String TPTOP_INDEX_KEY = "tptop_index";
+
+    /**
+     * {@code CANDLE_GAP_KEY} is instance that memorize candle gap key
+     * **/
+    public static final String CANDLE_GAP_KEY = "candle_gap";
+
+    /**
+     * {@code PRICE_CHANGE_PERCENT_KEY} is instance that memorize price change percent key
+     * **/
+    public static final String PRICE_CHANGE_PERCENT_KEY = "price_change_percent_key";
+
+    /**
+     * {@code QUOTE_ASSET_KEY} is instance that memorize quote asset key
+     * **/
+    public static final String QUOTE_ASSET_KEY = "quote_asset";
+
+    /**
+     * {@code INCOME_PERCENT_KEY} is instance that memorize income percent key
+     * **/
+    public static final String INCOME_PERCENT_KEY = "income_percent";
+
+    /**
+     * {@code TRADING_CONFIG_KEY} is instance that memorize trading config key
+     * **/
+    public static final String TRADING_CONFIG_KEY = "trading_config";
 
     /**
      * {@code symbol} is instance that memorize symbol of cryptocurrency es. BTCBUSD or BTC-USD
@@ -149,10 +199,15 @@ public class Cryptocurrency extends Token implements RecordDetails {
     }
 
     public double getFirstPrice() {
-        double firstPrice = 0;
-        for (double price : firstPrices)
-            firstPrice += price;
-        return firstPrice / firstPrices.size();
+        int firstPricesSize = firstPrices.size();
+        if(firstPricesSize > 0){
+            double firstPrice = 0;
+            for (double price : firstPrices)
+                firstPrice += price;
+
+            return firstPrice / firstPricesSize;
+        }
+        return lastPrice;
     }
 
     /**
@@ -358,6 +413,159 @@ public class Cryptocurrency extends Token implements RecordDetails {
             return tail + ANSI_RED + percent + ANSI_RESET + "\n";
         else
             return tail + percent + "\n";
+    }
+
+    /**
+     * This method is used to get cryptocurrency details <br>
+     * Any params required
+     * @return cryptocurrency details as {@link HashMap} of {@link Object}
+     * **/
+    public HashMap<String, Object> getCryptocurrency() {
+        HashMap<String, Object> trader = new HashMap<>();
+        trader.put(BASE_ASSET_KEY, assetIndex);
+        trader.put(ASSET_NAME_KEY, assetName);
+        trader.put(QUANTITY_KEY, quantity);
+        trader.put(SYMBOL_KEY, symbol);
+        trader.put(LAST_PRICE_KEY, lastPrice);
+        trader.put(FIRS_PRICE_KEY, getFirstPrice(2));
+        trader.put(TPTOP_INDEX_KEY, tptopIndex);
+        trader.put(CANDLE_GAP_KEY, candleGap);
+        trader.put(PRICE_CHANGE_PERCENT_KEY, priceChangePercent);
+        trader.put(QUOTE_ASSET_KEY, quoteAsset);
+        trader.put(INCOME_PERCENT_KEY, incomePercent);
+        if(tradingConfig != null)
+            trader.put(TRADING_CONFIG_KEY, tradingConfig.getTradingConfig());
+        return trader;
+    }
+
+
+    /**
+     * The {@code TradingConfig} class is useful for trading operation.<br>
+     * Represent model to use for a {@link Cryptocurrency} in trading phases. (BUY and SELL)
+     * @author Tecknobit N7ghtm4r3
+     * **/
+    public static final class TradingConfig{
+
+        /**
+         * {@code MARKET_PHASE_KEY} is instance that memorize market phase key
+         * **/
+        public static final String MARKET_PHASE_KEY = "market_phase";
+
+        /**
+         * {@code WASTE_RANGE_KEY} is instance that memorize waste range key
+         * **/
+        public static final String WASTE_RANGE_KEY = "waste_range_key";
+
+        /**
+         * {@code DAIS_GAP_KEY} is instance that memorize days gap key
+         * **/
+        public static final String DAIS_GAP_KEY = "days_gap";
+
+        /**
+         * {@code MIN_GAIN_FOR_ORDER_KEY} is instance that memorize min gain for order key
+         * **/
+        public static final String MIN_GAIN_FOR_ORDER_KEY = "min_gain_for_order";
+
+        /**
+         * {@code MAX_LOSS_KEY} is instance that memorize max loss key
+         * **/
+        public static final String MAX_LOSS_KEY = "max_loss_key";
+
+        /**
+         * {@code MAX_GAIN_KEY} is instance that memorize max gain key
+         * **/
+        public static final String MAX_GAIN_KEY = "max_gain_key";
+
+        /**
+         * {@code marketPhase} is instance that memorize market phase when buy a {@link Cryptocurrency}
+         * **/
+        private final double marketPhase;
+
+        /**
+         * {@code wasteRange} is instance that memorize waste range gap to buy and to make forecast for {@link Cryptocurrency}
+         * **/
+        private final double wasteRange;
+
+        /**
+         * {@code daysGap} is instance that memorize days gap to make forecast for {@link Cryptocurrency}
+         * **/
+        private final int daysGap;
+
+        /**
+         * {@code minGainForOrder} is instance that memorize minimum gain to obtain by an order. This is used in sell phase.
+         * **/
+        private final double minGainForOrder;
+
+        /**
+         * {@code maxLoss} is instance that memorize maximum loss for a {@link Cryptocurrency} and is used in buy phase to check <br>
+         * if a cryptocurrency is in correct range to be bought, and is used in sell phase to sell when cryptocurrency is dropping.
+         * **/
+        private final double maxLoss;
+
+        /**
+         * {@code maxGain} is instance that memorize maximum gain for a {@link Cryptocurrency} and is used in buy phase to check
+         * if a cryptocurrency is in correct range to be bought.
+         * **/
+        private final double maxGain;
+
+        /** Constructor to init {@link TradingConfig}
+         * @param marketPhase: market phase when buy a {@link Cryptocurrency}
+         * @param wasteRange: waste range gap to buy and to make forecast for {@link Cryptocurrency}
+         * @param daysGap: days gap to make forecast for {@link Cryptocurrency}
+         * @param minGainForOrder: minimum gain to obtain by an order. This is used in sell phase.
+         * @param maxLoss: maximum loss for a {@link Cryptocurrency}
+         * @param maxGain: maximum gain for a {@link Cryptocurrency} in checking phase
+         * **/
+        public TradingConfig(double marketPhase, double wasteRange, int daysGap, double minGainForOrder, double maxLoss,
+                             double maxGain) {
+            this.marketPhase = marketPhase;
+            this.wasteRange = wasteRange;
+            this.daysGap = daysGap;
+            this.minGainForOrder = minGainForOrder;
+            this.maxLoss = maxLoss;
+            this.maxGain = maxGain;
+        }
+
+        public double getMarketPhase() {
+            return marketPhase;
+        }
+
+        public double getWasteRange() {
+            return wasteRange;
+        }
+
+        public int getDaysGap() {
+            return daysGap;
+        }
+
+        public double getMinGainForOrder() {
+            return minGainForOrder;
+        }
+
+        public double getMaxLoss() {
+            return maxLoss;
+        }
+
+        public double getMaxGain() {
+            return maxGain;
+        }
+
+        /**
+         * This method is used to get trading config details <br>
+         * Any params required
+         * @return trading config details as {@link HashMap} of {@link Object}
+         * **/
+        public HashMap<String, Object> getTradingConfig() {
+            HashMap<String, Object> trader = new HashMap<>();
+            trader.put(MARKET_PHASE_KEY, marketPhase);
+            trader.put(WASTE_RANGE_KEY, wasteRange);
+            trader.put(DAIS_GAP_KEY, daysGap);
+            trader.put(MIN_GAIN_FOR_ORDER_KEY, minGainForOrder);
+            trader.put(MAX_LOSS_KEY, maxLoss);
+            trader.put(MAX_GAIN_KEY, maxGain);
+            return trader;
+        }
+
     }
 
 }
