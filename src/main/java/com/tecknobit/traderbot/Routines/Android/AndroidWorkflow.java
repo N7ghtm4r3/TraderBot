@@ -14,7 +14,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.crypto.BadPaddingException;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.tecknobit.traderbot.Records.Account.TraderDetails.*;
@@ -26,6 +25,8 @@ import static org.apache.commons.validator.routines.EmailValidator.getInstance;
 
 public final class AndroidWorkflow implements RoutineMessages {
 
+    private static boolean alreadyInstantiated = false;
+    
     /**
      * {@code cryptocurrencyTool} is instance helpful to manage cryptocurrencies details
      * **/
@@ -37,7 +38,14 @@ public final class AndroidWorkflow implements RoutineMessages {
     private boolean workflowStarted;
 
     public AndroidWorkflow(ServerRequest serverRequest, TraderCoreRoutines traderCoreRoutines, Credentials credentials,
-                           boolean printRoutineMessages) throws IOException {
+                           boolean printRoutineMessages) throws Exception {
+        if(!alreadyInstantiated)
+            alreadyInstantiated = true;
+        else {
+            System.out.println(ANSI_RED + "AndroidWorkflow object is already instantiated you cannot have multiple AndroidWorkflow " +
+                    "objects in same session" + ANSI_RESET);
+            System.exit(1);
+        }
         this.serverRequest = serverRequest;
         this.printRoutineMessages = printRoutineMessages;
         this.credentials = credentials;
@@ -267,11 +275,11 @@ public final class AndroidWorkflow implements RoutineMessages {
          * }
          * **/
 
-        public Credentials(String mail, String password) throws IllegalAccessException {
+        public Credentials(String mail, String password) {
             if(!alreadyInstantiated)
                 alreadyInstantiated = true;
             else
-                throw new IllegalAccessException("Credentials object is already instantiated you cannot have multiple Credentials objects in same session");
+                exitWithError();
             if(!getInstance().isValid(mail))
                 throw new IllegalArgumentException("Mail must be a valid mail");
             else
@@ -290,7 +298,7 @@ public final class AndroidWorkflow implements RoutineMessages {
             if(!alreadyInstantiated)
                 alreadyInstantiated = true;
             else
-                throw new IllegalAccessException("Credentials object is already instantiated you cannot have multiple Credentials objects in same session");
+                exitWithError();
             if(traderDetails != null && token == null){
                 getPublicKeys();
                 serverRequest.sendRequest(new JSONObject().put(MAIL_KEY, mail).put(PASSWORD_KEY, password)
@@ -323,7 +331,7 @@ public final class AndroidWorkflow implements RoutineMessages {
             if(!alreadyInstantiated)
                 alreadyInstantiated = true;
             else
-                throw new IllegalAccessException("Credentials object is already instantiated you cannot have multiple Credentials objects in same session");
+                exitWithError();
             this.authToken = authToken;
             this.mail = mail;
             this.password = password;
@@ -347,6 +355,12 @@ public final class AndroidWorkflow implements RoutineMessages {
                 }
             }else
                 throw new IllegalStateException(SERVICE_UNAVAILABLE);
+        }
+
+        private void exitWithError() {
+            System.out.println(ANSI_RED + "Credentials object is already instantiated you cannot have multiple Credentials objects in same session"
+            + ANSI_RESET);
+            System.exit(1);
         }
 
         private void getPublicKeys() {
