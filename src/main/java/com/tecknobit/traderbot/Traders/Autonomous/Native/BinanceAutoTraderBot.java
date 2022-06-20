@@ -39,7 +39,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
      * {@code TraderAccount} is instance that memorize and manage account information and trading reports of auto trader
      * account
      * **/
-    protected final TraderAccount traderAccount = new TraderAccount(0,0,0,0,0);
+    protected final TraderAccount traderAccount;
 
     /**
      * {@code MIN_NOTIONAL_FILTER} is instance that contains key for {@code MIN_NOTIONAL} filter
@@ -105,17 +105,21 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
      * **/
     private String baseCurrency;
 
-    /** Constructor to init {@link BinanceAutoTraderBot}
-     * @param apiKey: your Binance's api key
-     * @param secretKey: your Binance's secret key
-     * @param sendStatsReport: flag to insert to send or not reports
-     * @param printRoutineMessages: flag to insert to print or not routine messages
-     * @param baseCurrency: base currency to get all amount value of traders routine es. EUR
+    /**
+     * Constructor to init {@link BinanceAutoTraderBot}
+     *
+     * @param apiKey               : your Binance's api key
+     * @param secretKey            : your Binance's secret key
+     * @param traderAccount        : manage account information and trading reports of auto trader account
+     * @param sendStatsReport      : flag to insert to send or not reports
+     * @param printRoutineMessages : flag to insert to print or not routine messages
+     * @param baseCurrency         : base currency to get all amount value of traders routine es. EUR
      * @implNote these keys will NOT store by libray anywhere.
-     * **/
-    public BinanceAutoTraderBot(String apiKey, String secretKey, boolean sendStatsReport, boolean printRoutineMessages,
-                                String baseCurrency) throws Exception {
+     **/
+    public BinanceAutoTraderBot(String apiKey, String secretKey, TraderAccount traderAccount, boolean sendStatsReport,
+                                boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, secretKey);
+        this.traderAccount = traderAccount;
         this.sendStatsReport = sendStatsReport;
         this.printRoutineMessages = printRoutineMessages;
         this.baseCurrency = baseCurrency;
@@ -123,18 +127,22 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         walletList = new ConcurrentHashMap<>();
     }
 
-    /** Constructor to init {@link BinanceAutoTraderBot}
-     * @param apiKey: your Binance's api key
-     * @param secretKey: your Binance's secret key
-     * @param baseEndpoint: base endpoint choose from BinanceManager.BASE_ENDPOINTS array
-     * @param sendStatsReport: flag to insert to send or not reports
-     * @param printRoutineMessages: flag to insert to print or not routine messages
-     * @param baseCurrency: base currency to get all amount value of traders routine es. EUR
+    /**
+     * Constructor to init {@link BinanceAutoTraderBot}
+     *
+     * @param apiKey               : your Binance's api key
+     * @param secretKey            : your Binance's secret key
+     * @param baseEndpoint         : base endpoint choose from BinanceManager.BASE_ENDPOINTS array
+     * @param traderAccount        : manage account information and trading reports of auto trader account
+     * @param sendStatsReport      : flag to insert to send or not reports
+     * @param printRoutineMessages : flag to insert to print or not routine messages
+     * @param baseCurrency         : base currency to get all amount value of traders routine es. EUR
      * @implNote these keys will NOT store by libray anywhere.
-     * **/
-    public BinanceAutoTraderBot(String apiKey, String secretKey, String baseEndpoint, boolean sendStatsReport,
-                                boolean printRoutineMessages, String baseCurrency) throws Exception {
+     **/
+    public BinanceAutoTraderBot(String apiKey, String secretKey, String baseEndpoint, TraderAccount traderAccount,
+                                boolean sendStatsReport, boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, secretKey, baseEndpoint);
+        this.traderAccount = traderAccount;
         this.sendStatsReport = sendStatsReport;
         this.printRoutineMessages = printRoutineMessages;
         this.baseCurrency = baseCurrency;
@@ -142,19 +150,23 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         walletList = new ConcurrentHashMap<>();
     }
 
-    /** Constructor to init {@link BinanceTraderBot}
-     * @param apiKey: your Binance's api key
-     * @param secretKey: your Binance's secret key
-     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
-     * @param sendStatsReport: flag to insert to send or not reports
-     * @param printRoutineMessages: flag to insert to print or not routine messages
-     * @param baseCurrency: base currency to get all amount value of traders routine es. EUR
+    /**
+     * Constructor to init {@link BinanceTraderBot}
+     *
+     * @param apiKey               : your Binance's api key
+     * @param secretKey            : your Binance's secret key
+     * @param refreshPricesTime    : is time in seconds to set for refresh the latest prices
+     * @param traderAccount        : manage account information and trading reports of auto trader account
+     * @param sendStatsReport      : flag to insert to send or not reports
+     * @param printRoutineMessages : flag to insert to print or not routine messages
+     * @param baseCurrency         : base currency to get all amount value of traders routine es. EUR
      * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
      * @implNote these keys will NOT store by libray anywhere.
-     * **/
-    public BinanceAutoTraderBot(String apiKey, String secretKey, int refreshPricesTime, boolean sendStatsReport,
-                                boolean printRoutineMessages, String baseCurrency) throws Exception {
+     **/
+    public BinanceAutoTraderBot(String apiKey, String secretKey, int refreshPricesTime, TraderAccount traderAccount,
+                                boolean sendStatsReport, boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, secretKey, refreshPricesTime);
+        this.traderAccount = traderAccount;
         this.sendStatsReport = sendStatsReport;
         this.printRoutineMessages = printRoutineMessages;
         this.baseCurrency = baseCurrency;
@@ -162,64 +174,25 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         walletList = new ConcurrentHashMap<>();
     }
 
-    /** Constructor to init {@link BinanceTraderBot}
-     * @param apiKey: your Binance's api key
-     * @param secretKey: your Binance's secret key
-     * @param baseEndpoint: base endpoint choose from BinanceManager.BASE_ENDPOINTS array
-     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
-     * @param sendStatsReport: flag to insert to send or not reports
-     * @param printRoutineMessages: flag to insert to print or not routine messages
-     * @param baseCurrency: base currency to get all amount value of traders routine es. EUR
+    /**
+     * Constructor to init {@link BinanceTraderBot}
+     *
+     * @param apiKey               : your Binance's api key
+     * @param secretKey            : your Binance's secret key
+     * @param baseEndpoint         : base endpoint choose from BinanceManager.BASE_ENDPOINTS array
+     * @param refreshPricesTime    : is time in seconds to set for refresh the latest prices
+     * @param traderAccount        : manage account information and trading reports of auto trader account
+     * @param sendStatsReport      : flag to insert to send or not reports
+     * @param printRoutineMessages : flag to insert to print or not routine messages
+     * @param baseCurrency         : base currency to get all amount value of traders routine es. EUR
      * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
      * @implNote these keys will NOT store by libray anywhere.
-     * **/
+     **/
     public BinanceAutoTraderBot(String apiKey, String secretKey, String baseEndpoint, int refreshPricesTime,
-                                boolean sendStatsReport, boolean printRoutineMessages, String baseCurrency) throws Exception {
-        super(apiKey, secretKey, baseEndpoint, refreshPricesTime);
-        this.sendStatsReport = sendStatsReport;
-        this.printRoutineMessages = printRoutineMessages;
-        this.baseCurrency = baseCurrency;
-        checkingList = new HashMap<>();
-        walletList = new ConcurrentHashMap<>();
-    }
-
-    /** Constructor to init {@link BinanceTraderBot}
-     * @param apiKey: your Binance's api key
-     * @param secretKey: your Binance's secret key
-     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
-     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR)
-     * @param sendStatsReport: flag to insert to send or not reports
-     * @param printRoutineMessages: flag to insert to print or not routine messages
-     * @param baseCurrency: base currency to get all amount value of traders routine es. EUR
-     * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
-     * @implNote these keys will NOT store by libray anywhere.
-     * **/
-    public BinanceAutoTraderBot(String apiKey, String secretKey, ArrayList<String> quoteCurrencies, int refreshPricesTime,
-                                boolean sendStatsReport, boolean printRoutineMessages, String baseCurrency) throws Exception {
-        super(apiKey, secretKey, quoteCurrencies, refreshPricesTime);
-        this.sendStatsReport = sendStatsReport;
-        this.printRoutineMessages = printRoutineMessages;
-        this.baseCurrency = baseCurrency;
-        checkingList = new HashMap<>();
-        walletList = new ConcurrentHashMap<>();
-    }
-
-    /** Constructor to init {@link BinanceTraderBot}
-     * @param apiKey: your Binance's api key
-     * @param secretKey: your Binance's secret key
-     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
-     * @param baseEndpoint: base endpoint choose from BinanceManager.BASE_ENDPOINTS array
-     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR)
-     * @param sendStatsReport: flag to insert to send or not reports
-     * @param printRoutineMessages: flag to insert to print or not routine messages
-     * @param baseCurrency: base currency to get all amount value of traders routine es. EUR
-     * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
-     * @implNote these keys will NOT store by libray anywhere.
-     * **/
-    public BinanceAutoTraderBot(String apiKey, String secretKey, String baseEndpoint, ArrayList<String> quoteCurrencies,
-                                int refreshPricesTime, boolean sendStatsReport, boolean printRoutineMessages,
+                                TraderAccount traderAccount, boolean sendStatsReport, boolean printRoutineMessages,
                                 String baseCurrency) throws Exception {
-        super(apiKey, secretKey, baseEndpoint, quoteCurrencies, refreshPricesTime);
+        super(apiKey, secretKey, baseEndpoint, refreshPricesTime);
+        this.traderAccount = traderAccount;
         this.sendStatsReport = sendStatsReport;
         this.printRoutineMessages = printRoutineMessages;
         this.baseCurrency = baseCurrency;
@@ -227,18 +200,25 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         walletList = new ConcurrentHashMap<>();
     }
 
-    /** Constructor to init {@link BinanceTraderBot}
-     * @param apiKey: your Binance's api key
-     * @param secretKey: your Binance's secret key
-     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR)
-     * @param sendStatsReport: flag to insert to send or not reports
-     * @param printRoutineMessages: flag to insert to print or not routine messages
-     * @param baseCurrency: base currency to get all amount value of traders routine es. EUR
+    /**
+     * Constructor to init {@link BinanceTraderBot}
+     *
+     * @param apiKey               : your Binance's api key
+     * @param secretKey            : your Binance's secret key
+     * @param quoteCurrencies      : is a list of quote currencies used in past orders es (USD or EUR)
+     * @param refreshPricesTime    : is time in seconds to set for refresh the latest prices
+     * @param traderAccount        : manage account information and trading reports of auto trader account
+     * @param sendStatsReport      : flag to insert to send or not reports
+     * @param printRoutineMessages : flag to insert to print or not routine messages
+     * @param baseCurrency         : base currency to get all amount value of traders routine es. EUR
+     * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
      * @implNote these keys will NOT store by libray anywhere.
-     * **/
-    public BinanceAutoTraderBot(String apiKey, String secretKey, ArrayList<String> quoteCurrencies, boolean sendStatsReport,
-                                boolean printRoutineMessages, String baseCurrency) throws Exception {
-        super(apiKey, secretKey, quoteCurrencies);
+     **/
+    public BinanceAutoTraderBot(String apiKey, String secretKey, ArrayList<String> quoteCurrencies, int refreshPricesTime,
+                                TraderAccount traderAccount, boolean sendStatsReport, boolean printRoutineMessages,
+                                String baseCurrency) throws Exception {
+        super(apiKey, secretKey, quoteCurrencies, refreshPricesTime);
+        this.traderAccount = traderAccount;
         this.sendStatsReport = sendStatsReport;
         this.printRoutineMessages = printRoutineMessages;
         this.baseCurrency = baseCurrency;
@@ -246,19 +226,74 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
         walletList = new ConcurrentHashMap<>();
     }
 
-    /** Constructor to init {@link BinanceTraderBot}
-     * @param apiKey: your Binance's api key
-     * @param secretKey: your Binance's secret key
-     * @param baseEndpoint: base endpoint choose from BinanceManager.BASE_ENDPOINTS array
-     * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR)
-     * @param sendStatsReport: flag to insert to send or not reports
-     * @param printRoutineMessages: flag to insert to print or not routine messages
-     * @param baseCurrency: base currency to get all amount value of traders routine es. EUR
+    /**
+     * Constructor to init {@link BinanceTraderBot}
+     *
+     * @param apiKey               : your Binance's api key
+     * @param secretKey            : your Binance's secret key
+     * @param baseEndpoint         : base endpoint choose from BinanceManager.BASE_ENDPOINTS array
+     * @param quoteCurrencies      : is a list of quote currencies used in past orders es (USD or EUR)
+     * @param refreshPricesTime    : is time in seconds to set for refresh the latest prices
+     * @param traderAccount        : manage account information and trading reports of auto trader account
+     * @param sendStatsReport      : flag to insert to send or not reports
+     * @param printRoutineMessages : flag to insert to print or not routine messages
+     * @param baseCurrency         : base currency to get all amount value of traders routine es. EUR
+     * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
      * @implNote these keys will NOT store by libray anywhere.
-     * **/
+     **/
     public BinanceAutoTraderBot(String apiKey, String secretKey, String baseEndpoint, ArrayList<String> quoteCurrencies,
+                                int refreshPricesTime, TraderAccount traderAccount, boolean sendStatsReport,
+                                boolean printRoutineMessages, String baseCurrency) throws Exception {
+        super(apiKey, secretKey, baseEndpoint, quoteCurrencies, refreshPricesTime);
+        this.traderAccount = traderAccount;
+        this.sendStatsReport = sendStatsReport;
+        this.printRoutineMessages = printRoutineMessages;
+        this.baseCurrency = baseCurrency;
+        checkingList = new HashMap<>();
+        walletList = new ConcurrentHashMap<>();
+    }
+
+    /**
+     * Constructor to init {@link BinanceTraderBot}
+     *
+     * @param apiKey               : your Binance's api key
+     * @param secretKey            : your Binance's secret key
+     * @param quoteCurrencies      : is a list of quote currencies used in past orders es (USD or EUR)
+     * @param traderAccount        : manage account information and trading reports of auto trader account
+     * @param sendStatsReport      : flag to insert to send or not reports
+     * @param printRoutineMessages : flag to insert to print or not routine messages
+     * @param baseCurrency         : base currency to get all amount value of traders routine es. EUR
+     * @implNote these keys will NOT store by libray anywhere.
+     **/
+    public BinanceAutoTraderBot(String apiKey, String secretKey, ArrayList<String> quoteCurrencies, TraderAccount traderAccount,
                                 boolean sendStatsReport, boolean printRoutineMessages, String baseCurrency) throws Exception {
+        super(apiKey, secretKey, quoteCurrencies);
+        this.traderAccount = traderAccount;
+        this.sendStatsReport = sendStatsReport;
+        this.printRoutineMessages = printRoutineMessages;
+        this.baseCurrency = baseCurrency;
+        checkingList = new HashMap<>();
+        walletList = new ConcurrentHashMap<>();
+    }
+
+    /**
+     * Constructor to init {@link BinanceTraderBot}
+     *
+     * @param apiKey               : your Binance's api key
+     * @param secretKey            : your Binance's secret key
+     * @param baseEndpoint         : base endpoint choose from BinanceManager.BASE_ENDPOINTS array
+     * @param quoteCurrencies      : is a list of quote currencies used in past orders es (USD or EUR)
+     * @param traderAccount        : manage account information and trading reports of auto trader account
+     * @param sendStatsReport      : flag to insert to send or not reports
+     * @param printRoutineMessages : flag to insert to print or not routine messages
+     * @param baseCurrency         : base currency to get all amount value of traders routine es. EUR
+     * @implNote these keys will NOT store by libray anywhere.
+     **/
+    public BinanceAutoTraderBot(String apiKey, String secretKey, String baseEndpoint, ArrayList<String> quoteCurrencies,
+                                TraderAccount traderAccount, boolean sendStatsReport, boolean printRoutineMessages,
+                                String baseCurrency) throws Exception {
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies);
+        this.traderAccount = traderAccount;
         this.sendStatsReport = sendStatsReport;
         this.printRoutineMessages = printRoutineMessages;
         this.baseCurrency = baseCurrency;
@@ -281,7 +316,8 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     /**
      * This method is used to start {@link BinanceAutoTraderBot}<br>
      * Any params required
-     * @implNote the running mode if is disabled (using {@link #disableTrader()}) trader will not do more trading operations, but trader will continue to listen for reactivation of the running mode
+     * @implNote the running mode if is disabled (using {@link #disableTrader()}) trader will not do more trading operations,
+     * but trader will continue to listen for reactivation of the running mode
      * (using {@link #enableTrader()}) and trading operations will start again.
      * **/
     @Override

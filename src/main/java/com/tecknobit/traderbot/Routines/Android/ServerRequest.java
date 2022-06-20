@@ -27,6 +27,7 @@ public final class ServerRequest {
     public static final String CHANGE_LANGUAGE_OPE = "change_language_ope";
     public static final String CHANGE_CURRENCY_OPE = "change_currency_ope";
     public static final String CHANGE_ACCOUNT_TIME_DELETION_OPE = "change_account_time_deletion_ope";
+    public static final String INSERT_WALLET_BALANCE_OPE = "insert_wallet_balance_ope";
     public static final String INSERT_QUOTE_OPE = "insert_quote_ope";
     public static final String REMOVE_QUOTE_OPE = "remove_quote_ope";
     public static final String LOGOUT_ACCOUNT_OPE = "logout_account_ope";
@@ -49,6 +50,7 @@ public final class ServerRequest {
     public static final String CURRENCY_KEY = "currency";
     public static final String TIME_DELETION_KEY = "time_deletion";
     public static final String QUOTE_KEY = "quote";
+    public static final String BALANCE_KEY = "balance";
     public static JSONObject response;
     private final ClientCipher clientCipher;
     private PrintWriter printWriter;

@@ -281,6 +281,15 @@ public abstract class TraderCoreRoutines {
     }
 
     /**
+     * This method is used to get {@link #REFRESH_PRICES_TIME}<br>
+     * Any params required.
+     * @return {@link #REFRESH_PRICES_TIME} list long
+     * **/
+    public long getRefreshPricesTime() {
+        return REFRESH_PRICES_TIME;
+    }
+
+    /**
      * This method is used to set new list of {@link #quoteCurrencies} overwritten the past list<br>
      * @param quoteCurrencies: list of quote currencies to insert.
      * **/

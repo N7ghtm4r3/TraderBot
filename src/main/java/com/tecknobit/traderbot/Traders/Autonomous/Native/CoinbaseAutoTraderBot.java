@@ -541,7 +541,8 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     /**
      * This method is used to start {@link CoinbaseAutoTraderBot}<br>
      * Any params required
-     * @implNote the running mode if is disabled (using {@link #disableTrader()}) trader will not do more trading operations, but trader will continue to listen for reactivation of the running mode
+     * @implNote the running mode if is disabled (using {@link #disableTrader()}) trader will not do more trading operations,
+     * but trader will continue to listen for reactivation of the running mode
      * (using {@link #enableTrader()}) and trading operations will start again.
      * **/
     @Override
