@@ -665,7 +665,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * Any params required
      * **/
     @Override
-    protected void refreshLatestPrice() {
+    protected synchronized void refreshLatestPrice() {
         lastPricesRefresh = System.currentTimeMillis();
         for (String productId : tradingPairsList.keySet()) {
             try {

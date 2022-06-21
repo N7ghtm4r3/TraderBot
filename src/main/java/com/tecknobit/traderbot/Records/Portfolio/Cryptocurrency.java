@@ -308,6 +308,8 @@ public class Cryptocurrency extends Token implements RecordDetails {
     }
 
     public double getIncomePercent() {
+        if(firstPrices != null)
+            return incomePercent = tradingTools.computeAssetPercent(getFirstPrice(), lastPrice);
         return incomePercent;
     }
 

@@ -248,7 +248,35 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
     @Override
     public void workflowHandler() {
         runningTrader = true;
+        refreshWalletList();
         androidWorkflow.startWorkflow();
+    }
+
+    @Override
+    public void refreshWalletList() {
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                while (true){
+                    try {
+                        if(isRefreshTime())
+                            refreshLatestPrice();
+                        for (Cryptocurrency cryptocurrency : walletList.values()){
+                            String assetIndex = cryptocurrency.getAssetIndex();
+                            TickerPriceChange ticker = lastPrices.get(assetIndex + USDT_CURRENCY);
+                            cryptocurrency.setLastPrice(ticker.getLastPrice());
+                            cryptocurrency.setPriceChangePercent(ticker.getPriceChangePercent());
+                            walletList.put(assetIndex, cryptocurrency);
+                        }
+                        sleep(REFRESH_PRICES_TIME);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        printRed("Error during refreshing wallet list");
+                    }
+                }
+            }
+        }.start();
     }
 
     @Override
@@ -332,10 +360,10 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         Cryptocurrency cryptocurrency;
         TickerPriceChange ticker = lastPrices.get(symbol);
         String quoteAsset = tradingPairsList.get(symbol).getQuoteAsset();
-        Transaction transaction = new Transaction(symbol, side, transactionDateFormat.format(new Date(currentTimeMillis())),
-                binanceMarketManager.roundValue(1 * ticker.getLastPrice(), 2), quantity,
-                quoteAsset, index);
+        double lastPrice = ticker.getLastPrice();
         int sales = 0;
+        Transaction transaction = new Transaction(symbol, side, transactionDateFormat.format(new Date(currentTimeMillis())),
+                binanceMarketManager.roundValue(quantity * lastPrice, 2), quantity, quoteAsset, index);
         if(side.equals(SELL)){
             cryptocurrency = walletList.get(index);
             double income = cryptocurrency.getIncomePercent();
@@ -357,9 +385,16 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
                     sales = traderAccount.getSalesAtPair();
             }
         }else{
-            cryptocurrency = new Cryptocurrency(index, cryptocurrencyTool.getCryptocurrencyName(index), quantity,
-                    symbol, ticker.getLastPrice(), -1 , null, ticker.getPriceChangePercent(), quoteAsset,
-                    null);
+            cryptocurrency = walletList.get(index);
+            if(cryptocurrency == null) {
+                cryptocurrency = new Cryptocurrency(index, cryptocurrencyTool.getCryptocurrencyName(index), quantity,
+                    symbol, lastPrice, -1 , null, ticker.getPriceChangePercent(), quoteAsset, null);
+                cryptocurrency.addFirstPrice(lastPrice);
+            }else {
+                cryptocurrency.setQuantity(coin.getQuantity());
+                cryptocurrency.addFirstPrice(lastPrice);
+                cryptocurrency.setIncomePercent(cryptocurrency.getIncomePercent());
+            }
             walletList.put(index, cryptocurrency);
         }
         if(coin.isTradingEnabled())

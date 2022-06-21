@@ -28,6 +28,8 @@ public interface AndroidCoreRoutines extends TraderManager, RoutineMessages {
 
     void workflowHandler();
 
+    void refreshWalletList() throws Exception;
+
     /**
      * This method is used to get credentials inserted for trader login
      * @return trader credentials as {@link Credentials} object

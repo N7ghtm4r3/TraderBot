@@ -490,7 +490,7 @@ public class BinanceTraderBot extends TraderCoreRoutines {
      * Any params required
      * **/
     @Override
-    protected void refreshLatestPrice() throws Exception {
+    protected synchronized void refreshLatestPrice() throws Exception {
         lastPricesRefresh = System.currentTimeMillis();
         for(TickerPriceChange tickerPriceChange : binanceMarketManager.getTickerPriceChangeList()) {
             String symbol = tickerPriceChange.getSymbol();
