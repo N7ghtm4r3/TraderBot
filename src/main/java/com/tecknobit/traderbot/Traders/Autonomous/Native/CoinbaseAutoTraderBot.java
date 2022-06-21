@@ -764,7 +764,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
      * @param codeOpe: code of type of sell to increment
      * **/
     @Override
-    public void incrementSalesSale(Cryptocurrency cryptocurrency, int codeOpe) throws Exception {
+    public void incrementSalesSale(Cryptocurrency cryptocurrency, String codeOpe) throws Exception {
         sellMarket(cryptocurrency.getSymbol(), cryptocurrency.getQuantity());
         walletList.remove(cryptocurrency.getAssetIndex());
         switch (codeOpe){

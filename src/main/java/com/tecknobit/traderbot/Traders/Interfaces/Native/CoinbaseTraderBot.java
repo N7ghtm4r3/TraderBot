@@ -532,11 +532,11 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
                     for (Order order : orders){
                         if(order.getProductId().equals(symbol)){
                             String createdAt = order.getCreatedAt();
-                            if(dateFormat != null) {
+                            if(dateFormat != null){
                                 long timestamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
                                         .parse((createdAt)).getTime();
                                 date = new SimpleDateFormat(dateFormat).format(new Date(timestamp));
-                            } else
+                            }else
                                 date = createdAt;
                             transactions.add(new Transaction(symbol,
                                     order.getSide(),

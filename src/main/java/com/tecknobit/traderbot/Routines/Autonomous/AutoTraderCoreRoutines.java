@@ -162,7 +162,7 @@ public interface AutoTraderCoreRoutines extends TraderManager, RoutineMessages {
      * @param cryptocurrency: cryptocurrency used in the order
      * @param codeOpe: code of type of sell to increment
      * **/
-    void incrementSalesSale(Cryptocurrency cryptocurrency, int codeOpe) throws Exception;
+    void incrementSalesSale(Cryptocurrency cryptocurrency, String codeOpe) throws Exception;
 
     /**
      * This method is used to refresh details of {@link Cryptocurrency}

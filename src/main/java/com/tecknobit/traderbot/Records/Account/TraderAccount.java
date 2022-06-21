@@ -178,9 +178,6 @@ public final class TraderAccount extends Trader implements RecordDetails {
      * **/
     public void addLoss(){
         salesAtLoss++;
-        if(serverRequest != null){
-            // TODO: 19/06/2022  request to add loss
-        }
     }
 
     /**
@@ -197,9 +194,6 @@ public final class TraderAccount extends Trader implements RecordDetails {
      * **/
     public void addGain(){
         salesAtGain++;
-        if(serverRequest != null){
-            // TODO: 19/06/2022  request to add gain
-        }
     }
 
     /**
@@ -216,9 +210,6 @@ public final class TraderAccount extends Trader implements RecordDetails {
      * **/
     public void addPair(){
         salesAtPair++;
-        if(serverRequest != null){
-            // TODO: 19/06/2022  request to add pair
-        }
     }
 
     /**

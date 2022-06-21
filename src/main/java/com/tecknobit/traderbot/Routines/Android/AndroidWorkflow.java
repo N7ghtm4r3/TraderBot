@@ -1,12 +1,11 @@
 package com.tecknobit.traderbot.Routines.Android;
 
 import com.tecknobit.apimanager.Tools.Readers.JsonHelper;
-import com.tecknobit.apimanager.Tools.Trading.CryptocurrencyTool;
 import com.tecknobit.traderbot.Exceptions.SaveData;
 import com.tecknobit.traderbot.Records.Account.TraderDetails;
 import com.tecknobit.traderbot.Records.Android.Routine;
 import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency;
-import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency.TradingConfig;
+import com.tecknobit.traderbot.Records.Portfolio.Transaction;
 import com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages;
 import com.tecknobit.traderbot.Routines.Interfaces.TraderCoreRoutines;
 import com.tecknobit.traderbot.Traders.Interfaces.Android.AndroidBinanceTrader;
@@ -16,9 +15,12 @@ import org.json.JSONObject;
 import javax.crypto.BadPaddingException;
 import java.util.ArrayList;
 
+import static com.tecknobit.traderbot.Records.Account.Trader.TraderManager.SELL_KEY;
+import static com.tecknobit.traderbot.Records.Account.TraderAccount.TOTAL_INCOME_KEY;
 import static com.tecknobit.traderbot.Records.Account.TraderDetails.*;
 import static com.tecknobit.traderbot.Records.Android.Routine.*;
 import static com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency.CRYPTOCURRENCY_KEY;
+import static com.tecknobit.traderbot.Records.Portfolio.Transaction.TRANSACTION_KEY;
 import static com.tecknobit.traderbot.Routines.Android.ServerRequest.*;
 import static java.lang.Integer.parseInt;
 import static org.apache.commons.validator.routines.EmailValidator.getInstance;
@@ -26,11 +28,6 @@ import static org.apache.commons.validator.routines.EmailValidator.getInstance;
 public final class AndroidWorkflow implements RoutineMessages {
 
     private static boolean alreadyInstantiated = false;
-    
-    /**
-     * {@code cryptocurrencyTool} is instance helpful to manage cryptocurrencies details
-     * **/
-    private final CryptocurrencyTool cryptocurrencyTool;
     private final ServerRequest serverRequest;
     private final TraderCoreRoutines trader;
     private final Credentials credentials;
@@ -50,7 +47,6 @@ public final class AndroidWorkflow implements RoutineMessages {
         this.printRoutineMessages = printRoutineMessages;
         this.credentials = credentials;
         this.trader = traderCoreRoutines;
-        cryptocurrencyTool = new CryptocurrencyTool();
     }
 
     public void startWorkflow(){
@@ -166,14 +162,15 @@ public final class AndroidWorkflow implements RoutineMessages {
         }
     }
 
-    public void insertCryptocurrency(String assetIndex, double quantity, String symbol, double lastPrice,
-                                     double tptopIndex, Object candleGap, double priceChangePercent, String quoteAsset,
-                                     double incomePercent, TradingConfig tradingConfig) {
+    public void insertCryptocurrency(Cryptocurrency cryptocurrency, Transaction transaction, int sales, double totalIncome) {
         try {
-            serverRequest.sendTokenRequest(new JSONObject().put(CRYPTOCURRENCY_KEY,
-                    new Cryptocurrency(assetIndex, cryptocurrencyTool.getCryptocurrencyName(assetIndex), quantity, symbol,
-                            lastPrice, tptopIndex, candleGap, priceChangePercent, quoteAsset, incomePercent, tradingConfig)
-                            .getCryptocurrency()), INSERT_CRYPTOCURRENCY_OPE);
+            JSONObject request = new JSONObject().put(CRYPTOCURRENCY_KEY, cryptocurrency.getCryptocurrency())
+                    .put(TRANSACTION_KEY, transaction.getTransaction());
+            if(sales > 0) {
+                request.put(SELL_KEY, sales);
+                request.put(TOTAL_INCOME_KEY, totalIncome);
+            }
+            serverRequest.sendTokenRequest(request, INSERT_CRYPTOCURRENCY_OPE);
             response = serverRequest.readResponse();
             if(response != null){
                 switch (response.getInt(STATUS_CODE)){
@@ -194,9 +191,10 @@ public final class AndroidWorkflow implements RoutineMessages {
         }
     }
 
-    public void removeCryptocurrency(String assetIndex){
+    public void removeCryptocurrency(String assetIndex, Transaction transaction){
         try {
-            serverRequest.sendTokenRequest(new JSONObject().put(CRYPTOCURRENCY_KEY, assetIndex), DELETE_CRYPTOCURRENCY_OPE);
+            serverRequest.sendTokenRequest(new JSONObject().put(CRYPTOCURRENCY_KEY, assetIndex)
+                            .put(TRANSACTION_KEY, transaction.getTransaction()), DELETE_CRYPTOCURRENCY_OPE);
             response = serverRequest.readResponse();
             if(response != null){
                 switch (response.getInt(STATUS_CODE)){

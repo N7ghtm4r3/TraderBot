@@ -1,11 +1,12 @@
 package com.tecknobit.traderbot.Traders.Interfaces.Android;
 
-import com.tecknobit.binancemanager.Managers.Market.Records.Stats.ExchangeInformation;
+import com.tecknobit.apimanager.Tools.Trading.CryptocurrencyTool;
 import com.tecknobit.binancemanager.Managers.Market.Records.Tickers.TickerPriceChange;
 import com.tecknobit.traderbot.Records.Account.TraderAccount;
 import com.tecknobit.traderbot.Records.Account.TraderDetails;
 import com.tecknobit.traderbot.Records.Portfolio.Asset;
 import com.tecknobit.traderbot.Records.Portfolio.Coin;
+import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency;
 import com.tecknobit.traderbot.Records.Portfolio.Transaction;
 import com.tecknobit.traderbot.Routines.Android.AndroidCoreRoutines;
 import com.tecknobit.traderbot.Routines.Android.AndroidWorkflow;
@@ -13,13 +14,25 @@ import com.tecknobit.traderbot.Routines.Android.AndroidWorkflow.Credentials;
 import com.tecknobit.traderbot.Routines.Android.ServerRequest;
 import com.tecknobit.traderbot.Traders.Interfaces.Native.BinanceTraderBot;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.concurrent.ConcurrentHashMap;
 
+import static com.tecknobit.binancemanager.Managers.SignedManagers.Trade.Common.TradeConstants.SELL;
 import static com.tecknobit.traderbot.Records.Account.TraderDetails.*;
 import static java.lang.Math.toIntExact;
+import static java.lang.System.currentTimeMillis;
+import static java.text.DateFormat.getDateTimeInstance;
 
 public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCoreRoutines {
 
+    private final DateFormat transactionDateFormat;
+
+    /**
+     * {@code cryptocurrencyTool} is instance helpful to manage cryptocurrencies details
+     * **/
+    private final CryptocurrencyTool cryptocurrencyTool;
     private final TraderDetails traderDetails;
     private final TraderAccount traderAccount;
     private final AndroidWorkflow androidWorkflow;
@@ -28,6 +41,13 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
     private final String ivSpec;
     private final String secretKey;
     private String symbol;
+    private String side;
+
+    /**
+     * {@code walletList} is a map that contains wallet list assets and index (es. BTCBUSD) as key {@link String} and {@link Cryptocurrency}
+     * as value of map.
+     * **/
+    private final ConcurrentHashMap<String, Cryptocurrency> walletList;
 
     /**
      * {@code runningTrader} is instance that memorize flag that indicates if the trader is running
@@ -43,7 +63,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
                                 String baseCurrency) throws Exception {
         super(apiKey, secretKey);
         this.baseCurrency = baseCurrency;
-        long timestamp = System.currentTimeMillis();
+        long timestamp = currentTimeMillis();
         traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
                 toIntExact(REFRESH_PRICES_TIME), timestamp);
         initCredentials(credentials);
@@ -54,6 +74,9 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         ServerRequest serverRequest = new ServerRequest(ivSpec, this.secretKey, authToken, token);
         androidWorkflow = new AndroidWorkflow(serverRequest, this, credentials, printRoutineMessages);
         traderAccount = new TraderAccount(serverRequest);
+        cryptocurrencyTool = new CryptocurrencyTool();
+        transactionDateFormat = getDateTimeInstance();
+        walletList = new ConcurrentHashMap<>(); // TODO: 21/06/2022 RECOVERY FROM REQUEST
         workflowHandler();
     }
 
@@ -61,7 +84,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
                                 boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, secretKey, baseEndpoint);
         this.baseCurrency = baseCurrency;
-        long timestamp = System.currentTimeMillis();
+        long timestamp = currentTimeMillis();
         traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
                 toIntExact(REFRESH_PRICES_TIME), timestamp);
         initCredentials(credentials);
@@ -72,6 +95,9 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         ServerRequest serverRequest = new ServerRequest(ivSpec, this.secretKey, authToken, token);
         androidWorkflow = new AndroidWorkflow(serverRequest, this, credentials, printRoutineMessages);
         traderAccount = new TraderAccount(serverRequest);
+        cryptocurrencyTool = new CryptocurrencyTool();
+        transactionDateFormat = getDateTimeInstance();
+        walletList = new ConcurrentHashMap<>(); // TODO: 21/06/2022 RECOVERY FROM REQUEST
         workflowHandler();
     }
 
@@ -80,7 +106,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         super(apiKey, secretKey, refreshPricesTime);
         this.baseCurrency = baseCurrency;
         checkCredentialsValidity(credentials);
-        long timestamp = System.currentTimeMillis();
+        long timestamp = currentTimeMillis();
         traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
                 toIntExact(REFRESH_PRICES_TIME), timestamp);
         initCredentials(credentials);
@@ -91,6 +117,9 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         ServerRequest serverRequest = new ServerRequest(ivSpec, this.secretKey, authToken, token);
         androidWorkflow = new AndroidWorkflow(serverRequest, this, credentials, printRoutineMessages);
         traderAccount = new TraderAccount(serverRequest);
+        cryptocurrencyTool = new CryptocurrencyTool();
+        transactionDateFormat = getDateTimeInstance();
+        walletList = new ConcurrentHashMap<>(); // TODO: 21/06/2022 RECOVERY FROM REQUEST
         workflowHandler();
     }
 
@@ -98,7 +127,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
                                 Credentials credentials, boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, secretKey, baseEndpoint, refreshPricesTime);
         this.baseCurrency = baseCurrency;
-        long timestamp = System.currentTimeMillis();
+        long timestamp = currentTimeMillis();
         traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
                 toIntExact(REFRESH_PRICES_TIME), timestamp);
         initCredentials(credentials);
@@ -109,6 +138,9 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         ServerRequest serverRequest = new ServerRequest(ivSpec, this.secretKey, authToken, token);
         androidWorkflow = new AndroidWorkflow(serverRequest, this, credentials, printRoutineMessages);
         traderAccount = new TraderAccount(serverRequest);
+        cryptocurrencyTool = new CryptocurrencyTool();
+        transactionDateFormat = getDateTimeInstance();
+        walletList = new ConcurrentHashMap<>(); // TODO: 21/06/2022 RECOVERY FROM REQUEST
         workflowHandler();
     }
 
@@ -116,7 +148,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
                                 Credentials credentials, boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, secretKey, quoteCurrencies, refreshPricesTime);
         this.baseCurrency = baseCurrency;
-        long timestamp = System.currentTimeMillis();
+        long timestamp = currentTimeMillis();
         traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
                 toIntExact(REFRESH_PRICES_TIME), timestamp);
         initCredentials(credentials);
@@ -127,6 +159,9 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         ServerRequest serverRequest = new ServerRequest(ivSpec, this.secretKey, authToken, token);
         androidWorkflow = new AndroidWorkflow(serverRequest, this, credentials, printRoutineMessages);
         traderAccount = new TraderAccount(serverRequest);
+        cryptocurrencyTool = new CryptocurrencyTool();
+        transactionDateFormat = getDateTimeInstance();
+        walletList = new ConcurrentHashMap<>(); // TODO: 21/06/2022 RECOVERY FROM REQUEST
         workflowHandler();
     }
 
@@ -135,7 +170,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
                                 String baseCurrency) throws Exception {
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies, refreshPricesTime);
         this.baseCurrency = baseCurrency;
-        long timestamp = System.currentTimeMillis();
+        long timestamp = currentTimeMillis();
         traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
                 toIntExact(REFRESH_PRICES_TIME), timestamp);
         initCredentials(credentials);
@@ -146,6 +181,9 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         ServerRequest serverRequest = new ServerRequest(ivSpec, this.secretKey, authToken, token);
         androidWorkflow = new AndroidWorkflow(serverRequest, this, credentials, printRoutineMessages);
         traderAccount = new TraderAccount(serverRequest);
+        cryptocurrencyTool = new CryptocurrencyTool();
+        transactionDateFormat = getDateTimeInstance();
+        walletList = new ConcurrentHashMap<>(); // TODO: 21/06/2022 RECOVERY FROM REQUEST
         workflowHandler();
     }
 
@@ -153,7 +191,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
                                 Credentials credentials, boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, secretKey, quoteCurrencies);
         this.baseCurrency = baseCurrency;
-        long timestamp = System.currentTimeMillis();
+        long timestamp = currentTimeMillis();
         traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
                 toIntExact(REFRESH_PRICES_TIME), timestamp);
         initCredentials(credentials);
@@ -164,6 +202,9 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         ServerRequest serverRequest = new ServerRequest(ivSpec, this.secretKey, authToken, token);
         androidWorkflow = new AndroidWorkflow(serverRequest, this, credentials, printRoutineMessages);
         traderAccount = new TraderAccount(serverRequest);
+        cryptocurrencyTool = new CryptocurrencyTool();
+        transactionDateFormat = getDateTimeInstance();
+        walletList = new ConcurrentHashMap<>(); // TODO: 21/06/2022 RECOVERY FROM REQUEST
         workflowHandler();
     }
 
@@ -172,7 +213,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies);
         initCredentials(credentials);
         this.baseCurrency = baseCurrency;
-        long timestamp = System.currentTimeMillis();
+        long timestamp = currentTimeMillis();
         traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
                 toIntExact(REFRESH_PRICES_TIME), timestamp);
         initCredentials(credentials);
@@ -183,6 +224,9 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         ServerRequest serverRequest = new ServerRequest(ivSpec, this.secretKey, authToken, token);
         androidWorkflow = new AndroidWorkflow(serverRequest, this, credentials, printRoutineMessages);
         traderAccount = new TraderAccount(serverRequest);
+        cryptocurrencyTool = new CryptocurrencyTool();
+        transactionDateFormat = getDateTimeInstance();
+        walletList = new ConcurrentHashMap<>(); // TODO: 21/06/2022 RECOVERY FROM REQUEST
         workflowHandler();
     }
 
@@ -276,17 +320,54 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
     }
 
     @Override
+    protected void placeAnOrder(String symbol, double quantity, String side) throws Exception {
+        super.placeAnOrder(symbol, quantity, side);
+        this.side = side;
+    }
+
+    @Override
     protected void insertCoin(String index, String name, double quantity) {
         super.insertCoin(index, name, quantity);
-        TickerPriceChange ticker = lastPrices.get(symbol);
-        ExchangeInformation.Symbol asset = tradingPairsList.get(symbol);
         Coin coin = coins.get(index);
-        if(coin.isTradingEnabled()) {
-            androidWorkflow.insertCryptocurrency(index, coin.getQuantity(), symbol, ticker.getLastPrice(), -1,
-                    null, ticker.getPriceChangePercent(), tradingPairsList.get(symbol).getQuoteAsset(),
-                    0, null);
-        }else
-            androidWorkflow.removeCryptocurrency(index);
+        Cryptocurrency cryptocurrency;
+        TickerPriceChange ticker = lastPrices.get(symbol);
+        String quoteAsset = tradingPairsList.get(symbol).getQuoteAsset();
+        Transaction transaction = new Transaction(symbol, side, transactionDateFormat.format(new Date(currentTimeMillis())),
+                binanceMarketManager.roundValue(1 * ticker.getLastPrice(), 2), quantity,
+                quoteAsset, index);
+        int sales = 0;
+        if(side.equals(SELL)){
+            cryptocurrency = walletList.get(index);
+            double income = cryptocurrency.getIncomePercent();
+            String sellCode = getTypeSellCode(income);
+            traderAccount.addIncome(income);
+            transaction.setIncomePercent(cryptocurrency.getIncomePercent(2));
+            transaction.setTransactionType(sellCode);
+            switch (sellCode){
+                case LOSS_SELL:
+                    traderAccount.addLoss();
+                    sales = traderAccount.getSalesAtLoss();
+                    break;
+                case GAIN_SELL:
+                    traderAccount.addGain();
+                    sales = traderAccount.getSalesAtGain();
+                    break;
+                default:
+                    traderAccount.addPair();
+                    sales = traderAccount.getSalesAtPair();
+            }
+        }else{
+            cryptocurrency = new Cryptocurrency(index, cryptocurrencyTool.getCryptocurrencyName(index), quantity,
+                    symbol, ticker.getLastPrice(), -1 , null, ticker.getPriceChangePercent(), quoteAsset,
+                    null);
+            walletList.put(index, cryptocurrency);
+        }
+        if(coin.isTradingEnabled())
+            androidWorkflow.insertCryptocurrency(cryptocurrency, transaction, sales, traderAccount.getTotalIncome(2));
+        else {
+            androidWorkflow.removeCryptocurrency(index, transaction);
+            walletList.remove(index);
+        }
     }
 
     @Override

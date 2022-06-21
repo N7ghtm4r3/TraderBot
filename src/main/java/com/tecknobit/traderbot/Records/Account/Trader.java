@@ -39,19 +39,24 @@ public abstract class Trader {
     public interface TraderManager {
 
         /**
+         * {@code SELL_KEY} is instance that memorize transaction sell key
+         * **/
+        String SELL_KEY = "sell";
+
+        /**
          * {@code LOSS_SELL} is code to indicate a sell in losing
          * **/
-        int LOSS_SELL = 0;
+        String LOSS_SELL = "sales_at_loss";
 
         /**
          * {@code GAIN_SELL} is code to indicate a sell in gaining
          * **/
-        int GAIN_SELL = 1;
+        String GAIN_SELL = "sales_at_gain";
 
         /**
          * {@code GAIN_SELL} is code to indicate a sell in pairing
          * **/
-        int PAIR_SELL = 2;
+        String PAIR_SELL = "sales_at_pair";
 
         /**
          * This method is used to get if bot is in running mode
@@ -105,6 +110,27 @@ public abstract class Trader {
          * **/
         String getBaseCurrency();
 
+        /**
+         * This method is used to get type of sell made
+         * @param percent: percent of sell made
+         * @return code of sell es {@link #GAIN_SELL}, {@link #LOSS_SELL} or {@link #PAIR_SELL}
+         * **/
+        default String getTypeSellCode(double percent){
+            if(percent > 0)
+                return GAIN_SELL;
+            else if(percent < 0)
+                return LOSS_SELL;
+            return PAIR_SELL;
+        }
+
+    }
+
+    public static DateFormat getDayPassFormat() {
+        return dayPassFormat;
+    }
+
+    public static SimpleDateFormat getTimeFormat() {
+        return timeFormat;
     }
 
 }
