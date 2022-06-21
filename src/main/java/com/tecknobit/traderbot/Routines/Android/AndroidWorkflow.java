@@ -35,7 +35,7 @@ public final class AndroidWorkflow implements RoutineMessages {
     private boolean workflowStarted;
 
     public AndroidWorkflow(ServerRequest serverRequest, TraderCoreRoutines traderCoreRoutines, Credentials credentials,
-                           boolean printRoutineMessages) throws Exception {
+                           boolean printRoutineMessages) {
         if(!alreadyInstantiated)
             alreadyInstantiated = true;
         else {

@@ -51,7 +51,7 @@ public class Cryptocurrency extends Token implements RecordDetails {
     /**
      * {@code PRICE_CHANGE_PERCENT_KEY} is instance that memorize price change percent key
      * **/
-    public static final String PRICE_CHANGE_PERCENT_KEY = "price_change_percent_key";
+    public static final String PRICE_CHANGE_PERCENT_KEY = "price_change_percent";
 
     /**
      * {@code QUOTE_ASSET_KEY} is instance that memorize quote asset key
@@ -67,6 +67,16 @@ public class Cryptocurrency extends Token implements RecordDetails {
      * {@code TRADING_CONFIG_KEY} is instance that memorize trading config key
      * **/
     public static final String TRADING_CONFIG_KEY = "trading_config";
+
+    /**
+     * {@code FIRST_PRICES_SUM} is instance that memorize first prices size key
+     * **/
+    public static final String FIRST_PRICES_SUM = "first_prices_sum";
+
+    /**
+     * {@code FIRST_PRICES_SIZE} is instance that memorize first prices size key
+     * **/
+    public static final String FIRST_PRICES_SIZE = "first_prices_size";
 
     /**
      * {@code symbol} is instance that memorize symbol of cryptocurrency es. BTCBUSD or BTC-USD
@@ -113,6 +123,22 @@ public class Cryptocurrency extends Token implements RecordDetails {
      * **/
     private final TradingConfig tradingConfig;
 
+    /**
+     * {@code firstPricesSum} is instance that memorize sum of first prices of order for cryptocurrency.
+     * **/
+    private final double firstPricesSum;
+
+    /**
+     * {@code previousFirstPricesSize} is instance that memorize size of first prices of order for cryptocurrency <br>
+     * passed by previous first prices list
+     * **/
+    private final int previousFirstPricesSize;
+
+    /**
+     * {@code firstPricesSize} is instance that memorize size of first prices of order for cryptocurrency.
+     * **/
+    private int firstPricesSize;
+
     /** Constructor to init {@link Cryptocurrency}
      * @param assetIndex: index of cryptocurrency es. BTC
      * @param assetName: full name of cryptocurrency es Bitcoin
@@ -137,6 +163,8 @@ public class Cryptocurrency extends Token implements RecordDetails {
         this.quoteAsset = quoteAsset;
         this.tradingConfig = tradingConfig;
         firstPrices = new ArrayList<>();
+        firstPricesSum = 0;
+        previousFirstPricesSize = 0;
     }
 
     /** Constructor to init {@link Cryptocurrency}
@@ -165,6 +193,8 @@ public class Cryptocurrency extends Token implements RecordDetails {
         this.incomePercent = incomePercent;
         this.tradingConfig = tradingConfig;
         firstPrices = new ArrayList<>();
+        firstPricesSum = 0;
+        previousFirstPricesSize = 0;
     }
 
     /** Constructor to init {@link Cryptocurrency}
@@ -192,6 +222,31 @@ public class Cryptocurrency extends Token implements RecordDetails {
         this.quoteAsset = quoteAsset;
         this.tradingConfig = tradingConfig;
         this.firstPrices = firstPrices;
+        firstPricesSum = 0;
+        previousFirstPricesSize = 0;
+    }
+
+    /** Constructor to init {@link Cryptocurrency}
+     * @implNote is useful for Android's interfaces not for a normal workflow
+     * @param assetIndex: index of cryptocurrency es. BTC
+     * @param assetName: full name of cryptocurrency es Bitcoin
+     * @param quantity: value of quantity bought for this cryptocurrency es 1
+     * @param tptopIndex: forecast trend of cryptocurrency
+     * @param candleGap: previous day percent gap of trend of cryptocurrency
+     * @param tradingConfig: model of trading to use for this cryptocurrency
+     * **/
+    public Cryptocurrency(String assetIndex, String assetName, double quantity, TradingConfig tradingConfig,
+                          double tptopIndex, Object candleGap, String quoteAsset, double firstPricesSum,
+                          int previousFirstPricesSize) {
+        super(assetIndex, assetName, quantity);
+        this.symbol = null;
+        this.tptopIndex = tptopIndex;
+        this.candleGap = candleGap;
+        this.quoteAsset = quoteAsset;
+        this.tradingConfig = tradingConfig;
+        firstPrices = new ArrayList<>();
+        this.firstPricesSum = firstPricesSum;
+        this.previousFirstPricesSize = previousFirstPricesSize;
     }
 
     public String getSymbol() {
@@ -199,13 +254,13 @@ public class Cryptocurrency extends Token implements RecordDetails {
     }
 
     public double getFirstPrice() {
-        int firstPricesSize = firstPrices.size();
+        firstPricesSize = firstPrices.size() + previousFirstPricesSize;
         if(firstPricesSize > 0){
             double firstPrice = 0;
             for (double price : firstPrices)
                 firstPrice += price;
 
-            return firstPrice / firstPricesSize;
+            return ((firstPrice + firstPricesSum) / firstPricesSize);
         }
         return lastPrice;
     }
@@ -437,6 +492,10 @@ public class Cryptocurrency extends Token implements RecordDetails {
         trader.put(INCOME_PERCENT_KEY, incomePercent);
         if(tradingConfig != null)
             trader.put(TRADING_CONFIG_KEY, tradingConfig.getTradingConfig());
+        if(firstPricesSum != 0)
+            trader.put(FIRST_PRICES_SUM, getFirstPrice());
+        if(previousFirstPricesSize != 0)
+            trader.put(FIRST_PRICES_SIZE, firstPricesSize);
         return trader;
     }
 
@@ -456,7 +515,7 @@ public class Cryptocurrency extends Token implements RecordDetails {
         /**
          * {@code WASTE_RANGE_KEY} is instance that memorize waste range key
          * **/
-        public static final String WASTE_RANGE_KEY = "waste_range_key";
+        public static final String WASTE_RANGE_KEY = "waste_range";
 
         /**
          * {@code DAIS_GAP_KEY} is instance that memorize days gap key
@@ -471,12 +530,12 @@ public class Cryptocurrency extends Token implements RecordDetails {
         /**
          * {@code MAX_LOSS_KEY} is instance that memorize max loss key
          * **/
-        public static final String MAX_LOSS_KEY = "max_loss_key";
+        public static final String MAX_LOSS_KEY = "max_loss";
 
         /**
          * {@code MAX_GAIN_KEY} is instance that memorize max gain key
          * **/
-        public static final String MAX_GAIN_KEY = "max_gain_key";
+        public static final String MAX_GAIN_KEY = "max_gain";
 
         /**
          * {@code marketPhase} is instance that memorize market phase when buy a {@link Cryptocurrency}
