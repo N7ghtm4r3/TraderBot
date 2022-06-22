@@ -76,7 +76,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         traderAccount = new TraderAccount(serverRequest);
         cryptocurrencyTool = new CryptocurrencyTool();
         transactionDateFormat = getDateTimeInstance();
-        walletList = new ConcurrentHashMap<>(); // TODO: 21/06/2022 RECOVERY FROM REQUEST
+        walletList = traderAccount.getWalletCryptocurrencies();
         workflowHandler();
     }
 
@@ -97,7 +97,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         traderAccount = new TraderAccount(serverRequest);
         cryptocurrencyTool = new CryptocurrencyTool();
         transactionDateFormat = getDateTimeInstance();
-        walletList = new ConcurrentHashMap<>(); // TODO: 21/06/2022 RECOVERY FROM REQUEST
+        walletList = traderAccount.getWalletCryptocurrencies();
         workflowHandler();
     }
 
@@ -119,7 +119,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         traderAccount = new TraderAccount(serverRequest);
         cryptocurrencyTool = new CryptocurrencyTool();
         transactionDateFormat = getDateTimeInstance();
-        walletList = new ConcurrentHashMap<>(); // TODO: 21/06/2022 RECOVERY FROM REQUEST
+        walletList = traderAccount.getWalletCryptocurrencies();
         workflowHandler();
     }
 
@@ -140,7 +140,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         traderAccount = new TraderAccount(serverRequest);
         cryptocurrencyTool = new CryptocurrencyTool();
         transactionDateFormat = getDateTimeInstance();
-        walletList = new ConcurrentHashMap<>(); // TODO: 21/06/2022 RECOVERY FROM REQUEST
+        walletList = traderAccount.getWalletCryptocurrencies();
         workflowHandler();
     }
 
@@ -161,7 +161,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         traderAccount = new TraderAccount(serverRequest);
         cryptocurrencyTool = new CryptocurrencyTool();
         transactionDateFormat = getDateTimeInstance();
-        walletList = new ConcurrentHashMap<>(); // TODO: 21/06/2022 RECOVERY FROM REQUEST
+        walletList = traderAccount.getWalletCryptocurrencies();
         workflowHandler();
     }
 
@@ -183,7 +183,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         traderAccount = new TraderAccount(serverRequest);
         cryptocurrencyTool = new CryptocurrencyTool();
         transactionDateFormat = getDateTimeInstance();
-        walletList = new ConcurrentHashMap<>(); // TODO: 21/06/2022 RECOVERY FROM REQUEST
+        walletList = traderAccount.getWalletCryptocurrencies();
         workflowHandler();
     }
 
@@ -204,7 +204,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         traderAccount = new TraderAccount(serverRequest);
         cryptocurrencyTool = new CryptocurrencyTool();
         transactionDateFormat = getDateTimeInstance();
-        walletList = new ConcurrentHashMap<>(); // TODO: 21/06/2022 RECOVERY FROM REQUEST
+        walletList = traderAccount.getWalletCryptocurrencies();
         workflowHandler();
     }
 
@@ -226,7 +226,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         traderAccount = new TraderAccount(serverRequest);
         cryptocurrencyTool = new CryptocurrencyTool();
         transactionDateFormat = getDateTimeInstance();
-        walletList = new ConcurrentHashMap<>(); // TODO: 21/06/2022 RECOVERY FROM REQUEST
+        walletList = traderAccount.getWalletCryptocurrencies();
         workflowHandler();
     }
 

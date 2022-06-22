@@ -34,9 +34,9 @@ public class Cryptocurrency extends Token implements RecordDetails {
     public static final String LAST_PRICE_KEY = "last_price";
 
     /**
-     * {@code FIRS_PRICE_KEY} is instance that memorize last price key
+     * {@code FIRST_PRICE_KEY} is instance that memorize last price key
      * **/
-    public static final String FIRS_PRICE_KEY = "firs_price";
+    public static final String FIRST_PRICE_KEY = "first_price";
 
     /**
      * {@code TPTOP_INDEX_KEY} is instance that memorize tptop index key
@@ -69,14 +69,14 @@ public class Cryptocurrency extends Token implements RecordDetails {
     public static final String TRADING_CONFIG_KEY = "trading_config";
 
     /**
-     * {@code FIRST_PRICES_SUM} is instance that memorize first prices size key
+     * {@code FIRST_PRICES_SUM_KEY} is instance that memorize first prices size key
      * **/
-    public static final String FIRST_PRICES_SUM = "first_prices_sum";
+    public static final String FIRST_PRICES_SUM_KEY = "first_prices_sum";
 
     /**
-     * {@code FIRST_PRICES_SIZE} is instance that memorize first prices size key
+     * {@code FIRST_PRICES_SIZE_KEY} is instance that memorize first prices size key
      * **/
-    public static final String FIRST_PRICES_SIZE = "first_prices_size";
+    public static final String FIRST_PRICES_SIZE_KEY = "first_prices_size";
 
     /**
      * {@code symbol} is instance that memorize symbol of cryptocurrency es. BTCBUSD or BTC-USD
@@ -478,25 +478,23 @@ public class Cryptocurrency extends Token implements RecordDetails {
      * @return cryptocurrency details as {@link HashMap} of {@link Object}
      * **/
     public HashMap<String, Object> getCryptocurrency() {
-        HashMap<String, Object> trader = new HashMap<>();
-        trader.put(BASE_ASSET_KEY, assetIndex);
-        trader.put(ASSET_NAME_KEY, assetName);
-        trader.put(QUANTITY_KEY, quantity);
-        trader.put(SYMBOL_KEY, symbol);
-        trader.put(LAST_PRICE_KEY, lastPrice);
-        trader.put(FIRS_PRICE_KEY, getFirstPrice(2));
-        trader.put(TPTOP_INDEX_KEY, tptopIndex);
-        trader.put(CANDLE_GAP_KEY, candleGap);
-        trader.put(PRICE_CHANGE_PERCENT_KEY, priceChangePercent);
-        trader.put(QUOTE_ASSET_KEY, quoteAsset);
-        trader.put(INCOME_PERCENT_KEY, incomePercent);
+        HashMap<String, Object> crypto = new HashMap<>();
+        crypto.put(BASE_ASSET_KEY, assetIndex);
+        crypto.put(ASSET_NAME_KEY, assetName);
+        crypto.put(QUANTITY_KEY, quantity);
+        crypto.put(SYMBOL_KEY, symbol);
+        crypto.put(LAST_PRICE_KEY, lastPrice);
+        crypto.put(FIRST_PRICE_KEY, getFirstPrice(2));
+        crypto.put(TPTOP_INDEX_KEY, tptopIndex);
+        crypto.put(CANDLE_GAP_KEY, candleGap);
+        crypto.put(PRICE_CHANGE_PERCENT_KEY, priceChangePercent);
+        crypto.put(QUOTE_ASSET_KEY, quoteAsset);
+        crypto.put(INCOME_PERCENT_KEY, incomePercent);
         if(tradingConfig != null)
-            trader.put(TRADING_CONFIG_KEY, tradingConfig.getTradingConfig());
-        if(firstPricesSum != 0)
-            trader.put(FIRST_PRICES_SUM, getFirstPrice());
-        if(previousFirstPricesSize != 0)
-            trader.put(FIRST_PRICES_SIZE, firstPricesSize);
-        return trader;
+            crypto.put(TRADING_CONFIG_KEY, tradingConfig.getTradingConfig());
+        crypto.put(FIRST_PRICES_SUM_KEY, getFirstPrice());
+        crypto.put(FIRST_PRICES_SIZE_KEY, firstPricesSize);
+        return crypto;
     }
 
 

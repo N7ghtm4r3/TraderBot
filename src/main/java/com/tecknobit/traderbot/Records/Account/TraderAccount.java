@@ -1,5 +1,7 @@
 package com.tecknobit.traderbot.Records.Account;
 
+import com.tecknobit.apimanager.Tools.Readers.JsonHelper;
+import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency;
 import com.tecknobit.traderbot.Routines.Android.ServerRequest;
 import com.tecknobit.traderbot.Routines.Interfaces.RecordDetails;
 import org.json.JSONArray;
@@ -8,12 +10,15 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
+import static com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency.*;
+import static com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency.TradingConfig.*;
 import static com.tecknobit.traderbot.Routines.Android.ServerRequest.*;
 import static com.tecknobit.traderbot.Routines.Autonomous.AutoTraderCoreRoutines.ASSET_NOT_TRADABLE;
 import static com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages.*;
 import static com.tecknobit.traderbot.Routines.Interfaces.TraderCoreRoutines.tradingTools;
-import static java.lang.System.*;
+import static java.lang.System.currentTimeMillis;
 import static java.lang.System.out;
 
 /**
@@ -80,6 +85,11 @@ public final class TraderAccount extends Trader implements RecordDetails {
     private ArrayList<Double> incomes;
 
     /**
+     * {@code cryptocurrencies} is instance that memorize list of cryptocurrencies in your waller
+     * **/
+    private final ConcurrentHashMap<String, Cryptocurrency> cryptocurrencies;
+
+    /**
      * {@code totalIncome} is instance that memorize total income for account
      * **/
     private double totalIncome;
@@ -103,6 +113,7 @@ public final class TraderAccount extends Trader implements RecordDetails {
         this.activationDate = activationDate;
         this.totalIncome = totalIncome;
         serverRequest = null;
+        cryptocurrencies = null;
         initTimeFormatters();
     }
 
@@ -121,14 +132,17 @@ public final class TraderAccount extends Trader implements RecordDetails {
         this.activationDate = activationDate;
         this.incomes = incomes;
         serverRequest = null;
+        cryptocurrencies = null;
         initTimeFormatters();
     }
 
     /** Constructor to init {@link TraderAccount} <br>
-     * Any params required
+     * @param serverRequest: object to send request to server
+     * @implNote is useful for Android's use
      * **/
     public TraderAccount(ServerRequest serverRequest) throws Exception {
         this.serverRequest = serverRequest;
+        cryptocurrencies = new ConcurrentHashMap<>();
         serverRequest.sendTokenRequest(new JSONObject(), GET_TRADER_ACCOUNT_OPE);
         response = serverRequest.readResponse();
         if(response != null) {
@@ -138,9 +152,37 @@ public final class TraderAccount extends Trader implements RecordDetails {
                 salesAtPair = response.getInt(PAIRS_KEY);
                 activationDate = response.getLong(ACTIVATION_DATE_KEY);
                 incomes = new ArrayList<>();
+
                 JSONArray incomesList = response.getJSONArray(INCOMES_KEY);
                 for (int j=0; j < incomesList.length(); j++)
                     incomes.add(incomesList.getDouble(j));
+                JSONArray cryptocurrencies = response.getJSONArray(CRYPTOCURRENCY_KEY);
+                for (int j=0; j < cryptocurrencies.length(); j++){
+                    JSONObject crypto = cryptocurrencies.getJSONObject(j);
+                    JsonHelper jsonHelper = new JsonHelper(crypto);
+                    TradingConfig tradingConfig = null;
+                    JSONObject config = jsonHelper.getJSONObject(TRADING_CONFIG_KEY);
+                    if(config != null){
+                        tradingConfig = new TradingConfig(config.getDouble(MARKET_PHASE_KEY),
+                                config.getDouble(WASTE_RANGE_KEY),
+                                config.getInt(DAIS_GAP_KEY),
+                                config.getDouble(MIN_GAIN_FOR_ORDER_KEY),
+                                config.getDouble(MAX_LOSS_KEY),
+                                config.getDouble(MAX_GAIN_KEY)
+                        );
+                    }
+                    String index = crypto.getString(BASE_ASSET_KEY);
+                    this.cryptocurrencies.put(index, new Cryptocurrency(index,
+                            crypto.getString(ASSET_NAME_KEY),
+                            crypto.getDouble(QUANTITY_KEY),
+                            tradingConfig,
+                            crypto.getDouble(TPTOP_INDEX_KEY),
+                            jsonHelper.get(CANDLE_GAP_KEY),
+                            crypto.getString(QUOTE_ASSET_KEY),
+                            crypto.getDouble(FIRST_PRICES_SUM_KEY),
+                            crypto.getInt(FIRST_PRICES_SIZE_KEY)
+                    ));
+                }
                 totalIncome = ASSET_NOT_TRADABLE;
                 initTimeFormatters();
             }else
@@ -161,6 +203,7 @@ public final class TraderAccount extends Trader implements RecordDetails {
         totalIncome = 0;
         serverRequest = null;
         incomes = new ArrayList<>();
+        cryptocurrencies = null;
         initTimeFormatters();
     }
 
@@ -322,6 +365,16 @@ public final class TraderAccount extends Trader implements RecordDetails {
      * **/
     public double getTotalIncome(int decimals) {
         return computeTotalIncome(2);
+    }
+
+    /**
+     * This method is used to get wallet list of cryptocurrencies <br>
+     * Any params required
+     * @implNote is useful and able to use only in Android's interfaces
+     * @return wallet list as {@link ConcurrentHashMap} of {@link Cryptocurrency}
+     * **/
+    public ConcurrentHashMap<String, Cryptocurrency> getWalletCryptocurrencies() {
+        return cryptocurrencies;
     }
 
     /**
