@@ -94,11 +94,6 @@ public final class TraderAccount extends Trader implements RecordDetails {
      * **/
     private double totalIncome;
 
-    /**
-     * {@code serverRequest} is instance that memorize server request for {@code Android's interfaces}
-     * **/
-    private final ServerRequest serverRequest;
-
     /** Constructor to init {@link TraderAccount}
      * @param salesAtLoss: sales at loss for account
      * @param salesAtGain: sales at gain for account
@@ -112,7 +107,6 @@ public final class TraderAccount extends Trader implements RecordDetails {
         this.salesAtPair = salesAtPair;
         this.activationDate = activationDate;
         this.totalIncome = totalIncome;
-        serverRequest = null;
         cryptocurrencies = null;
         initTimeFormatters();
     }
@@ -131,7 +125,6 @@ public final class TraderAccount extends Trader implements RecordDetails {
         this.salesAtPair = salesAtPair;
         this.activationDate = activationDate;
         this.incomes = incomes;
-        serverRequest = null;
         cryptocurrencies = null;
         initTimeFormatters();
     }
@@ -141,7 +134,6 @@ public final class TraderAccount extends Trader implements RecordDetails {
      * @implNote is useful for Android's use
      * **/
     public TraderAccount(ServerRequest serverRequest) throws Exception {
-        this.serverRequest = serverRequest;
         cryptocurrencies = new ConcurrentHashMap<>();
         serverRequest.sendTokenRequest(new JSONObject(), GET_TRADER_ACCOUNT_OPE);
         response = serverRequest.readResponse();
@@ -201,7 +193,6 @@ public final class TraderAccount extends Trader implements RecordDetails {
         salesAtPair = 0;
         activationDate = currentTimeMillis();
         totalIncome = 0;
-        serverRequest = null;
         incomes = new ArrayList<>();
         cryptocurrencies = null;
         initTimeFormatters();
@@ -290,9 +281,6 @@ public final class TraderAccount extends Trader implements RecordDetails {
      * @param newIncome: new income to insert
      * **/
     public void addIncome(double newIncome){
-        if(serverRequest != null){
-            // TODO: 19/06/2022  request to add income
-        }
         if(newIncome < -100)
             throw new IllegalArgumentException("Income value cannot be less than -100");
         incomes.add(newIncome);

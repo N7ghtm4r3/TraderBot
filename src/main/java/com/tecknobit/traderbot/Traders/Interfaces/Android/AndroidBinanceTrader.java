@@ -262,6 +262,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
                     try {
                         if(isRefreshTime())
                             refreshLatestPrice();
+                        // TODO: 22/06/2022  request to refresh prices
                         for (Cryptocurrency cryptocurrency : walletList.values()){
                             String assetIndex = cryptocurrency.getAssetIndex();
                             TickerPriceChange ticker = lastPrices.get(assetIndex + USDT_CURRENCY);
