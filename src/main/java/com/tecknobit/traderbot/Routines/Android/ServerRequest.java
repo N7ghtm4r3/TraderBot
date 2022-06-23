@@ -32,6 +32,7 @@ public final class ServerRequest {
     public static final String INSERT_WALLET_BALANCE_OPE = "insert_wallet_balance_ope";
     public static final String INSERT_CRYPTOCURRENCY_OPE = "insert_cryptocurrency_ope";
     public static final String DELETE_CRYPTOCURRENCY_OPE = "delete_cryptocurrency_ope";
+    public static final String INSERT_REFRESHED_PRICES = "insert_refreshed_prices_ope";
     public static final String INSERT_QUOTE_OPE = "insert_quote_ope";
     public static final String REMOVE_QUOTE_OPE = "remove_quote_ope";
     public static final String LOGOUT_ACCOUNT_OPE = "logout_account_ope";

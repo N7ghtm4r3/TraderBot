@@ -4,15 +4,14 @@ import com.tecknobit.apimanager.Tools.Trading.CryptocurrencyTool;
 import com.tecknobit.binancemanager.Managers.Market.Records.Tickers.TickerPriceChange;
 import com.tecknobit.traderbot.Records.Account.TraderAccount;
 import com.tecknobit.traderbot.Records.Account.TraderDetails;
-import com.tecknobit.traderbot.Records.Portfolio.Asset;
-import com.tecknobit.traderbot.Records.Portfolio.Coin;
-import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency;
-import com.tecknobit.traderbot.Records.Portfolio.Transaction;
+import com.tecknobit.traderbot.Records.Portfolio.*;
 import com.tecknobit.traderbot.Routines.Android.AndroidCoreRoutines;
 import com.tecknobit.traderbot.Routines.Android.AndroidWorkflow;
 import com.tecknobit.traderbot.Routines.Android.AndroidWorkflow.Credentials;
 import com.tecknobit.traderbot.Routines.Android.ServerRequest;
 import com.tecknobit.traderbot.Traders.Interfaces.Native.BinanceTraderBot;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -21,6 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static com.tecknobit.binancemanager.Managers.SignedManagers.Trade.Common.TradeConstants.SELL;
 import static com.tecknobit.traderbot.Records.Account.TraderDetails.*;
+import static com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency.*;
+import static com.tecknobit.traderbot.Records.Portfolio.Token.BASE_ASSET_KEY;
 import static java.lang.Math.toIntExact;
 import static java.lang.System.currentTimeMillis;
 import static java.text.DateFormat.getDateTimeInstance;
@@ -258,19 +259,27 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
             @Override
             public void run() {
                 super.run();
+                JSONArray wallet = new JSONArray();
                 while (true){
                     try {
                         if(isRefreshTime())
                             refreshLatestPrice();
-                        // TODO: 22/06/2022  request to refresh prices
                         for (Cryptocurrency cryptocurrency : walletList.values()){
                             String assetIndex = cryptocurrency.getAssetIndex();
                             TickerPriceChange ticker = lastPrices.get(assetIndex + USDT_CURRENCY);
-                            cryptocurrency.setLastPrice(ticker.getLastPrice());
-                            cryptocurrency.setPriceChangePercent(ticker.getPriceChangePercent());
+                            double lastPrice = ticker.getLastPrice();
+                            double priceChangePercent = ticker.getPriceChangePercent();
+                            cryptocurrency.setLastPrice(lastPrice);
+                            cryptocurrency.setPriceChangePercent(priceChangePercent);
                             walletList.put(assetIndex, cryptocurrency);
+                            wallet.put(new JSONObject().put(BASE_ASSET_KEY, assetIndex)
+                                    .put(LAST_PRICE_KEY, lastPrice)
+                                    .put(PRICE_CHANGE_PERCENT_KEY, priceChangePercent)
+                                    .put(INCOME_PERCENT_KEY, cryptocurrency.getIncomePercent(2)));
                         }
-                        sleep(REFRESH_PRICES_TIME);
+                        androidWorkflow.insertRefreshedPrices(wallet);
+                        wallet.clear();
+                        sleep(10000);
                     }catch (Exception e){
                         e.printStackTrace();
                         printRed("Error during refreshing wallet list");

@@ -149,8 +149,8 @@ public final class AndroidWorkflow implements RoutineMessages {
                             printOperationSuccess(INSERT_WALLET_BALANCE_OPE);
                         break;
                     case GENERIC_ERROR_RESPONSE:
-                        if(printRoutineMessages)
-                            printRed("[" + INSERT_WALLET_BALANCE_OPE + "] Wallet balance cannot be less than 0");
+                        printOperationStatus("[" + INSERT_WALLET_BALANCE_OPE + "] Wallet balance cannot be less than 0",
+                                false);
                         break;
                     default:
                         printOperationFailed(INSERT_WALLET_BALANCE_OPE);
@@ -178,8 +178,8 @@ public final class AndroidWorkflow implements RoutineMessages {
                         printOperationSuccess(INSERT_CRYPTOCURRENCY_OPE);
                         break;
                     case GENERIC_ERROR_RESPONSE:
-                        if(printRoutineMessages)
-                            printRed("[" + INSERT_WALLET_BALANCE_OPE + "] Insert a valid cryptocurrency value");
+                        printOperationStatus("[" + INSERT_WALLET_BALANCE_OPE + "] Insert a valid cryptocurrency value",
+                                false);
                         break;
                     default:
                         printOperationFailed(INSERT_CRYPTOCURRENCY_OPE);
@@ -202,8 +202,8 @@ public final class AndroidWorkflow implements RoutineMessages {
                         printOperationSuccess(DELETE_CRYPTOCURRENCY_OPE);
                         break;
                     case GENERIC_ERROR_RESPONSE:
-                        if(printRoutineMessages)
-                            printRed("[" + DELETE_CRYPTOCURRENCY_OPE + "] Insert a valid cryptocurrency index");
+                        printOperationStatus("[" + DELETE_CRYPTOCURRENCY_OPE + "] Insert a valid cryptocurrency index",
+                                false);
                         break;
                     default:
                         printOperationFailed(DELETE_CRYPTOCURRENCY_OPE);
@@ -213,6 +213,24 @@ public final class AndroidWorkflow implements RoutineMessages {
         }catch (Exception e){
             printOperationFailed(DELETE_CRYPTOCURRENCY_OPE);
         }
+    }
+
+    public void insertRefreshedPrices(JSONArray wallet) throws Exception {
+        serverRequest.sendTokenRequest(new JSONObject().put(CRYPTOCURRENCY_KEY, wallet), INSERT_REFRESHED_PRICES);
+        response = serverRequest.readResponse();
+        if(response != null){
+            switch (response.getInt(STATUS_CODE)){
+                case SUCCESSFUL_RESPONSE:
+                    printOperationSuccess(INSERT_REFRESHED_PRICES);
+                    break;
+                case GENERIC_ERROR_RESPONSE:
+                    printOperationStatus("[" + INSERT_REFRESHED_PRICES + "] Insert a valid wallet list",
+                            false);
+                    break;
+                default: printOperationFailed(INSERT_REFRESHED_PRICES);
+            }
+        }else
+            printOperationFailed(INSERT_REFRESHED_PRICES);
     }
 
     private void printOperationStatus(String msg, boolean greenPrint) {
