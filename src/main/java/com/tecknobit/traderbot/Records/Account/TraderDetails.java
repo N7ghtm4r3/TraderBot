@@ -295,6 +295,4 @@ public final class TraderDetails extends Trader{
         return trader;
     }
 
-    // TODO: 23/06/2022 REQUEST TO SERVER FOR REFRESH DATA
-
 }

@@ -222,6 +222,15 @@ public final class Transaction implements RecordDetails {
         return incomePercent;
     }
 
+    /**
+     * This method is used get {@link #incomePercent} instance
+     * @param decimals: number of decimal digits es. 2
+     * @return {@link #incomePercent} formatted as 21.22
+     * **/
+    public double getIncomePercent(int decimals) {
+        return tradingTools.roundValue(incomePercent, decimals);
+    }
+
     public void setIncomePercent(double incomePercent) {
         if(incomePercent < -100)
             throw new IllegalArgumentException("Income percent must be bigger than -100");

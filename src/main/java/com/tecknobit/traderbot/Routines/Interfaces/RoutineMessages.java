@@ -1,5 +1,10 @@
 package com.tecknobit.traderbot.Routines.Interfaces;
 
+/**
+ * The {@code RoutineMessages} interface defines base methods to print routine messages.<br>
+ * @author Tecknobit N7ghtm4r3
+ * **/
+
 public interface RoutineMessages {
 
     /**

@@ -94,7 +94,6 @@ public final class ServerRequest {
                 assert clientCipher != null;
                 messageToSent = clientCipher.encryptRequest(messageToSent);
             }
-            printWriter = new PrintWriter(socket.getOutputStream(), true);
             printWriter.println(messageToSent);
             printWriter.flush();
         }catch (NullPointerException ignored){
@@ -108,7 +107,6 @@ public final class ServerRequest {
             message.put(AUTH_TOKEN_KEY, authToken);
             assert clientCipher != null;
             String messageToSent = clientCipher.encrypt(message.toString()) + "#" + tokenId;
-            printWriter = new PrintWriter(socket.getOutputStream(), true);
             printWriter.println(messageToSent);
             printWriter.flush();
         }catch (NullPointerException ignored){
@@ -133,6 +131,7 @@ public final class ServerRequest {
         try {
             while (socket != null) Thread.onSpinWait();
             socket = new Socket("localhost", 7898);
+            printWriter = new PrintWriter(socket.getOutputStream(), true);
         }catch (ConnectException ignored){
         }
     }

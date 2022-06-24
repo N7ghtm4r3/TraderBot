@@ -371,10 +371,10 @@ public abstract class TraderCoreRoutines {
         System.out.println("""
                 ############################### DISCLAIMER ALERT #################################\s
                 ## Note: You are solely responsible for storing and using your api keys created ##\s
-                ## on the exchange platforms, this is because they will never be saved in our   ##\s   
+                ## on the exchange platforms, this is because they will never be saved in our   ##\s\040\040\040
                 ## infrastructures. Never share these personal credentials with anyone,         ##\s
                 ## Tecknobit will never ask you for any of the credentials external to our      ##\s
-                ## service outside of starting the interfaces, therefore not by email, messages,##\s 
+                ## service outside of starting the interfaces, therefore not by email, messages,##\s\040
                 ## forums or social networks.                                                   ##\s
                 ##################################################################################
                 """);

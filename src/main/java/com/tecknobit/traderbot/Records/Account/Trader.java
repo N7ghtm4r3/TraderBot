@@ -36,6 +36,11 @@ public abstract class Trader {
         timeFormat = new SimpleDateFormat("HH:mm:ss", getDefault());
     }
 
+    /**
+     * The {@code TraderManager} interface defines base methods to manage a trader.<br>
+     * @author Tecknobit N7ghtm4r3
+     * **/
+
     public interface TraderManager {
 
         /**
@@ -65,12 +70,12 @@ public abstract class Trader {
         boolean isTraderRunning();
 
         /**
-         * This method is used to disable running mode of bot
+         * This method is used to disable running mode of trader
          * **/
         void disableTrader();
 
         /**
-         * This method is used to enable running mode of bot
+         * This method is used to enable running mode of trader
          * **/
         void enableTrader();
 

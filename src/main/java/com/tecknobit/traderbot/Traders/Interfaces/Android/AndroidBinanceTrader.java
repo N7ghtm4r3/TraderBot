@@ -4,7 +4,10 @@ import com.tecknobit.apimanager.Tools.Trading.CryptocurrencyTool;
 import com.tecknobit.binancemanager.Managers.Market.Records.Tickers.TickerPriceChange;
 import com.tecknobit.traderbot.Records.Account.TraderAccount;
 import com.tecknobit.traderbot.Records.Account.TraderDetails;
-import com.tecknobit.traderbot.Records.Portfolio.*;
+import com.tecknobit.traderbot.Records.Portfolio.Asset;
+import com.tecknobit.traderbot.Records.Portfolio.Coin;
+import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency;
+import com.tecknobit.traderbot.Records.Portfolio.Transaction;
 import com.tecknobit.traderbot.Routines.Android.AndroidCoreRoutines;
 import com.tecknobit.traderbot.Routines.Android.AndroidWorkflow;
 import com.tecknobit.traderbot.Routines.Android.AndroidWorkflow.Credentials;
@@ -244,34 +247,42 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
                 super.run();
                 JSONArray wallet = new JSONArray();
                 while (true){
-                    try {
-                        if(isRefreshTime())
-                            refreshLatestPrice();
-                        for (Cryptocurrency cryptocurrency : walletList.values()){
-                            String assetIndex = cryptocurrency.getAssetIndex();
-                            TickerPriceChange ticker = lastPrices.get(assetIndex + USDT_CURRENCY);
-                            double lastPrice = ticker.getLastPrice();
-                            double priceChangePercent = ticker.getPriceChangePercent();
-                            cryptocurrency.setLastPrice(lastPrice);
-                            cryptocurrency.setPriceChangePercent(priceChangePercent);
-                            walletList.put(assetIndex, cryptocurrency);
-                            wallet.put(new JSONObject().put(BASE_ASSET_KEY, assetIndex)
-                                    .put(LAST_PRICE_KEY, lastPrice)
-                                    .put(PRICE_CHANGE_PERCENT_KEY, priceChangePercent)
-                                    .put(INCOME_PERCENT_KEY, cryptocurrency.getIncomePercent(2)));
+                    if(runningTrader){
+                        try {
+                            if(isRefreshTime())
+                                refreshLatestPrice();
+                            for (Cryptocurrency cryptocurrency : walletList.values()){
+                                String assetIndex = cryptocurrency.getAssetIndex();
+                                TickerPriceChange ticker = lastPrices.get(assetIndex + USDT_CURRENCY);
+                                double lastPrice = ticker.getLastPrice();
+                                double priceChangePercent = ticker.getPriceChangePercent();
+                                cryptocurrency.setLastPrice(lastPrice);
+                                cryptocurrency.setPriceChangePercent(priceChangePercent);
+                                walletList.put(assetIndex, cryptocurrency);
+                                wallet.put(new JSONObject().put(BASE_ASSET_KEY, assetIndex)
+                                        .put(LAST_PRICE_KEY, lastPrice)
+                                        .put(PRICE_CHANGE_PERCENT_KEY, priceChangePercent)
+                                        .put(INCOME_PERCENT_KEY, cryptocurrency.getIncomePercent(2)));
+                            }
+                            androidWorkflow.insertRefreshedPrices(wallet);
+                            wallet.clear();
+                            sleep(REFRESH_PRICES_TIME);
+                        }catch (Exception e){
+                            printRed("Error during refreshing wallet list");
                         }
-                        androidWorkflow.insertRefreshedPrices(wallet);
-                        wallet.clear();
-                        sleep(REFRESH_PRICES_TIME);
-                    }catch (Exception e){
-                        e.printStackTrace();
-                        printRed("Error during refreshing wallet list");
                     }
                 }
             }
         }.start();
     }
 
+    /**
+     * This method is used by traders to get user Binance's wallet balance. <br>
+     * @param currency: currency of balance value es. EUR will return balance in EUR currency
+     * @param forceRefresh: this flag when is set to true will refresh prices also if is not time to refresh it
+     * @implNote if {@link #runningTrader} is false will return -1
+     * @return wallet balance in currency value
+     * **/
     @Override
     public double getWalletBalance(String currency, boolean forceRefresh) throws Exception {
         if(runningTrader) {
@@ -282,6 +293,14 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         return -1;
     }
 
+    /**
+     * This method is used by traders to get user Binance's wallet balance. <br>
+     * @param currency: currency of balance value es. EUR will return balance in EUR currency
+     * @param forceRefresh: this flag when is set to true will refresh prices also if is not time to refresh it
+     * @param decimals: this indicates number of decimal number after comma es. 3 -> xx,yyy.
+     * @implNote if {@link #runningTrader} is false will return -1
+     * @return wallet balance in currency value
+     * **/
     @Override
     public double getWalletBalance(String currency, boolean forceRefresh, int decimals) throws Exception {
         if(runningTrader)
@@ -289,6 +308,13 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         return -1;
     }
 
+    /**
+     * This method is used to get asset list of Binance's user wallet.<br>
+     * @param currency: currency of asset balance value es. EUR will return asset balance in EUR currency.
+     * @param forceRefresh: this flag when is set to true will refresh prices also if is not time to refresh it.
+     * @implNote if {@link #runningTrader} is false will return null
+     * @return list of custom object {@link Asset} as {@link ArrayList}
+     * **/
     @Override
     public ArrayList<Asset> getAssetsList(String currency, boolean forceRefresh) throws Exception {
         if(runningTrader)
@@ -296,6 +322,13 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         return null;
     }
 
+    /**
+     * This method is used to get all transactions for a Binance's account from all {@link #quoteCurrencies} inserted.<br>
+     * @param dateFormat: this indicates the format of date that you want to have es. HH:mm:ss -> 21:22:08
+     * @param forceRefresh: this flag when is set to true will refresh prices also if is not time to refresh it.
+     * @implNote if {@link #runningTrader} is false will return null
+     * @return list of custom object {@link Transaction} as {@link ArrayList}
+     * **/
     @Override
     public ArrayList<Transaction> getAllTransactions(String dateFormat, boolean forceRefresh) throws Exception {
         if(runningTrader)
@@ -303,6 +336,12 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         return null;
     }
 
+    /**
+     * This method is used to get all transactions for a Binance's account from all {@link #quoteCurrencies} inserted.<br>
+     * @param forceRefresh: this flag when is set to true will refresh prices also if is not time to refresh it.
+     * @implNote if {@link #runningTrader} is false will return null
+     * @return list of custom object {@link Transaction} as {@link ArrayList}
+     * **/
     @Override
     public ArrayList<Transaction> getAllTransactions(boolean forceRefresh) throws Exception {
         if(runningTrader)
@@ -310,6 +349,14 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         return null;
     }
 
+    /**
+     * This method is used to get all transactions for a Binance's account from a single symbol<br>
+     * @param quoteCurrency: this indicates the symbol from fetch details es. BTC will fetch all transactions on Bitcoin
+     * @param dateFormat: this indicates the format of date that you want to have es. HH:mm:ss -> 21:22:08
+     * @param forceRefresh: this flag when is set to true will refresh prices also if is not time to refresh it.
+     * @implNote if {@link #runningTrader} is false will return null
+     * @return list of custom object {@link Transaction} as {@link ArrayList}
+     * **/
     @Override
     public ArrayList<Transaction> getTransactionsList(String quoteCurrency, String dateFormat, boolean forceRefresh) throws Exception {
         if(runningTrader)
@@ -317,6 +364,13 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         return null;
     }
 
+    /**
+     * This method is used to get all transactions for a Binance's account from a single symbol<br>
+     * @param quoteCurrency: this indicates the symbol from fetch details es. BTC will fetch all transactions on Bitcoin
+     * @param forceRefresh: this flag when is set to true will refresh prices also if is not time to refresh it.
+     * @implNote if {@link #runningTrader} is false will return null
+     * @return list of custom object {@link Transaction} as {@link ArrayList}
+     * **/
     @Override
     public ArrayList<Transaction> getTransactionsList(String quoteCurrency, boolean forceRefresh) throws Exception {
         if(runningTrader)
@@ -324,6 +378,12 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         return null;
     }
 
+    /**
+     * This method is used to send a buy market order from a Binance SPOT account.<br>
+     * @param symbol: this indicates the symbol for the order es. BTCBUSD
+     * @param quantity: this indicates quantity of that symbol is wanted to buy es. 10
+     * @implNote if {@link #runningTrader} is false will do not the buy operation
+     * **/
     @Override
     public void buyMarket(String symbol, double quantity) throws Exception {
         if(runningTrader){
@@ -332,6 +392,12 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         }
     }
 
+    /**
+     * This method is used to send a sell market order from a Binance SPOT account.<br>
+     * @param symbol: this indicates the symbol for the order es. BTCBUSD
+     * @param quantity: this indicates quantity of that symbol is wanted to sell es. 10
+     * @implNote if {@link #runningTrader} is false will do not the sell operation
+     * **/
     @Override
     public void sellMarket(String symbol, double quantity) throws Exception {
         if(runningTrader){
@@ -340,12 +406,26 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         }
     }
 
+    /**
+     * This method is used to place an order<br>
+     * @param symbol: this indicates the symbol for the order es. BTCBUSD
+     * @param quantity: this indicates quantity of that symbol is wanted to trade es. 10
+     * @param side: this indicates the side of the order (BUY or SELL)
+     * **/
     @Override
     protected void placeAnOrder(String symbol, double quantity, String side) throws Exception {
         super.placeAnOrder(symbol, quantity, side);
         this.side = side;
     }
 
+    /**
+     * This method is used to insert or update a coin in {@link #coins} list.
+     * @param index: index of the coin es. BTC
+     * @param name: name of the coin es Bitcoin
+     * @param quantity: quantity of that coin es. 0.28
+     * @implNote in Android's interfaces this method updates also {@link #traderAccount} instance
+     * stats and insert a new transaction
+     * **/
     @Override
     protected void insertCoin(String index, String name, double quantity) {
         super.insertCoin(index, name, quantity);
@@ -397,6 +477,12 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         }
     }
 
+    /**
+     * This method is used to set time to refresh the latest prices <br>
+     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices.
+     * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
+     * @implNote in Android's interfaces this method updates also {@link #traderDetails} instance
+     * **/
     @Override
     public void setRefreshPricesTime(int refreshPricesTime) {
         super.setRefreshPricesTime(refreshPricesTime);
@@ -404,23 +490,42 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
             traderDetails.setRefreshPricesTime(refreshPricesTime);
     }
 
+    /**
+     * This method is used to get if bot is in running mode
+     * @return flag that indicates if the bot is running
+     * **/
     @Override
     public boolean isTraderRunning() {
         return runningTrader;
     }
 
+    /**
+     * This method is used to disable running mode of trader
+     * @implNote in Android's interfaces this method updates also
+     * {@link #traderDetails} status instance to STOPPED_TRADER_STATUS
+     * **/
     @Override
     public void disableTrader() {
         runningTrader = false;
         traderDetails.setTraderStatus(STOPPED_TRADER_STATUS);
     }
 
+    /**
+     * This method is used to enable running mode of trader
+     * @implNote in Android's interfaces this method updates also
+     * {@link #traderDetails} status instance to RUNNING_TRADER_STATUS
+     * **/
     @Override
     public void enableTrader() {
         runningTrader = true;
         traderDetails.setTraderStatus(RUNNING_TRADER_STATUS);
     }
 
+    /**
+     * This method is used to get sales at loss
+     * @return sales at loss
+     * @implNote if {@link #runningTrader} is false will return -1
+     * **/
     @Override
     public double getSalesAtLoss() {
         if(runningTrader)
@@ -428,6 +533,11 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         return -1;
     }
 
+    /**
+     * This method is used to get sales at gain
+     * @return sales at gain
+     * @implNote if {@link #runningTrader} is false will return -1
+     * **/
     @Override
     public double getSalesAtGain() {
         if(runningTrader)
@@ -435,6 +545,11 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         return -1;
     }
 
+    /**
+     * This method is used to get sales at pair
+     * @return sales at pair
+     * @implNote if {@link #runningTrader} is false will return -1
+     * **/
     @Override
     public double getSalesInPair() {
         if(runningTrader)
@@ -442,6 +557,11 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         return -1;
     }
 
+    /**
+     * This method is used to get total sales
+     * @return total sales
+     * @implNote if {@link #runningTrader} is false will return -1
+     * **/
     @Override
     public double getTotalSales() {
         if(runningTrader)
@@ -449,6 +569,10 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         return -1;
     }
 
+    /**
+     * This method is used to set base currency for change amount value
+     * @param baseCurrency: base currency to get all amount value of traders routine es. EUR
+     * **/
     @Override
     public void setBaseCurrency(String baseCurrency) {
         if(baseCurrency == null || baseCurrency.isEmpty())
@@ -456,6 +580,11 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         this.baseCurrency = baseCurrency;
     }
 
+    /**
+     * This method is used to get base currency for change amount value <br>
+     * Any params required
+     * @implNote if {@link #runningTrader} is false will return null
+     * **/
     @Override
     public String getBaseCurrency() {
         if(runningTrader)

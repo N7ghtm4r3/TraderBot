@@ -1,7 +1,7 @@
 package com.tecknobit.traderbot.Routines.Interfaces;
 
 /**
- * The {@code RecordDetails} interface defines base routine methods to print routine messages.<br>
+ * The {@code RecordDetails} interface defines base routine methods to print record details messages.<br>
  * @author Tecknobit N7ghtm4r3
  * **/
 
