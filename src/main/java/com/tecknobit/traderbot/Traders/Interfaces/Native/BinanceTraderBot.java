@@ -11,9 +11,7 @@ import com.tecknobit.traderbot.Records.Portfolio.Asset;
 import com.tecknobit.traderbot.Records.Portfolio.Coin;
 import com.tecknobit.traderbot.Records.Portfolio.Transaction;
 import com.tecknobit.traderbot.Routines.Interfaces.TraderCoreRoutines;
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -27,7 +25,7 @@ import static com.tecknobit.coinbasemanager.Managers.ExchangePro.Orders.Records.
 /**
  * The {@code BinanceTraderBot} class is trader for {@link BinanceManager} library.<br>
  * This trader bot allow to manage user wallet, get transactions and make orders (BUY and SELL side) for a Binance's account.<br>
- * Is derived class of {@code TraderCoreRoutines} class from inherit all core routines methods and instances.
+ * Is derived class of {@link TraderCoreRoutines} class from inherit all core routines methods and instances.
  * @author Tecknobit N7ghtm4r3
  * **/
 
@@ -460,20 +458,6 @@ public class BinanceTraderBot extends TraderCoreRoutines {
         HashMap<String, Object> quantityParam = new HashMap<>();
         quantityParam.put("quantity", quantity);
         orderStatus = binanceSpotManager.sendNewOrder(symbol, side, MARKET_TYPE, quantityParam);
-    }
-
-    /**
-     * This method is used fetch details of a Binance's order request<br>
-     * @implNote you must call it when is placed an order before, so when {@link #buyMarket(java.lang.String, double)}
-     * or {@link #sellMarket(java.lang.String, double)} is being called.
-     * @param formatResponseType: this indicates the format of order status that have to return.
-     * @implSpec if {@code formatResponseType} is equal to {@code String} order status will be returned as {@link String} <br>
-     * if {@code formatResponseType} is equal to {@code JSON} order status will be returned as {@link JSONObject} or {@link JSONArray} <br>
-     * if {@code formatResponseType} is equal to {@code CustomObject} order status will be returned as custom object given by libraries<br>
-     * **/
-    @Override
-    public <T> T getOrderStatus(FormatResponseType formatResponseType) {
-        return super.getOrderStatus(formatResponseType);
     }
 
     /**
