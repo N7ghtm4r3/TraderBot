@@ -25,16 +25,51 @@ import static com.tecknobit.traderbot.Routines.Android.ServerRequest.*;
 import static java.lang.Integer.parseInt;
 import static org.apache.commons.validator.routines.EmailValidator.getInstance;
 
+/**
+ * The {@code AndroidWorkflow} class is useful to manage Android's traders workflow<br>
+ * Is useful for Android's type traders.
+ * @author Tecknobit N7ghtm4r3
+ * **/
+
 public final class AndroidWorkflow implements RoutineMessages {
 
+    /**
+     * {@code alreadyInstantiated} flag to lock multiple instantiations of {@link AndroidWorkflow} object
+     * **/
     private static boolean alreadyInstantiated = false;
+
+    /**
+     * {@code serverRequest} instance to make server request for Android's traders
+     * **/
     private final ServerRequest serverRequest;
+
+    /**
+     * {@code trader} instance of Android's traders used
+     * **/
     private final TraderCoreRoutines trader;
+
+    /**
+     * {@code credentials} instance contains your Tecknobit's account credentials, not your private exchange keys
+     * **/
     private final Credentials credentials;
+
+    /**
+     * {@code printRoutineMessages} flag to insert to print or not routine messages
+     * **/
     private boolean printRoutineMessages;
+
+    /**
+     * {@code workflowStarted} flag to indicate if Android's workflow has been started
+     * **/
     private boolean workflowStarted;
 
-    public AndroidWorkflow(ServerRequest serverRequest, TraderCoreRoutines traderCoreRoutines, Credentials credentials,
+    /** Constructor to init {@link AndroidWorkflow}
+     * @param serverRequest: instance to make server request for Android's traders
+     * @param trader: instance of Android's traders used
+     * @param credentials : instance contains your Tecknobit's account credentials, not your private exchange keys
+     * @param printRoutineMessages: flag to insert to print or not routine messages
+     * **/
+    public AndroidWorkflow(ServerRequest serverRequest, TraderCoreRoutines trader, Credentials credentials,
                            boolean printRoutineMessages) {
         if(!alreadyInstantiated)
             alreadyInstantiated = true;
@@ -46,52 +81,64 @@ public final class AndroidWorkflow implements RoutineMessages {
         this.serverRequest = serverRequest;
         this.printRoutineMessages = printRoutineMessages;
         this.credentials = credentials;
-        this.trader = traderCoreRoutines;
+        this.trader = trader;
+        workflowStarted = false;
     }
 
+    /**
+     * This method is used to start Android's workflow <br>
+     * Any params required
+     * **/
     public void startWorkflow(){
-        new Thread(){
-            @Override
-            public void run() {
-                super.run();
-                /*getRuntime().addShutdownHook(new Thread(){
-                    @Override
-                    public void run() {
-                        super.run();
-                        try {
-                            serverRequest.sendTokenRequest(new JSONObject().put(TRADER_STATUS_KEY, STOPPED_TRADER_STATUS),
-                                    CHANGE_TRADER_STATUS_OPE);
-                            response = serverRequest.readResponse();
-                        } catch (Exception e) {
-                            response = null;
-                        }
-                        if(response != null){
-                            switch (response.getInt(STATUS_CODE)){
-                                case SUCCESSFUL_RESPONSE:
-                                    printOperationSuccess(CHANGE_TRADER_STATUS_OPE);
-                                    break;
-                                case GENERIC_ERROR_RESPONSE:
-                                    //showSnackBar(view, not_valid_status);
-                                    break;
-                                default:
-                                    printOperationFailed(CHANGE_TRADER_STATUS_OPE);
+        if(!workflowStarted) {
+            workflowStarted = true;
+            new Thread(){
+                @Override
+                public void run() {
+                    super.run();
+                    /*getRuntime().addShutdownHook(new Thread(){
+                        @Override
+                        public void run() {
+                            super.run();
+                            try {
+                                serverRequest.sendTokenRequest(new JSONObject().put(TRADER_STATUS_KEY, STOPPED_TRADER_STATUS),
+                                        CHANGE_TRADER_STATUS_OPE);
+                                response = serverRequest.readResponse();
+                            } catch (Exception e) {
+                                response = null;
                             }
-                        }else
-                            printOperationFailed(CHANGE_TRADER_STATUS_OPE);
+                            if(response != null){
+                                switch (response.getInt(STATUS_CODE)){
+                                    case SUCCESSFUL_RESPONSE:
+                                        printOperationSuccess(CHANGE_TRADER_STATUS_OPE);
+                                        break;
+                                    case GENERIC_ERROR_RESPONSE:
+                                        //showSnackBar(view, not_valid_status);
+                                        break;
+                                    default:
+                                        printOperationFailed(CHANGE_TRADER_STATUS_OPE);
+                                }
+                            }else
+                                printOperationFailed(CHANGE_TRADER_STATUS_OPE);
+                        }
+                    });*/
+                    try {
+                        while (true){
+                            performRoutines();
+                            sleep(5000);
+                        }
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
                     }
-                });*/
-                try {
-                    while (true){
-                        performRoutines();
-                        sleep(5000);
-                    }
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
                 }
-            }
-        }.start();
+            }.start();
+        }
     }
 
+    /**
+     * This method is used to perform routines of Android's workflow <br>
+     * Any params required
+     * **/
     private void performRoutines() {
         for (Routine routine : getRoutines()){
             switch (routine.getRoutine()){
@@ -140,6 +187,10 @@ public final class AndroidWorkflow implements RoutineMessages {
         }
     }
 
+    /**
+     * This method is used to fetch routines of Android's workflow <br>
+     * Any params required
+     * **/
     private ArrayList<Routine> getRoutines() {
         ArrayList<Routine> routines = new ArrayList<>();
         try {
@@ -164,6 +215,10 @@ public final class AndroidWorkflow implements RoutineMessages {
         return routines;
     }
 
+    /**
+     * This method is used to insert wallet balance <br>
+     * @param balance: value of balance to insert
+     * **/
     public void insertWalletBalance(double balance) {
         try {
             serverRequest.sendTokenRequest(new JSONObject().put(BALANCE_KEY, balance), INSERT_WALLET_BALANCE_OPE);
@@ -188,6 +243,13 @@ public final class AndroidWorkflow implements RoutineMessages {
         }
     }
 
+    /**
+     * This method is used to insert cryptocurrency in the user wallet<br>
+     * @param cryptocurrency: cryptocurrency to insert
+     * @param transaction: transaction to insert
+     * @param sales: sales to insert
+     * @param totalIncome: total income of trader to insert
+     * **/
     public void insertCryptocurrency(Cryptocurrency cryptocurrency, Transaction transaction, int sales, double totalIncome) {
         try {
             JSONObject request = new JSONObject().put(CRYPTOCURRENCY_KEY, cryptocurrency.getCryptocurrency())
@@ -217,6 +279,11 @@ public final class AndroidWorkflow implements RoutineMessages {
         }
     }
 
+    /**
+     * This method is used to remove cryptocurrency from the user wallet<br>
+     * @param assetIndex: cryptocurrency to insert
+     * @param transaction: transaction to insert
+     * **/
     public void removeCryptocurrency(String assetIndex, Transaction transaction){
         try {
             serverRequest.sendTokenRequest(new JSONObject().put(CRYPTOCURRENCY_KEY, assetIndex)
@@ -241,6 +308,10 @@ public final class AndroidWorkflow implements RoutineMessages {
         }
     }
 
+    /**
+     * This method is used to refresh details of cryptocurrency of the user wallet<br>
+     * @param wallet: wallet with updated values of a cryptocurrency
+     * **/
     public void insertRefreshedPrices(JSONArray wallet) throws Exception {
         serverRequest.sendTokenRequest(new JSONObject().put(CRYPTOCURRENCY_KEY, wallet), INSERT_REFRESHED_PRICES);
         response = serverRequest.readResponse();
@@ -259,6 +330,11 @@ public final class AndroidWorkflow implements RoutineMessages {
             printOperationFailed(INSERT_REFRESHED_PRICES);
     }
 
+    /**
+     * This method is used to print message about an operation made<br>
+     * @param msg: message to print out
+     * @param greenPrint: flag to print green or red
+     * **/
     private void printOperationStatus(String msg, boolean greenPrint) {
         if(printRoutineMessages){
             if(greenPrint)
@@ -268,11 +344,19 @@ public final class AndroidWorkflow implements RoutineMessages {
         }
     }
 
+    /**
+     * This method is used to print message about a failed operation<br>
+     * @param ope: message to print out
+     * **/
     public void printOperationFailed(String ope){
         if(printRoutineMessages)
             printRed("[" + ope + "] Operation failed");
     }
 
+    /**
+     * This method is used to print message about a successful operation <br>
+     * @param ope: message to print out
+     * **/
     private void printOperationSuccess(String ope){
         if(printRoutineMessages)
             printGreen("[" + ope + "] Operation ended successfully");
@@ -292,18 +376,68 @@ public final class AndroidWorkflow implements RoutineMessages {
         return credentials;
     }
 
+    /**
+     * The {@code Credentials} class is object for Tecknobit's account credentials
+     * @implNote it not saves your exchange keys
+     * Is useful for Android's type traders.
+     * @author Tecknobit N7ghtm4r3
+     * **/
+
     public static final class Credentials{
 
+        /**
+         * {@code alreadyInstantiated} flag to lock multiple instantiations of {@link Credentials} object
+         * **/
         private static boolean alreadyInstantiated = false;
+
+        /**
+         * {@code MAX_TOKEN_LENGTH} max number for password length
+         * **/
         public static final int MAX_TOKEN_LENGTH = 32;
+
+        /**
+         * {@code MIN_TOKEN_LENGTH} min number for password length
+         * **/
         public static final int MIN_TOKEN_LENGTH = 8;
+
+        /**
+         * {@code serverRequest} instance to make server request for Android's traders
+         * **/
         private ServerRequest serverRequest;
+
+        /**
+         * {@code authToken} is instance that memorize identifier of server trader to log in and requests operations
+         * **/
         private final String authToken;
-        private String mail;
-        private String password;
+
+        /**
+         * {@code token} is instance that memorize identifier of user to log in and requests operations
+         * **/
         private final String token;
+
+        /**
+         * {@code mail} is instance that memorize mail of user
+         * **/
+        private String mail;
+
+        /**
+         * {@code password} is instance that memorize password of user
+         * **/
+        private String password;
+
+        /**
+         * {@code ivSpec} is instance initialization vector used in server requests
+         * **/
         private final String ivSpec;
+
+        /**
+         * {@code secretKey} is instance secret key used in server requests
+         * **/
         private final String secretKey;
+
+        /**
+         * {@code traderDetails} is instance helpful to manage trader details
+         * **/
         private TraderDetails traderDetails;
 
         /**
@@ -317,6 +451,11 @@ public final class AndroidWorkflow implements RoutineMessages {
          * }
          * **/
 
+        /** Constructor to init {@link Credentials}
+         * @param mail: is instance that memorize mail of user
+         * @param password: is instance that memorize password of user
+         * @implNote this constructor must call to register a new account
+         * **/
         public Credentials(String mail, String password) {
             if(!alreadyInstantiated)
                 alreadyInstantiated = true;
@@ -336,6 +475,10 @@ public final class AndroidWorkflow implements RoutineMessages {
             secretKey = null;
         }
 
+        /**
+         * This method is used to register a new Tecknobit's account <br>
+         * Any params required
+         * **/
         public void sendRegistrationRequest() throws Exception {
             if(!alreadyInstantiated)
                 alreadyInstantiated = true;
@@ -368,6 +511,15 @@ public final class AndroidWorkflow implements RoutineMessages {
             }
         }
 
+        /** Constructor to init {@link Credentials}
+         * @param authToken: is instance that memorize identifier of server trader to log in and requests operations
+         * @param mail: is instance that memorize mail of user
+         * @param password: is instance that memorize password of user
+         * @param token: instance that memorize identifier of user to log in and requests operations
+         * @param ivSpec: instance initialization vector used in server requests
+         * @param secretKey: is instance secret key used in server requests
+         * @implNote this constructor must call to log in
+         * **/
         public Credentials(String authToken, String mail, String password, String token, String ivSpec,
                            String secretKey) throws Exception {
             if(!alreadyInstantiated)
@@ -399,12 +551,20 @@ public final class AndroidWorkflow implements RoutineMessages {
                 throw new IllegalStateException(SERVICE_UNAVAILABLE);
         }
 
+        /**
+         * This method is used to exit when a multiple instantiation of {@link Credentials} object is made <br>
+         * Any params required
+         * **/
         private void exitWithError() {
             System.out.println(ANSI_RED + "Credentials object is already instantiated you cannot have multiple Credentials objects in same session"
             + ANSI_RESET);
             System.exit(1);
         }
 
+        /**
+         * This method is used fetch public key for register and login operation<br>
+         * Any params required
+         * **/
         private void getPublicKeys() {
             try {
                 serverRequest = new ServerRequest();
@@ -417,6 +577,11 @@ public final class AndroidWorkflow implements RoutineMessages {
             }
         }
 
+        /**
+         * This method is used to check validity of password inserted
+         * @param password: password of user to check
+         * @return is password inserted is valid
+         * **/
         private boolean wrongPasswordValidity(String password){
             if(password == null)
                 return true;

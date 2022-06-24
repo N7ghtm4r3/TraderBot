@@ -340,12 +340,20 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         workflowHandler();
     }
 
+    /**
+     * This method init all instances that {@link AndroidBinanceTrader}'s routine need. <br>
+     * Any params required <br>
+     * **/
     @Override
     protected void initTrader() throws Exception {
         printAndroidDisclaimer();
         super.initTrader();
     }
 
+    /**
+     * This method is used to init a {@link Credentials} object to start {@link AndroidWorkflow}
+     * @param credentials: is object that contains your Tecknobit's account credentials, not your private exchange keys
+     * **/
     @Override
     public void initCredentials(Credentials credentials) throws Exception {
         checkCredentialsValidity(credentials);
@@ -355,6 +363,10 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         }
     }
 
+    /**
+     * This method is used to handle {@link AndroidWorkflow} <br>
+     * Any params required
+     * **/
     @Override
     public void workflowHandler() {
         runningTrader = true;
@@ -362,6 +374,10 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         androidWorkflow.startWorkflow();
     }
 
+    /**
+     * This method is used to update account wallet list <br>
+     * Any params required
+     * **/
     @Override
     public void refreshWalletList() {
         new Thread(){

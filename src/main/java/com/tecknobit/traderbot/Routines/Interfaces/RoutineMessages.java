@@ -34,10 +34,18 @@ public interface RoutineMessages {
      * **/
     boolean canPrintRoutineMessages();
 
+    /**
+     * This method is used to print red output<br>
+     * @param message: message to print of red
+     * **/
     default void printRed(String message){
         System.out.println(ANSI_RED + message + ANSI_RESET);
     }
 
+    /**
+     * This method is used to print green output<br>
+     * @param message: message to print of green
+     * **/
     default void printGreen(String message){
         System.out.println(ANSI_GREEN + message + ANSI_RESET);
     }
