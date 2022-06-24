@@ -61,10 +61,11 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
     private String baseCurrency;
 
     public AndroidBinanceTrader(String apiKey, String secretKey, Credentials credentials, boolean printRoutineMessages,
-                                String baseCurrency) throws Exception {
+                                String baseCurrency, int refreshPricesTime) throws Exception {
         super(apiKey, secretKey);
         this.baseCurrency = baseCurrency;
         long timestamp = currentTimeMillis();
+        setRefreshPricesTime(refreshPricesTime);
         traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
                 toIntExact(REFRESH_PRICES_TIME), timestamp);
         initCredentials(credentials);
@@ -82,10 +83,11 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
     }
 
     public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint, Credentials credentials,
-                                boolean printRoutineMessages, String baseCurrency) throws Exception {
+                                boolean printRoutineMessages, String baseCurrency, int refreshPricesTime) throws Exception {
         super(apiKey, secretKey, baseEndpoint);
         this.baseCurrency = baseCurrency;
         long timestamp = currentTimeMillis();
+        setRefreshPricesTime(refreshPricesTime);
         traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
                 toIntExact(REFRESH_PRICES_TIME), timestamp);
         initCredentials(credentials);
@@ -102,8 +104,8 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         workflowHandler();
     }
 
-    public AndroidBinanceTrader(String apiKey, String secretKey, int refreshPricesTime,
-                                Credentials credentials, boolean printRoutineMessages, String baseCurrency) throws Exception {
+    public AndroidBinanceTrader(String apiKey, String secretKey, int refreshPricesTime, Credentials credentials,
+                                boolean printRoutineMessages, String baseCurrency) throws Exception {
         super(apiKey, secretKey, refreshPricesTime);
         this.baseCurrency = baseCurrency;
         checkCredentialsValidity(credentials);
@@ -188,33 +190,14 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         workflowHandler();
     }
 
-    public AndroidBinanceTrader(String apiKey, String secretKey, ArrayList<String> quoteCurrencies,
-                                Credentials credentials, boolean printRoutineMessages, String baseCurrency) throws Exception {
-        super(apiKey, secretKey, quoteCurrencies);
-        this.baseCurrency = baseCurrency;
-        long timestamp = currentTimeMillis();
-        traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
-                toIntExact(REFRESH_PRICES_TIME), timestamp);
-        initCredentials(credentials);
-        authToken = credentials.getAuthToken();
-        token = credentials.getToken();
-        ivSpec = credentials.getIvSpec();
-        this.secretKey = credentials.getSecretKey();
-        ServerRequest serverRequest = new ServerRequest(ivSpec, this.secretKey, authToken, token);
-        androidWorkflow = new AndroidWorkflow(serverRequest, this, credentials, printRoutineMessages);
-        traderAccount = new TraderAccount(serverRequest);
-        cryptocurrencyTool = new CryptocurrencyTool();
-        transactionDateFormat = getDateTimeInstance();
-        walletList = traderAccount.getWalletCryptocurrencies();
-        workflowHandler();
-    }
-
     public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint, ArrayList<String> quoteCurrencies,
-                                Credentials credentials, boolean printRoutineMessages, String baseCurrency) throws Exception {
+                                Credentials credentials, boolean printRoutineMessages, String baseCurrency,
+                                int refreshPricesTime) throws Exception {
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies);
         initCredentials(credentials);
         this.baseCurrency = baseCurrency;
         long timestamp = currentTimeMillis();
+        setRefreshPricesTime(refreshPricesTime);
         traderDetails = new TraderDetails(timestamp, TRADER_TYPE_MANUAL, RUNNING_TRADER_STATUS, BINANCE_TRADER_PLATFORM,
                 toIntExact(REFRESH_PRICES_TIME), timestamp);
         initCredentials(credentials);
@@ -279,7 +262,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
                         }
                         androidWorkflow.insertRefreshedPrices(wallet);
                         wallet.clear();
-                        sleep(10000);
+                        sleep(REFRESH_PRICES_TIME);
                     }catch (Exception e){
                         e.printStackTrace();
                         printRed("Error during refreshing wallet list");
@@ -403,7 +386,6 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
             }else {
                 cryptocurrency.setQuantity(coin.getQuantity());
                 cryptocurrency.addFirstPrice(lastPrice);
-                cryptocurrency.setIncomePercent(cryptocurrency.getIncomePercent());
             }
             walletList.put(index, cryptocurrency);
         }
@@ -418,7 +400,8 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
     @Override
     public void setRefreshPricesTime(int refreshPricesTime) {
         super.setRefreshPricesTime(refreshPricesTime);
-        traderDetails.setRefreshPricesTime(refreshPricesTime);
+        if(traderDetails != null)
+            traderDetails.setRefreshPricesTime(refreshPricesTime);
     }
 
     @Override

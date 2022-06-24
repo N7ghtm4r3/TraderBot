@@ -54,10 +54,36 @@ public final class AndroidWorkflow implements RoutineMessages {
             @Override
             public void run() {
                 super.run();
+                /*getRuntime().addShutdownHook(new Thread(){
+                    @Override
+                    public void run() {
+                        super.run();
+                        try {
+                            serverRequest.sendTokenRequest(new JSONObject().put(TRADER_STATUS_KEY, STOPPED_TRADER_STATUS),
+                                    CHANGE_TRADER_STATUS_OPE);
+                            response = serverRequest.readResponse();
+                        } catch (Exception e) {
+                            response = null;
+                        }
+                        if(response != null){
+                            switch (response.getInt(STATUS_CODE)){
+                                case SUCCESSFUL_RESPONSE:
+                                    printOperationSuccess(CHANGE_TRADER_STATUS_OPE);
+                                    break;
+                                case GENERIC_ERROR_RESPONSE:
+                                    //showSnackBar(view, not_valid_status);
+                                    break;
+                                default:
+                                    printOperationFailed(CHANGE_TRADER_STATUS_OPE);
+                            }
+                        }else
+                            printOperationFailed(CHANGE_TRADER_STATUS_OPE);
+                    }
+                });*/
                 try {
                     while (true){
                         performRoutines();
-                        sleep(2000);
+                        sleep(5000);
                     }
                 } catch (Exception e) {
                     throw new RuntimeException(e);

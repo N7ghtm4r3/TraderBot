@@ -172,7 +172,6 @@ public interface AutoTraderCoreRoutines extends TraderManager, RoutineMessages {
      * **/
     default void refreshCryptoDetails(Cryptocurrency cryptocurrency, double incomePercent, double lastPrice,
                                       double priceChangePercent){
-        cryptocurrency.setIncomePercent(incomePercent);
         cryptocurrency.setLastPrice(lastPrice);
         cryptocurrency.setPriceChangePercent(priceChangePercent);
     }

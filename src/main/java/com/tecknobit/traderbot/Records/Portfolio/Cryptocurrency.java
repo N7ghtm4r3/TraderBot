@@ -374,7 +374,7 @@ public class Cryptocurrency extends Token implements RecordDetails {
      * @return {@link #incomePercent} formatted as 1.65 or -1.65
      * **/
     public double getIncomePercent(int decimals){
-        return tradingTools.roundValue(incomePercent, decimals);
+        return tradingTools.roundValue(getIncomePercent(), decimals);
     }
 
     /**
@@ -383,7 +383,7 @@ public class Cryptocurrency extends Token implements RecordDetails {
      * @return {@link #incomePercent} formatted as +1.653% or -1.6563% as {@link String}
      * **/
     public String getTextIncomePercent(){
-        return tradingTools.textualizeAssetPercent(incomePercent);
+        return tradingTools.textualizeAssetPercent(getIncomePercent());
     }
 
     /**
@@ -392,7 +392,7 @@ public class Cryptocurrency extends Token implements RecordDetails {
      * @return {@link #incomePercent} formatted as +1.65% or -1.65% as {@link String}
      * **/
     public String getTextIncomePercent(int decimals){
-        return tradingTools.textualizeAssetPercent(tradingTools.roundValue(incomePercent, decimals));
+        return tradingTools.textualizeAssetPercent(tradingTools.roundValue(getIncomePercent(), decimals));
     }
 
     public void setIncomePercent(double incomePercent) {
@@ -489,7 +489,7 @@ public class Cryptocurrency extends Token implements RecordDetails {
         crypto.put(CANDLE_GAP_KEY, candleGap);
         crypto.put(PRICE_CHANGE_PERCENT_KEY, priceChangePercent);
         crypto.put(QUOTE_ASSET_KEY, quoteAsset);
-        crypto.put(INCOME_PERCENT_KEY, incomePercent);
+        crypto.put(INCOME_PERCENT_KEY, getIncomePercent());
         if(tradingConfig != null)
             crypto.put(TRADING_CONFIG_KEY, tradingConfig.getTradingConfig());
         crypto.put(FIRST_PRICES_SUM_KEY, getFirstPrice());
