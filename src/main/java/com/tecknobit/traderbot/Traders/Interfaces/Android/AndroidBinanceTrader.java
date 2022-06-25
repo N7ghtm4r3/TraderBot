@@ -114,13 +114,14 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
      * **/
     private String baseCurrency;
 
-    /** Constructor to init {@link BinanceTraderBot}
+    /** Constructor to init {@link AndroidBinanceTrader}
      * @param apiKey: your Binance's api key
      * @param secretKey: your Binance's secret key
      * @param printRoutineMessages : flag to insert to print or not routine messages
      * @param credentials: is object that contains your Tecknobit's account credentials, not your private exchange keys
      * @param baseCurrency         : base currency to get all amount value of traders routine es. EUR
      * @param refreshPricesTime    : is time in seconds to set for refresh the latest prices
+     * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
      * @implNote these keys will NOT store by libray anywhere.
      * **/
     public AndroidBinanceTrader(String apiKey, String secretKey, Credentials credentials, boolean printRoutineMessages,
@@ -145,7 +146,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         workflowHandler();
     }
 
-    /** Constructor to init {@link BinanceTraderBot}
+    /** Constructor to init {@link AndroidBinanceTrader}
      * @param apiKey: your Binance's api key
      * @param secretKey: your Binance's secret key
      * @param baseEndpoint: base endpoint choose from BinanceManager.BASE_ENDPOINTS array
@@ -153,6 +154,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
      * @param credentials: is object that contains your Tecknobit's account credentials, not your private exchange keys
      * @param baseCurrency         : base currency to get all amount value of traders routine es. EUR
      * @param refreshPricesTime    : is time in seconds to set for refresh the latest prices
+     * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
      * @implNote these keys will NOT store by libray anywhere.
      * **/
     public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint, Credentials credentials,
@@ -177,13 +179,14 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         workflowHandler();
     }
 
-    /** Constructor to init {@link BinanceTraderBot}
+    /** Constructor to init {@link AndroidBinanceTrader}
      * @param apiKey: your Binance's api key
      * @param secretKey: your Binance's secret key
      * @param refreshPricesTime    : is time in seconds to set for refresh the latest prices
      * @param credentials: is object that contains your Tecknobit's account credentials, not your private exchange keys
      * @param printRoutineMessages : flag to insert to print or not routine messages
      * @param baseCurrency         : base currency to get all amount value of traders routine es. EUR
+     * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
      * @implNote these keys will NOT store by libray anywhere.
      * **/
     public AndroidBinanceTrader(String apiKey, String secretKey, int refreshPricesTime, Credentials credentials,
@@ -208,7 +211,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         workflowHandler();
     }
 
-    /** Constructor to init {@link BinanceTraderBot}
+    /** Constructor to init {@link AndroidBinanceTrader}
      * @param apiKey: your Binance's api key
      * @param secretKey: your Binance's secret key
      * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
@@ -240,7 +243,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         workflowHandler();
     }
 
-    /** Constructor to init {@link BinanceTraderBot}
+    /** Constructor to init {@link AndroidBinanceTrader}
      * @param apiKey: your Binance's api key
      * @param secretKey: your Binance's secret key
      * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
@@ -272,7 +275,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         workflowHandler();
     }
 
-    /** Constructor to init {@link BinanceTraderBot}
+    /** Constructor to init {@link AndroidBinanceTrader}
      * @param apiKey: your Binance's api key
      * @param secretKey: your Binance's secret key
      * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
@@ -306,7 +309,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         workflowHandler();
     }
 
-    /** Constructor to init {@link BinanceTraderBot}
+    /** Constructor to init {@link AndroidBinanceTrader}
      * @param apiKey: your Binance's api key
      * @param secretKey: your Binance's secret key
      * @param quoteCurrencies: is a list of quote currencies used in past orders es (USD or EUR)
@@ -314,13 +317,13 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
      * @param printRoutineMessages : flag to insert to print or not routine messages
      * @param baseCurrency         : base currency to get all amount value of traders routine es. EUR
      * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
+     * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
      * @implNote these keys will NOT store by libray anywhere.
      * **/
     public AndroidBinanceTrader(String apiKey, String secretKey, String baseEndpoint, ArrayList<String> quoteCurrencies,
                                 Credentials credentials, boolean printRoutineMessages, String baseCurrency,
                                 int refreshPricesTime) throws Exception {
         super(apiKey, secretKey, baseEndpoint, quoteCurrencies);
-        initCredentials(credentials);
         this.baseCurrency = baseCurrency;
         long timestamp = currentTimeMillis();
         setRefreshPricesTime(refreshPricesTime);
@@ -357,10 +360,11 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
     @Override
     public void initCredentials(Credentials credentials) throws Exception {
         checkCredentialsValidity(credentials);
-        if(credentials.getToken() == null) {
-            credentials.setTraderDetails(traderDetails);
+        credentials.setTraderDetails(traderDetails);
+        if(credentials.getToken() == null)
             credentials.sendRegistrationRequest();
-        }
+        else
+            credentials.sendLoginRequest();
     }
 
     /**

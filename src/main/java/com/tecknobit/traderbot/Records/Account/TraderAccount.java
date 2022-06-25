@@ -144,7 +144,6 @@ public final class TraderAccount extends Trader implements RecordDetails {
                 salesAtPair = response.getInt(PAIRS_KEY);
                 activationDate = response.getLong(ACTIVATION_DATE_KEY);
                 incomes = new ArrayList<>();
-
                 JSONArray incomesList = response.getJSONArray(INCOMES_KEY);
                 for (int j=0; j < incomesList.length(); j++)
                     incomes.add(incomesList.getDouble(j));

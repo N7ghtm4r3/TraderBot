@@ -67,7 +67,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * **/
     protected final CryptocurrencyTool cryptocurrencyTool;
 
-    /** Constructor to init CoinbaseTraderBot
+    /** Constructor to init {@link CoinbaseTraderBot}
      * @param apiKey: your Coinbase's api key
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
@@ -84,7 +84,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         initTrader();
     }
 
-    /** Constructor to init CoinbaseTraderBot
+    /** Constructor to init {@link CoinbaseTraderBot}
      * @param apiKey: your Coinbase's api key
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
@@ -99,7 +99,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         initTrader();
     }
 
-    /** Constructor to init CoinbaseTraderBot
+    /** Constructor to init {@link CoinbaseTraderBot}
      * @param apiKey: your Coinbase's api key
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
@@ -114,7 +114,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         initTrader();
     }
 
-    /** Constructor to init CoinbaseTraderBot
+    /** Constructor to init {@link CoinbaseTraderBot}
      * @param apiKey: your Coinbase's api key
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
@@ -128,7 +128,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         initTrader();
     }
 
-    /** Constructor to init CoinbaseTraderBot
+    /** Constructor to init {@link CoinbaseTraderBot}
      * @param apiKey: your Coinbase's api key
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
@@ -147,7 +147,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         initTrader();
     }
 
-    /** Constructor to init CoinbaseTraderBot
+    /** Constructor to init {@link CoinbaseTraderBot}
      * @param apiKey: your Coinbase's api key
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
@@ -165,7 +165,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         initTrader();
     }
 
-    /** Constructor to init CoinbaseTraderBot
+    /** Constructor to init {@link CoinbaseTraderBot}
      * @param apiKey: your Coinbase's api key
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
@@ -183,7 +183,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         initTrader();
     }
 
-    /** Constructor to init CoinbaseTraderBot
+    /** Constructor to init {@link CoinbaseTraderBot}
      * @param apiKey: your Coinbase's api key
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
@@ -200,7 +200,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         initTrader();
     }
 
-    /** Constructor to init CoinbaseTraderBot
+    /** Constructor to init {@link CoinbaseTraderBot}
      * @param apiKey: your Coinbase's api key
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
@@ -216,10 +216,14 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         coinbaseProductsManager = new CoinbaseProductsManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
         coinbaseOrdersManager = new CoinbaseOrdersManager(apiKey, apiSecret, passphrase, defaultErrorMessage);
         cryptocurrencyTool = new CryptocurrencyTool();
+        if(refreshPricesTime >= 5 && refreshPricesTime <= 3600)
+            REFRESH_PRICES_TIME = refreshPricesTime * 1000L;
+        else
+            throw new IllegalArgumentException("Refresh prices time must be more than 5 (5s) and less than 3600 (1h)");
         initTrader();
     }
 
-    /** Constructor to init CoinbaseTraderBot
+    /** Constructor to init {@link CoinbaseTraderBot}
      * @param apiKey: your Coinbase's api key
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
@@ -240,7 +244,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         initTrader();
     }
 
-    /** Constructor to init CoinbaseTraderBot
+    /** Constructor to init {@link CoinbaseTraderBot}
      * @param apiKey: your Coinbase's api key
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
@@ -262,7 +266,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         initTrader();
     }
 
-    /** Constructor to init CoinbaseTraderBot
+    /** Constructor to init {@link CoinbaseTraderBot}
      * @param apiKey: your Coinbase's api key
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
@@ -282,7 +286,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         initTrader();
     }
 
-    /** Constructor to init CoinbaseTraderBot
+    /** Constructor to init {@link CoinbaseTraderBot}
      * @param apiKey: your Coinbase's api key
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
@@ -307,7 +311,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         initTrader();
     }
 
-    /** Constructor to init CoinbaseTraderBot
+    /** Constructor to init {@link CoinbaseTraderBot}
      * @param apiKey: your Coinbase's api key
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
@@ -331,7 +335,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         initTrader();
     }
 
-    /** Constructor to init CoinbaseTraderBot
+    /** Constructor to init {@link CoinbaseTraderBot}
      * @param apiKey: your Coinbase's api key
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
@@ -355,7 +359,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
         initTrader();
     }
 
-    /** Constructor to init CoinbaseTraderBot
+    /** Constructor to init {@link CoinbaseTraderBot}
      * @param apiKey: your Coinbase's api key
      * @param apiSecret: your Coinbase's secret key
      * @param passphrase: your Coinbase's api passphrase
@@ -400,8 +404,11 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
             double balance = coin.getBalance();
             String index = coin.getCurrency();
             boolean isTradingEnabled = balance != 0;
+            String name = cryptocurrencyTool.getCryptocurrencyName(index);
+            if(name == null)
+                name = index + "to add"; // TODO: 25/06/2022 FIX
             coins.put(index, new Coin(index,
-                    cryptocurrencyTool.getCryptocurrencyName(index),
+                    name,
                     balance,
                     isTradingEnabled
             ));
@@ -633,7 +640,7 @@ public class CoinbaseTraderBot extends TraderCoreRoutines {
      * @param side: this indicates the side of the order (BUY or SELL)
      * **/
     @Override
-    public void placeAnOrder(String symbol, double quantity, String side) throws Exception {
+    protected void placeAnOrder(String symbol, double quantity, String side) throws Exception {
         coinbaseOrdersManager.createMarketOrderSize(side, symbol, quantity);
     }
 

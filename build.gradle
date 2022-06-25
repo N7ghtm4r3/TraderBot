@@ -17,7 +17,7 @@ dependencies {
     implementation 'com.github.N7ghtm4r3:CoinbaseManager:1.0.3'
     implementation 'com.github.N7ghtm4r3:BinanceManager:1.0.3'
     implementation 'commons-validator:commons-validator:1.7'
-    implementation 'com.github.N7ghtm4r3:APIManager:1.0.4'
+    implementation 'com.github.N7ghtm4r3:APIManager:1.0.5'
     implementation 'com.github.N7ghtm4r3:AESHelper:1.0.6'
     implementation 'org.json:json:20220320'
 }

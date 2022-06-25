@@ -313,21 +313,23 @@ public final class AndroidWorkflow implements RoutineMessages {
      * @param wallet: wallet with updated values of a cryptocurrency
      * **/
     public void insertRefreshedPrices(JSONArray wallet) throws Exception {
-        serverRequest.sendTokenRequest(new JSONObject().put(CRYPTOCURRENCY_KEY, wallet), INSERT_REFRESHED_PRICES);
-        response = serverRequest.readResponse();
-        if(response != null){
-            switch (response.getInt(STATUS_CODE)){
-                case SUCCESSFUL_RESPONSE:
-                    printOperationSuccess(INSERT_REFRESHED_PRICES);
-                    break;
-                case GENERIC_ERROR_RESPONSE:
-                    printOperationStatus("[" + INSERT_REFRESHED_PRICES + "] Insert a valid wallet list",
-                            false);
-                    break;
-                default: printOperationFailed(INSERT_REFRESHED_PRICES);
-            }
-        }else
-            printOperationFailed(INSERT_REFRESHED_PRICES);
+        if(wallet.length() > 0){
+            serverRequest.sendTokenRequest(new JSONObject().put(CRYPTOCURRENCY_KEY, wallet), INSERT_REFRESHED_PRICES);
+            response = serverRequest.readResponse();
+            if(response != null){
+                switch (response.getInt(STATUS_CODE)){
+                    case SUCCESSFUL_RESPONSE:
+                        printOperationSuccess(INSERT_REFRESHED_PRICES);
+                        break;
+                    case GENERIC_ERROR_RESPONSE:
+                        printOperationStatus("[" + INSERT_REFRESHED_PRICES + "] Insert a valid wallet list",
+                                false);
+                        break;
+                    default: printOperationFailed(INSERT_REFRESHED_PRICES);
+                }
+            }else
+                printOperationFailed(INSERT_REFRESHED_PRICES);
+        }
     }
 
     /**
@@ -480,10 +482,6 @@ public final class AndroidWorkflow implements RoutineMessages {
          * Any params required
          * **/
         public void sendRegistrationRequest() throws Exception {
-            if(!alreadyInstantiated)
-                alreadyInstantiated = true;
-            else
-                exitWithError();
             if(traderDetails != null && token == null){
                 getPublicKeys();
                 serverRequest.sendRequest(new JSONObject().put(MAIL_KEY, mail).put(PASSWORD_KEY, password)
@@ -520,8 +518,7 @@ public final class AndroidWorkflow implements RoutineMessages {
          * @param secretKey: is instance secret key used in server requests
          * @implNote this constructor must call to log in
          * **/
-        public Credentials(String authToken, String mail, String password, String token, String ivSpec,
-                           String secretKey) throws Exception {
+        public Credentials(String authToken, String mail, String password, String token, String ivSpec, String secretKey) {
             if(!alreadyInstantiated)
                 alreadyInstantiated = true;
             else
@@ -532,9 +529,22 @@ public final class AndroidWorkflow implements RoutineMessages {
             this.token = token;
             this.ivSpec = ivSpec;
             this.secretKey = secretKey;
+        }
+
+        /**
+         * This method is used to log in a Tecknobit's account <br>
+         * Any params required
+         * **/
+        public void sendLoginRequest() throws Exception {
             getPublicKeys();
             serverRequest.sendRequest(new JSONObject().put(MAIL_KEY, mail).put(PASSWORD_KEY, password)
-                    .put(AUTH_TOKEN_KEY, authToken), LOGIN_OPE);
+                    .put(AUTH_TOKEN_KEY, authToken)
+                    .put(TRADER_STATUS_KEY, traderDetails.getTraderStatus())
+                    .put(REFRESH_PRICES_TIME_KEY, traderDetails.getRefreshPricesTime())
+                    .put(TRADER_PLATFORM_KEY, traderDetails.getTraderPlatform())
+                    .put(LAST_TRADER_ACTIVITY_KEY, traderDetails.getLastTraderActivity())
+                    .put(RUNNING_FROM_DATE_KEY, traderDetails.getRunningFromDate())
+                    .put(TRADER_TYPE_KEY, traderDetails.getTraderType()), LOGIN_OPE);
             response = serverRequest.readResponse();
             if(response != null) {
                 switch (response.getInt(STATUS_CODE)){
