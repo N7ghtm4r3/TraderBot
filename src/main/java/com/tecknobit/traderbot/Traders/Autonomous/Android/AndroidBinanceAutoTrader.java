@@ -69,16 +69,6 @@ public class AndroidBinanceAutoTrader extends BinanceAutoTraderBot implements An
      * **/
     private final String secretKey;
 
-    /**
-     * {@code symbol} is instance that memorize symbol of cryptocurrency es. BTCBUSD or BTC-USD
-     * **/
-    private String symbol;
-
-    /**
-     * {@code side} is instance that memorize side of order BUY or SELL
-     * **/
-    private String side;
-
     public AndroidBinanceAutoTrader(String apiKey, String secretKey, boolean sendStatsReport, boolean printRoutineMessages,
                                     String baseCurrency, Credentials credentials, int refreshPricesTime) throws Exception {
         super(apiKey, secretKey, new TraderAccount(new ServerRequest(credentials.getIvSpec(), credentials.getSecretKey(),
@@ -427,6 +417,30 @@ public class AndroidBinanceAutoTrader extends BinanceAutoTraderBot implements An
         if(runningTrader)
             return super.getTransactionsList(quoteCurrency, forceRefresh);
         return null;
+    }
+
+    /**
+     * This method is used to send a buy market order from a Binance SPOT account.<br>
+     * @param symbol: this indicates the symbol for the order es. BTCBUSD
+     * @param quantity: this indicates quantity of that symbol is wanted to buy es. 10
+     * @implNote if {@link #runningTrader} is false will do not the buy operation
+     * **/
+    @Override
+    public void buyMarket(String symbol, double quantity) throws Exception {
+        if(runningTrader)
+            super.buyMarket(symbol, quantity);
+    }
+
+    /**
+     * This method is used to send a sell market order from a Binance SPOT account.<br>
+     * @param symbol: this indicates the symbol for the order es. BTCBUSD
+     * @param quantity: this indicates quantity of that symbol is wanted to sell es. 10
+     * @implNote if {@link #runningTrader} is false will do not the sell operation
+     * **/
+    @Override
+    public void sellMarket(String symbol, double quantity) throws Exception {
+        if(runningTrader)
+            super.sellMarket(symbol, quantity);
     }
 
     /**

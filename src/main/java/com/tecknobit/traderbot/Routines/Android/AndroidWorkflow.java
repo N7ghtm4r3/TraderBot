@@ -8,7 +8,9 @@ import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency;
 import com.tecknobit.traderbot.Records.Portfolio.Transaction;
 import com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages;
 import com.tecknobit.traderbot.Routines.Interfaces.TraderCoreRoutines;
+import com.tecknobit.traderbot.Traders.Autonomous.Android.AndroidBinanceAutoTrader;
 import com.tecknobit.traderbot.Traders.Interfaces.Android.AndroidBinanceTrader;
+import com.tecknobit.traderbot.Traders.Interfaces.Android.AndroidCoinbaseTrader;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -161,16 +163,28 @@ public final class AndroidWorkflow implements RoutineMessages {
                     if(routine.getExtraValue().equals(STOPPED_TRADER_STATUS)){
                         if(trader instanceof AndroidBinanceTrader)
                             ((AndroidBinanceTrader)trader).disableTrader();
+                        else if (trader instanceof AndroidCoinbaseTrader)
+                            ((AndroidCoinbaseTrader)trader).disableTrader();
+                        else if (trader instanceof AndroidBinanceAutoTrader)
+                            ((AndroidBinanceAutoTrader)trader).disableTrader();
                         printOperationStatus("Trader status: [" + STOPPED_TRADER_STATUS + "]", false);
                     }else{
                         if(trader instanceof AndroidBinanceTrader)
                             ((AndroidBinanceTrader)trader).enableTrader();
+                        else if (trader instanceof AndroidCoinbaseTrader)
+                            ((AndroidCoinbaseTrader)trader).enableTrader();
+                        else if (trader instanceof AndroidBinanceAutoTrader)
+                            ((AndroidBinanceAutoTrader)trader).enableTrader();
                         printOperationStatus("Trader status: [" + RUNNING_TRADER_STATUS+ "]", true);
                     }
                     break;
                 case CHANGE_CURRENCY_OPE:
                     if(trader instanceof AndroidBinanceTrader)
                         ((AndroidBinanceTrader)trader).setBaseCurrency(routine.getExtraValue());
+                    else if (trader instanceof AndroidCoinbaseTrader)
+                        ((AndroidCoinbaseTrader)trader).setBaseCurrency(routine.getExtraValue());
+                    else if (trader instanceof AndroidBinanceAutoTrader)
+                        ((AndroidBinanceAutoTrader)trader).setBaseCurrency(routine.getExtraValue());
                     printOperationStatus("[" + CHANGE_CURRENCY_OPE + "] Base currency successfully changed",
                             true);
                     break;
