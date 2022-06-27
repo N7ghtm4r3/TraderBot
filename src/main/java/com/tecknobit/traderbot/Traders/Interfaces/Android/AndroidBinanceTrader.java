@@ -373,7 +373,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
      * **/
     @Override
     public void workflowHandler() {
-        runningTrader = true;
+        enableTrader();
         refreshWalletList();
         androidWorkflow.startWorkflow();
     }

@@ -727,7 +727,8 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     public void updateWallet() throws Exception {
         System.out.println("## UPDATING WALLET CRYPTOCURRENCIES");
         if(walletList.size() > 0) {
-            refreshLatestPrice();
+            if(isRefreshTime())
+                refreshLatestPrice();
             for (Cryptocurrency cryptocurrency : walletList.values()){
                 String symbol = cryptocurrency.getSymbol();
                 TradingConfig tradingConfig = cryptocurrency.getTradingConfig();

@@ -421,7 +421,7 @@ public class AndroidCoinbaseTrader extends CoinbaseTraderBot implements AndroidC
      * **/
     @Override
     public void workflowHandler() {
-        runningTrader = true;
+        enableTrader();
         refreshWalletList();
         androidWorkflow.startWorkflow();
     }

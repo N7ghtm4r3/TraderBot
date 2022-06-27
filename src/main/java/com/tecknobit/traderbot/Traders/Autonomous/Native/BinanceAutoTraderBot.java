@@ -57,54 +57,54 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
      * as value of map.
      * @implNote is used in {@link #buyCryptocurrencies()} and {@link #updateWallet()} routines
      * **/
-    private ConcurrentHashMap<String, Cryptocurrency> walletList;
+    protected ConcurrentHashMap<String, Cryptocurrency> walletList;
 
     /**
      * {@code checkingList} is a map that contains checking list assets and index (es. BTCBUSD) as key {@link String} and {@link Cryptocurrency}
      * as value of map.
      * @implNote is used in {@link #checkCryptocurrencies()} routine
      * **/
-    private final HashMap<String, Cryptocurrency> checkingList;
+    protected final HashMap<String, Cryptocurrency> checkingList;
 
     /**
      * {@code tradingConfig} is instance that memorize model of trading to use for trading routines
      * **/
-    private TradingConfig tradingConfig;
+    protected TradingConfig tradingConfig;
 
     /**
      * {@code sendStatsReport} is instance that memorize flag to insert to send or not reports
      * **/
-    private boolean sendStatsReport;
+    protected boolean sendStatsReport;
 
     /**
      * {@code printRoutineMessages} is instance that memorize flag to insert to print or not routine messages
      * **/
-    private boolean printRoutineMessages;
+    protected boolean printRoutineMessages;
 
     /**
      * {@code runningTrader} is instance that memorize flag that indicates if the trader is running
      * **/
-    private boolean runningTrader;
+    protected boolean runningTrader;
 
     /**
      * {@code previousChecking} is instance that memorize previous timestamp when {@link #checkCryptocurrencies()} is called
      * **/
-    private long previousChecking;
+    protected long previousChecking;
 
     /**
      * {@code previousBuying} is instance that memorize previous timestamp when {@link #buyCryptocurrencies()} is called
      * **/
-    private long previousBuying;
+    protected long previousBuying;
 
     /**
      * {@code previousUpdating} is instance that memorize previous timestamp when {@link #updateWallet()} is called
      * **/
-    private long previousUpdating;
+    protected long previousUpdating;
 
     /**
      * {@code baseCurrency} is instance that memorize base currency to get all amount value of traders routine es. EUR
      * **/
-    private String baseCurrency;
+    protected String baseCurrency;
 
     /**
      * Constructor to init {@link BinanceAutoTraderBot}
@@ -152,7 +152,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     }
 
     /**
-     * Constructor to init {@link BinanceTraderBot}
+     * Constructor to init {@link BinanceAutoTraderBot}
      *
      * @param apiKey               : your Binance's api key
      * @param secretKey            : your Binance's secret key
@@ -176,7 +176,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     }
 
     /**
-     * Constructor to init {@link BinanceTraderBot}
+     * Constructor to init {@link BinanceAutoTraderBot}
      *
      * @param apiKey               : your Binance's api key
      * @param secretKey            : your Binance's secret key
@@ -202,7 +202,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     }
 
     /**
-     * Constructor to init {@link BinanceTraderBot}
+     * Constructor to init {@link BinanceAutoTraderBot}
      *
      * @param apiKey               : your Binance's api key
      * @param secretKey            : your Binance's secret key
@@ -228,7 +228,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     }
 
     /**
-     * Constructor to init {@link BinanceTraderBot}
+     * Constructor to init {@link BinanceAutoTraderBot}
      *
      * @param apiKey               : your Binance's api key
      * @param secretKey            : your Binance's secret key
@@ -255,7 +255,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     }
 
     /**
-     * Constructor to init {@link BinanceTraderBot}
+     * Constructor to init {@link BinanceAutoTraderBot}
      *
      * @param apiKey               : your Binance's api key
      * @param secretKey            : your Binance's secret key
@@ -278,7 +278,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     }
 
     /**
-     * Constructor to init {@link BinanceTraderBot}
+     * Constructor to init {@link BinanceAutoTraderBot}
      *
      * @param apiKey               : your Binance's api key
      * @param secretKey            : your Binance's secret key
@@ -479,7 +479,8 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     public void updateWallet() throws Exception {
         System.out.println("## UPDATING WALLET CRYPTOCURRENCIES");
         if(walletList.size() > 0){
-            refreshLatestPrice();
+            if(isRefreshTime())
+                refreshLatestPrice();
             for (Cryptocurrency cryptocurrency : walletList.values()) {
                 String symbol = cryptocurrency.getSymbol();
                 TradingConfig tradingConfig = cryptocurrency.getTradingConfig();

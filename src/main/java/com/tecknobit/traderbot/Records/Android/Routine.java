@@ -8,7 +8,7 @@ package com.tecknobit.traderbot.Records.Android;
  * @author Tecknobit N7ghtm4r3
  * **/
 
-public class Routine {
+public final class Routine {
 
     /**
      * {@code ROUTINES_KEY} is instance that memorize routines key
