@@ -325,7 +325,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     public void start() {
         runningTrader = true;
         printDisclaimer();
-        tradingConfig = fetchTradingConfig();
         previousBuying = System.currentTimeMillis();
         new Thread(){
             @Override
@@ -483,6 +482,8 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                 refreshLatestPrice();
             for (Cryptocurrency cryptocurrency : walletList.values()) {
                 String symbol = cryptocurrency.getSymbol();
+                if(symbol == null)
+                    symbol = cryptocurrency.getAssetIndex() + USDT_CURRENCY;
                 TradingConfig tradingConfig = cryptocurrency.getTradingConfig();
                 TickerPriceChange tickerPriceChange = lastPrices.get(symbol);
                 double lastPrice = tickerPriceChange.getLastPrice();

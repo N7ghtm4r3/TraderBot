@@ -573,7 +573,6 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     public void start() {
         runningBot = true;
         printDisclaimer();
-        tradingConfig = fetchTradingConfig();
         previousBuying = System.currentTimeMillis();
         new Thread(){
             @Override
@@ -731,6 +730,8 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                 refreshLatestPrice();
             for (Cryptocurrency cryptocurrency : walletList.values()){
                 String symbol = cryptocurrency.getSymbol();
+                if(symbol == null)
+                    symbol = cryptocurrency.getAssetIndex() + USD_CURRENCY;
                 TradingConfig tradingConfig = cryptocurrency.getTradingConfig();
                 Ticker ticker = lastPrices.get(symbol);
                 double lastPrice = ticker.getPrice();

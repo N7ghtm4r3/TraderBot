@@ -346,6 +346,24 @@ public final class AndroidWorkflow implements RoutineMessages {
         }
     }
 
+    public void insertCheckingList(JSONArray checkingList) throws Exception {
+        serverRequest.sendTokenRequest(new JSONObject().put(CRYPTOCURRENCY_KEY, checkingList), INSERT_CHECKING_LIST_OPE);
+        response = serverRequest.readResponse();
+        if(response != null){
+            switch (response.getInt(STATUS_CODE)){
+                case SUCCESSFUL_RESPONSE:
+                    printOperationSuccess(INSERT_CHECKING_LIST_OPE);
+                    break;
+                case GENERIC_ERROR_RESPONSE:
+                    printOperationStatus("[" + INSERT_CHECKING_LIST_OPE + "] Insert a valid checking list",
+                            false);
+                    break;
+                default: printOperationFailed(INSERT_REFRESHED_PRICES);
+            }
+        }else
+            printOperationFailed(INSERT_CHECKING_LIST_OPE);
+    }
+
     /**
      * This method is used to print message about an operation made<br>
      * @param msg: message to print out

@@ -118,6 +118,11 @@ public final class ServerRequest {
     public static final String REMOVE_QUOTE_OPE = "remove_quote_ope";
 
     /**
+     * {@code INSERT_CHECKING_LIST_OPE} request
+     * **/
+    public static final String INSERT_CHECKING_LIST_OPE = "insert_checking_list_ope";
+
+    /**
      * {@code LOGOUT_ACCOUNT_OPE} request
      * **/
     public static final String LOGOUT_ACCOUNT_OPE = "logout_account_ope";
