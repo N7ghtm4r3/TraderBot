@@ -287,16 +287,15 @@ public class AndroidBinanceAutoTrader extends BinanceAutoTraderBot implements An
         super.checkCryptocurrencies();
         JSONArray checkingList = new JSONArray();
         for (Cryptocurrency cryptocurrency : this.checkingList.values()){
-            JSONObject crypto = new JSONObject();
-            crypto.put(CRYPTOCURRENCY_KEY, new JSONObject().put(BASE_ASSET_KEY, cryptocurrency.getAssetIndex())
+            checkingList.put(new JSONObject().put(BASE_ASSET_KEY, cryptocurrency.getAssetIndex())
                     .put(SYMBOL_KEY, cryptocurrency.getSymbol())
+                    .put(ASSET_NAME_KEY, cryptocurrency.getAssetName())
                     .put(TPTOP_INDEX_KEY, cryptocurrency.getTptopIndex(2))
                     .put(LAST_PRICE_KEY, cryptocurrency.getLastPrice(2))
                     .put(PRICE_CHANGE_PERCENT_KEY, cryptocurrency.getPriceChangePercent(2))
                     .put(TRADING_CONFIG_KEY, cryptocurrency.getTradingConfig().getTradingConfig())
                     .put(QUOTE_ASSET_KEY, cryptocurrency.getQuoteAsset())
             );
-            checkingList.put(crypto);
         }
         androidWorkflow.insertCheckingList(checkingList);
     }

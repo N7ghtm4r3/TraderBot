@@ -358,7 +358,7 @@ public final class AndroidWorkflow implements RoutineMessages {
                     printOperationStatus("[" + INSERT_CHECKING_LIST_OPE + "] Insert a valid checking list",
                             false);
                     break;
-                default: printOperationFailed(INSERT_REFRESHED_PRICES);
+                default: printOperationFailed(INSERT_CHECKING_LIST_OPE);
             }
         }else
             printOperationFailed(INSERT_CHECKING_LIST_OPE);

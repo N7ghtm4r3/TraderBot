@@ -254,13 +254,15 @@ public class Cryptocurrency extends Token implements RecordDetails {
     }
 
     public double getFirstPrice() {
-        firstPricesSize = firstPrices.size() + previousFirstPricesSize;
-        if(firstPricesSize > 0){
-            double firstPrice = 0;
-            for (double price : firstPrices)
-                firstPrice += price;
+        if(firstPrices != null) {
+            firstPricesSize = firstPrices.size() + previousFirstPricesSize;
+            if(firstPricesSize > 0){
+                double firstPrice = 0;
+                for (double price : firstPrices)
+                    firstPrice += price;
 
-            return ((firstPrice + firstPricesSum) / firstPricesSize);
+                return ((firstPrice + firstPricesSum) / firstPricesSize);
+            }
         }
         return lastPrice;
     }
@@ -497,7 +499,6 @@ public class Cryptocurrency extends Token implements RecordDetails {
         return crypto;
     }
 
-
     /**
      * The {@code TradingConfig} class is useful for trading operation.<br>
      * Represent model to use for a {@link Cryptocurrency} in trading phases. (BUY and SELL)
@@ -589,8 +590,62 @@ public class Cryptocurrency extends Token implements RecordDetails {
             return marketPhase;
         }
 
+        /**
+         * This method is used get {@link #marketPhase} instance
+         * @param decimals: number of decimal digits es. 2
+         * @return {@link #marketPhase} formatted as 1.65 or -1.65
+         * **/
+        public double getMarketPhase(int decimals) {
+            return tradingTools.roundValue(marketPhase, decimals);
+        }
+
+        /**
+         * This method is used to format like a {@link String} object {@link #marketPhase}.<br>
+         * Any params required
+         * @return {@link #marketPhase} formatted as +1.653% or -1.6563% as {@link String}
+         * **/
+        public String getTextMarketPhase(){
+            return tradingTools.textualizeAssetPercent(marketPhase);
+        }
+
+        /**
+         * This method is used to format like a {@link String} object {@link #marketPhase}.<br>
+         * @param decimals: number of decimal digits es. 2
+         * @return {@link #marketPhase} formatted as +1.65% or -1.65%
+         * **/
+        public String getTextMarketPhase(int decimals){
+            return tradingTools.textualizeAssetPercent(marketPhase, decimals);
+        }
+
         public double getWasteRange() {
             return wasteRange;
+        }
+
+        /**
+         * This method is used get {@link #wasteRange} instance
+         * @param decimals: number of decimal digits es. 2
+         * @return {@link #wasteRange} formatted as 1.65 or -1.65
+         * **/
+        public double getWasteRange(int decimals) {
+            return tradingTools.roundValue(wasteRange, decimals);
+        }
+
+        /**
+         * This method is used to format like a {@link String} object {@link #wasteRange}.<br>
+         * Any params required
+         * @return {@link #wasteRange} formatted as +1.653% or -1.6563% as {@link String}
+         * **/
+        public String getTextWasteRange(){
+            return tradingTools.textualizeAssetPercent(wasteRange);
+        }
+
+        /**
+         * This method is used to format like a {@link String} object {@link #wasteRange}.<br>
+         * @param decimals: number of decimal digits es. 2
+         * @return {@link #wasteRange} formatted as +1.65% or -1.65%
+         * **/
+        public String getTextWasteRange(int decimals){
+            return tradingTools.textualizeAssetPercent(wasteRange, decimals);
         }
 
         public int getDaysGap() {
@@ -601,12 +656,93 @@ public class Cryptocurrency extends Token implements RecordDetails {
             return minGainForOrder;
         }
 
+        /**
+         * This method is used get {@link #minGainForOrder} instance
+         * @param decimals: number of decimal digits es. 2
+         * @return {@link #minGainForOrder} formatted as 1.65 or -1.65
+         * **/
+        public double getMinGainForOrder(int decimals) {
+            return tradingTools.roundValue(minGainForOrder, decimals);
+        }
+
+        /**
+         * This method is used to format like a {@link String} object {@link #minGainForOrder}.<br>
+         * Any params required
+         * @return {@link #minGainForOrder} formatted as +1.653% or -1.6563% as {@link String}
+         * **/
+        public String getTextMinGainForOrder(){
+            return tradingTools.textualizeAssetPercent(minGainForOrder);
+        }
+
+        /**
+         * This method is used to format like a {@link String} object {@link #minGainForOrder}.<br>
+         * @param decimals: number of decimal digits es. 2
+         * @return {@link #minGainForOrder} formatted as +1.65% or -1.65%
+         * **/
+        public String getTextMinGainForOrder(int decimals){
+            return tradingTools.textualizeAssetPercent(minGainForOrder, decimals);
+        }
+
         public double getMaxLoss() {
             return maxLoss;
         }
 
+        /**
+         * This method is used get {@link #maxLoss} instance
+         * @param decimals: number of decimal digits es. 2
+         * @return {@link #maxLoss} formatted as 1.65 or -1.65
+         * **/
+        public double getMaxLoss(int decimals) {
+            return tradingTools.roundValue(maxLoss, decimals);
+        }
+
+        /**
+         * This method is used to format like a {@link String} object {@link #maxLoss}.<br>
+         * Any params required
+         * @return {@link #maxLoss} formatted as +1.653% or -1.6563% as {@link String}
+         * **/
+        public String getTextMaxLoss(){
+            return tradingTools.textualizeAssetPercent(maxLoss);
+        }
+
+        /**
+         * This method is used to format like a {@link String} object {@link #maxLoss}.<br>
+         * @param decimals: number of decimal digits es. 2
+         * @return {@link #maxLoss} formatted as +1.65% or -1.65%
+         * **/
+        public String getTextMaxLoss(int decimals){
+            return tradingTools.textualizeAssetPercent(maxLoss, decimals);
+        }
+
         public double getMaxGain() {
             return maxGain;
+        }
+
+        /**
+         * This method is used get {@link #maxGain} instance
+         * @param decimals: number of decimal digits es. 2
+         * @return {@link #maxGain} formatted as 1.65 or -1.65
+         * **/
+        public double getMaxGain(int decimals) {
+            return tradingTools.roundValue(maxGain, decimals);
+        }
+
+        /**
+         * This method is used to format like a {@link String} object {@link #maxGain}.<br>
+         * Any params required
+         * @return {@link #maxGain} formatted as +1.653% or -1.6563% as {@link String}
+         * **/
+        public String getTextMaxGain(){
+            return tradingTools.textualizeAssetPercent(maxGain);
+        }
+
+        /**
+         * This method is used to format like a {@link String} object {@link #maxGain}.<br>
+         * @param decimals: number of decimal digits es. 2
+         * @return {@link #maxGain} formatted as +1.65% or -1.65%
+         * **/
+        public String getTextMaxGain(int decimals){
+            return tradingTools.textualizeAssetPercent(maxGain, decimals);
         }
 
         /**
