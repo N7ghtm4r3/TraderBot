@@ -108,7 +108,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
 
     /**
      * Constructor to init {@link BinanceAutoTraderBot}
-     *
      * @param apiKey               : your Binance's api key
      * @param secretKey            : your Binance's secret key
      * @param traderAccount        : manage account information and trading reports of auto trader account
@@ -130,7 +129,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
 
     /**
      * Constructor to init {@link BinanceAutoTraderBot}
-     *
      * @param apiKey               : your Binance's api key
      * @param secretKey            : your Binance's secret key
      * @param baseEndpoint         : base endpoint choose from BinanceManager.BASE_ENDPOINTS array
@@ -153,7 +151,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
 
     /**
      * Constructor to init {@link BinanceAutoTraderBot}
-     *
      * @param apiKey               : your Binance's api key
      * @param secretKey            : your Binance's secret key
      * @param refreshPricesTime    : is time in seconds to set for refresh the latest prices
@@ -177,7 +174,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
 
     /**
      * Constructor to init {@link BinanceAutoTraderBot}
-     *
      * @param apiKey               : your Binance's api key
      * @param secretKey            : your Binance's secret key
      * @param baseEndpoint         : base endpoint choose from BinanceManager.BASE_ENDPOINTS array
@@ -203,7 +199,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
 
     /**
      * Constructor to init {@link BinanceAutoTraderBot}
-     *
      * @param apiKey               : your Binance's api key
      * @param secretKey            : your Binance's secret key
      * @param quoteCurrencies      : is a list of quote currencies used in past orders es (USD or EUR)
@@ -229,7 +224,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
 
     /**
      * Constructor to init {@link BinanceAutoTraderBot}
-     *
      * @param apiKey               : your Binance's api key
      * @param secretKey            : your Binance's secret key
      * @param baseEndpoint         : base endpoint choose from BinanceManager.BASE_ENDPOINTS array
@@ -256,7 +250,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
 
     /**
      * Constructor to init {@link BinanceAutoTraderBot}
-     *
      * @param apiKey               : your Binance's api key
      * @param secretKey            : your Binance's secret key
      * @param quoteCurrencies      : is a list of quote currencies used in past orders es (USD or EUR)
@@ -279,7 +272,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
 
     /**
      * Constructor to init {@link BinanceAutoTraderBot}
-     *
      * @param apiKey               : your Binance's api key
      * @param secretKey            : your Binance's secret key
      * @param baseEndpoint         : base endpoint choose from BinanceManager.BASE_ENDPOINTS array

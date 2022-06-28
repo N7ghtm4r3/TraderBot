@@ -1,6 +1,8 @@
 package com.tecknobit.traderbot.Traders.Autonomous.Android;
 
 import com.tecknobit.apimanager.Tools.Trading.CryptocurrencyTool;
+import com.tecknobit.binancemanager.Managers.BinanceManager;
+import com.tecknobit.traderbot.Helpers.Orders.MarketOrder;
 import com.tecknobit.traderbot.Records.Account.TraderAccount;
 import com.tecknobit.traderbot.Records.Account.TraderDetails;
 import com.tecknobit.traderbot.Records.Portfolio.Asset;
@@ -10,6 +12,7 @@ import com.tecknobit.traderbot.Routines.Android.AndroidCoreRoutines;
 import com.tecknobit.traderbot.Routines.Android.AndroidWorkflow;
 import com.tecknobit.traderbot.Routines.Android.AndroidWorkflow.Credentials;
 import com.tecknobit.traderbot.Routines.Android.ServerRequest;
+import com.tecknobit.traderbot.Routines.Autonomous.AutoTraderCoreRoutines;
 import com.tecknobit.traderbot.Traders.Autonomous.Native.BinanceAutoTraderBot;
 import com.tecknobit.traderbot.Traders.Interfaces.Android.AndroidBinanceTrader;
 import org.json.JSONArray;
@@ -19,12 +22,21 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 
 import static com.tecknobit.traderbot.Records.Account.TraderDetails.*;
-import static com.tecknobit.traderbot.Records.Account.TraderDetails.BINANCE_TRADER_PLATFORM;
 import static com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency.*;
 import static com.tecknobit.traderbot.Records.Portfolio.Token.BASE_ASSET_KEY;
 import static java.lang.Math.toIntExact;
 import static java.lang.System.currentTimeMillis;
 import static java.text.DateFormat.getDateTimeInstance;
+
+/**
+ * The {@code AndroidBinanceAutoTrader} class is trader for {@link BinanceManager} library.<br>
+ * This trader bot allow to manage user wallet, get transactions and make orders (BUY and SELL side) for a Binance's account autonomously.<br>
+ * Is derived class of {@link BinanceAutoTraderBot} class from inherit all core routines methods and instances.
+ * @implNote for autonomous operations uses {@link AutoTraderCoreRoutines} and {@link MarketOrder} routines.
+ * @implSpec {@link TraderAccount} and {@link #walletList} are objects that will automatically restore, but if
+ * you change trader's platform all assets will be deleted from the managing of the trader.
+ * @author Tecknobit N7ghtm4r3
+ * **/
 
 public class AndroidBinanceAutoTrader extends BinanceAutoTraderBot implements AndroidCoreRoutines {
 
@@ -69,6 +81,18 @@ public class AndroidBinanceAutoTrader extends BinanceAutoTraderBot implements An
      * **/
     private final String secretKey;
 
+    /**
+     * Constructor to init {@link BinanceAutoTraderBot}
+     * @param apiKey               : your Binance's api key
+     * @param secretKey            : your Binance's secret key
+     * @param sendStatsReport      : flag to insert to send or not reports
+     * @param printRoutineMessages : flag to insert to print or not routine messages
+     * @param baseCurrency         : base currency to get all amount value of traders routine es. EUR
+     * @param credentials: is object that contains your Tecknobit's account credentials, not your private exchange keys
+     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
+     * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
+     * @implNote these keys will NOT store by libray anywhere.
+     **/
     public AndroidBinanceAutoTrader(String apiKey, String secretKey, boolean sendStatsReport, boolean printRoutineMessages,
                                     String baseCurrency, Credentials credentials, int refreshPricesTime) throws Exception {
         super(apiKey, secretKey, new TraderAccount(new ServerRequest(credentials.getIvSpec(), credentials.getSecretKey(),
@@ -90,6 +114,19 @@ public class AndroidBinanceAutoTrader extends BinanceAutoTraderBot implements An
         workflowHandler();
     }
 
+    /**
+     * Constructor to init {@link BinanceAutoTraderBot}
+     * @param apiKey               : your Binance's api key
+     * @param secretKey            : your Binance's secret key
+     * @param baseEndpoint         : base endpoint choose from BinanceManager.BASE_ENDPOINTS array
+     * @param sendStatsReport      : flag to insert to send or not reports
+     * @param printRoutineMessages : flag to insert to print or not routine messages
+     * @param baseCurrency         : base currency to get all amount value of traders routine es. EUR
+     * @param credentials: is object that contains your Tecknobit's account credentials, not your private exchange keys
+     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
+     * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
+     * @implNote these keys will NOT store by libray anywhere.
+     **/
     public AndroidBinanceAutoTrader(String apiKey, String secretKey, String baseEndpoint, boolean sendStatsReport,
                                     boolean printRoutineMessages, String baseCurrency, Credentials credentials,
                                     int refreshPricesTime) throws Exception {
@@ -112,6 +149,18 @@ public class AndroidBinanceAutoTrader extends BinanceAutoTraderBot implements An
         workflowHandler();
     }
 
+    /**
+     * Constructor to init {@link BinanceAutoTraderBot}
+     * @param apiKey               : your Binance's api key
+     * @param secretKey            : your Binance's secret key
+     * @param sendStatsReport      : flag to insert to send or not reports
+     * @param printRoutineMessages : flag to insert to print or not routine messages
+     * @param baseCurrency         : base currency to get all amount value of traders routine es. EUR
+     * @param credentials: is object that contains your Tecknobit's account credentials, not your private exchange keys
+     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
+     * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
+     * @implNote these keys will NOT store by libray anywhere.
+     **/
     public AndroidBinanceAutoTrader(String apiKey, String secretKey, int refreshPricesTime, boolean sendStatsReport,
                                     boolean printRoutineMessages, String baseCurrency, Credentials credentials) throws Exception {
         super(apiKey, secretKey, refreshPricesTime, new TraderAccount(new ServerRequest(credentials.getIvSpec(), credentials.getSecretKey(),
@@ -132,6 +181,19 @@ public class AndroidBinanceAutoTrader extends BinanceAutoTraderBot implements An
         workflowHandler();
     }
 
+    /**
+     * Constructor to init {@link BinanceAutoTraderBot}
+     * @param apiKey               : your Binance's api key
+     * @param secretKey            : your Binance's secret key
+     * @param baseEndpoint         : base endpoint choose from BinanceManager.BASE_ENDPOINTS array
+     * @param sendStatsReport      : flag to insert to send or not reports
+     * @param printRoutineMessages : flag to insert to print or not routine messages
+     * @param baseCurrency         : base currency to get all amount value of traders routine es. EUR
+     * @param credentials: is object that contains your Tecknobit's account credentials, not your private exchange keys
+     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
+     * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
+     * @implNote these keys will NOT store by libray anywhere.
+     **/
     public AndroidBinanceAutoTrader(String apiKey, String secretKey, String baseEndpoint, int refreshPricesTime,
                                     boolean sendStatsReport, boolean printRoutineMessages, String baseCurrency,
                                     Credentials credentials) throws Exception {
@@ -154,6 +216,19 @@ public class AndroidBinanceAutoTrader extends BinanceAutoTraderBot implements An
         workflowHandler();
     }
 
+    /**
+     * Constructor to init {@link BinanceAutoTraderBot}
+     * @param apiKey               : your Binance's api key
+     * @param secretKey            : your Binance's secret key
+     * @param quoteCurrencies      : is a list of quote currencies used in past orders es (USD or EUR)
+     * @param sendStatsReport      : flag to insert to send or not reports
+     * @param printRoutineMessages : flag to insert to print or not routine messages
+     * @param baseCurrency         : base currency to get all amount value of traders routine es. EUR
+     * @param credentials: is object that contains your Tecknobit's account credentials, not your private exchange keys
+     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
+     * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
+     * @implNote these keys will NOT store by libray anywhere.
+     **/
     public AndroidBinanceAutoTrader(String apiKey, String secretKey, ArrayList<String> quoteCurrencies, int refreshPricesTime,
                                     boolean sendStatsReport, boolean printRoutineMessages, String baseCurrency,
                                     Credentials credentials) throws Exception {
@@ -176,6 +251,20 @@ public class AndroidBinanceAutoTrader extends BinanceAutoTraderBot implements An
         workflowHandler();
     }
 
+    /**
+     * Constructor to init {@link BinanceAutoTraderBot}
+     * @param apiKey               : your Binance's api key
+     * @param secretKey            : your Binance's secret key
+     * @param baseEndpoint         : base endpoint choose from BinanceManager.BASE_ENDPOINTS array
+     * @param quoteCurrencies      : is a list of quote currencies used in past orders es (USD or EUR)
+     * @param sendStatsReport      : flag to insert to send or not reports
+     * @param printRoutineMessages : flag to insert to print or not routine messages
+     * @param baseCurrency         : base currency to get all amount value of traders routine es. EUR
+     * @param credentials: is object that contains your Tecknobit's account credentials, not your private exchange keys
+     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
+     * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
+     * @implNote these keys will NOT store by libray anywhere.
+     **/
     public AndroidBinanceAutoTrader(String apiKey, String secretKey, String baseEndpoint, ArrayList<String> quoteCurrencies,
                                     int refreshPricesTime, boolean sendStatsReport, boolean printRoutineMessages,
                                     String baseCurrency, Credentials credentials) throws Exception {
@@ -198,6 +287,19 @@ public class AndroidBinanceAutoTrader extends BinanceAutoTraderBot implements An
         workflowHandler();
     }
 
+    /**
+     * Constructor to init {@link BinanceAutoTraderBot}
+     * @param apiKey               : your Binance's api key
+     * @param secretKey            : your Binance's secret key
+     * @param quoteCurrencies      : is a list of quote currencies used in past orders es (USD or EUR)
+     * @param sendStatsReport      : flag to insert to send or not reports
+     * @param printRoutineMessages : flag to insert to print or not routine messages
+     * @param baseCurrency         : base currency to get all amount value of traders routine es. EUR
+     * @param credentials: is object that contains your Tecknobit's account credentials, not your private exchange keys
+     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
+     * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
+     * @implNote these keys will NOT store by libray anywhere.
+     **/
     public AndroidBinanceAutoTrader(String apiKey, String secretKey, ArrayList<String> quoteCurrencies, boolean sendStatsReport,
                                     boolean printRoutineMessages, String baseCurrency, Credentials credentials,
                                     int refreshPricesTime) throws Exception {
@@ -220,7 +322,21 @@ public class AndroidBinanceAutoTrader extends BinanceAutoTraderBot implements An
         walletList = traderAccount.getWalletCryptocurrencies();
         workflowHandler();
     }
-
+    
+    /**
+     * Constructor to init {@link BinanceAutoTraderBot}
+     * @param apiKey               : your Binance's api key
+     * @param secretKey            : your Binance's secret key
+     * @param baseEndpoint         : base endpoint choose from BinanceManager.BASE_ENDPOINTS array
+     * @param quoteCurrencies      : is a list of quote currencies used in past orders es (USD or EUR)
+     * @param sendStatsReport      : flag to insert to send or not reports
+     * @param printRoutineMessages : flag to insert to print or not routine messages
+     * @param baseCurrency         : base currency to get all amount value of traders routine es. EUR
+     * @param credentials: is object that contains your Tecknobit's account credentials, not your private exchange keys
+     * @param refreshPricesTime: is time in seconds to set for refresh the latest prices
+     * @throws IllegalArgumentException if {@code refreshPricesTime} value is less than 5(5s) and if is bigger than 3600(1h)
+     * @implNote these keys will NOT store by libray anywhere.
+     **/
     public AndroidBinanceAutoTrader(String apiKey, String secretKey, String baseEndpoint, ArrayList<String> quoteCurrencies,
                                     boolean sendStatsReport, boolean printRoutineMessages, String baseCurrency,
                                     Credentials credentials,  int refreshPricesTime) throws Exception {
