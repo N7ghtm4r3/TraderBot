@@ -211,22 +211,33 @@ public final class AndroidWorkflow implements RoutineMessages {
             try {
                 serverRequest.sendTokenRequest(new JSONObject(), GET_ROUTINES_TRADER_OPE);
                 response = serverRequest.readResponse();
-                assert response != null;
-                JSONArray jsonRoutines = new JsonHelper(response).getJSONArray(ROUTINES_KEY);
-                if(jsonRoutines != null){
-                    for (int j = 0; j < jsonRoutines.length(); j++) {
-                        JSONObject routine = jsonRoutines.getJSONObject(j);
-                        routines.add(new Routine(routine.getString(ROUTINE_KEY), routine.getString(ROUTINE_EXTRA_VALUE_KEY)));
+                if(response == null){
+                    stopTraderWorkflow();
+                }else {
+                    JSONArray jsonRoutines = new JsonHelper(response).getJSONArray(ROUTINES_KEY);
+                    if(jsonRoutines != null){
+                        for (int j = 0; j < jsonRoutines.length(); j++) {
+                            JSONObject routine = jsonRoutines.getJSONObject(j);
+                            routines.add(new Routine(routine.getString(ROUTINE_KEY), routine.getString(ROUTINE_EXTRA_VALUE_KEY)));
+                        }
                     }
                 }
             }catch (BadPaddingException e){
-                printRed("[ACCOUNT DELETED] You deleted account for trader, we hope to see you again soon!");
-                System.exit(0);
+                stopTraderWorkflow();
             }
         } catch (Exception e) {
             printOperationFailed(GET_ROUTINES_TRADER_OPE);
         }
         return routines;
+    }
+
+    /**
+     * This method is used to stop trader and Android's workflow when account has been deleted<br>
+     * Any params required
+     * **/
+    private void stopTraderWorkflow(){
+        printRed("[ACCOUNT DELETED] You deleted account for trader, we hope to see you again soon!");
+        System.exit(0);
     }
 
     /**
