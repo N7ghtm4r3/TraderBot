@@ -470,15 +470,13 @@ public class AndroidCoinbaseTrader extends CoinbaseTraderBot implements AndroidC
     }
     /**
      * This method is used by traders to get user Coinbase's wallet balance. <br>
-     * @param currency: currency of balance value es. EUR will return balance in EUR currency.
      * @param forceRefresh: this flag when is set to true will refresh prices also if is not time to refresh it.
      * @implNote if {@link #runningTrader} is false will return -1
      * @return wallet balance in currency value
      * **/
-    @Override
-    public double getWalletBalance(String currency, boolean forceRefresh) {
+    public double getWalletBalance(boolean forceRefresh) {
         if(runningTrader) {
-            balance = super.getWalletBalance(currency, forceRefresh);
+            balance = super.getWalletBalance(baseCurrency, forceRefresh);
             androidWorkflow.insertWalletBalance(coinbaseAccountManager.roundValue(balance, 2));
             return balance;
         }
@@ -487,30 +485,26 @@ public class AndroidCoinbaseTrader extends CoinbaseTraderBot implements AndroidC
 
     /**
      * This method is used by traders to get user Coinbase's wallet balance. <br>
-     * @param currency: currency of balance value es. EUR will return balance in EUR currency.
      * @param forceRefresh: this flag when is set to true will refresh prices also if is not time to refresh it.
      * @param decimals: this indicates number of decimal number after comma es. 3 -> xx,yyy.
      * @implNote if {@link #runningTrader} is false will return -1
      * @return wallet balance in currency value
      * **/
-    @Override
-    public double getWalletBalance(String currency, boolean forceRefresh, int decimals) {
+    public double getWalletBalance(boolean forceRefresh, int decimals) {
         if(runningTrader)
-            return super.getWalletBalance(currency, forceRefresh, decimals);
+            return coinbaseProductsManager.roundValue(getWalletBalance(forceRefresh), decimals);
         return -1;
     }
 
     /**
      * This method is used to get asset list of Coinbase's user wallet.<br>
-     * @param currency: currency of asset balance value es. EUR will return asset balance in EUR currency.
      * @param forceRefresh: this flag when is set to true will refresh prices also if is not time to refresh it.
      * @implNote if {@link #runningTrader} is false will return null
      * @return list of custom object {@link Asset} as {@link ArrayList}
      * **/
-    @Override
-    public ArrayList<Asset> getAssetsList(String currency, boolean forceRefresh) {
+    public ArrayList<Asset> getAssetsList(boolean forceRefresh) {
         if(runningTrader)
-            return super.getAssetsList(currency, forceRefresh);
+            return super.getAssetsList(baseCurrency, forceRefresh);
         return null;
     }
 

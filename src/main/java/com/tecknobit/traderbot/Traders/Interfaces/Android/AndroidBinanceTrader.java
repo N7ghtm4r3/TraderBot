@@ -421,15 +421,13 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
 
     /**
      * This method is used by traders to get user Binance's wallet balance. <br>
-     * @param currency: currency of balance value es. EUR will return balance in EUR currency
      * @param forceRefresh: this flag when is set to true will refresh prices also if is not time to refresh it
      * @implNote if {@link #runningTrader} is false will return -1
      * @return wallet balance in currency value
      * **/
-    @Override
-    public double getWalletBalance(String currency, boolean forceRefresh) throws Exception {
+    public double getWalletBalance(boolean forceRefresh) throws Exception {
         if(runningTrader) {
-            balance = super.getWalletBalance(currency, forceRefresh);
+            balance = super.getWalletBalance(baseCurrency, forceRefresh);
             androidWorkflow.insertWalletBalance(binanceMarketManager.roundValue(balance, 2));
             return balance;
         }
@@ -438,30 +436,26 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
 
     /**
      * This method is used by traders to get user Binance's wallet balance. <br>
-     * @param currency: currency of balance value es. EUR will return balance in EUR currency
      * @param forceRefresh: this flag when is set to true will refresh prices also if is not time to refresh it
      * @param decimals: this indicates number of decimal number after comma es. 3 -> xx,yyy.
      * @implNote if {@link #runningTrader} is false will return -1
      * @return wallet balance in currency value
      * **/
-    @Override
-    public double getWalletBalance(String currency, boolean forceRefresh, int decimals) throws Exception {
+    public double getWalletBalance(boolean forceRefresh, int decimals) throws Exception {
         if(runningTrader)
-            return super.getWalletBalance(currency, forceRefresh, decimals);
+            return binanceMarketManager.roundValue(getWalletBalance(forceRefresh), decimals);
         return -1;
     }
 
     /**
      * This method is used to get asset list of Binance's user wallet.<br>
-     * @param currency: currency of asset balance value es. EUR will return asset balance in EUR currency.
      * @param forceRefresh: this flag when is set to true will refresh prices also if is not time to refresh it.
      * @implNote if {@link #runningTrader} is false will return null
      * @return list of custom object {@link Asset} as {@link ArrayList}
      * **/
-    @Override
-    public ArrayList<Asset> getAssetsList(String currency, boolean forceRefresh) throws Exception {
+    public ArrayList<Asset> getAssetsList(boolean forceRefresh) throws Exception {
         if(runningTrader)
-            return super.getAssetsList(currency, forceRefresh);
+            return super.getAssetsList(baseCurrency, forceRefresh);
         return null;
     }
 
