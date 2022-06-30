@@ -14,7 +14,6 @@ import com.tecknobit.traderbot.Traders.Interfaces.Android.AndroidCoinbaseTrader;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.crypto.BadPaddingException;
 import java.util.ArrayList;
 
 import static com.tecknobit.traderbot.Records.Account.Trader.TraderManager.SELL_KEY;
@@ -208,12 +207,10 @@ public final class AndroidWorkflow implements RoutineMessages {
     private ArrayList<Routine> getRoutines() {
         ArrayList<Routine> routines = new ArrayList<>();
         try {
-            try {
-                serverRequest.sendTokenRequest(new JSONObject(), GET_ROUTINES_TRADER_OPE);
-                response = serverRequest.readResponse();
-                if(response == null){
-                    stopTraderWorkflow();
-                }else {
+            serverRequest.sendTokenRequest(new JSONObject(), GET_ROUTINES_TRADER_OPE);
+            response = serverRequest.readResponse();
+            if(response != null) {
+                if(response.getInt(STATUS_CODE) != -1){
                     JSONArray jsonRoutines = new JsonHelper(response).getJSONArray(ROUTINES_KEY);
                     if(jsonRoutines != null){
                         for (int j = 0; j < jsonRoutines.length(); j++) {
@@ -221,23 +218,15 @@ public final class AndroidWorkflow implements RoutineMessages {
                             routines.add(new Routine(routine.getString(ROUTINE_KEY), routine.getString(ROUTINE_EXTRA_VALUE_KEY)));
                         }
                     }
+                }else{
+                    printRed("[ACCOUNT DELETED] You deleted account for trader, we hope to see you again soon!");
+                    System.exit(0);
                 }
-            }catch (BadPaddingException e){
-                stopTraderWorkflow();
             }
         } catch (Exception e) {
             printOperationFailed(GET_ROUTINES_TRADER_OPE);
         }
         return routines;
-    }
-
-    /**
-     * This method is used to stop trader and Android's workflow when account has been deleted<br>
-     * Any params required
-     * **/
-    private void stopTraderWorkflow(){
-        printRed("[ACCOUNT DELETED] You deleted account for trader, we hope to see you again soon!");
-        System.exit(0);
     }
 
     /**

@@ -3,6 +3,7 @@ package com.tecknobit.traderbot.Routines.Android;
 import com.tecknobit.aesHelper.Client.ClientCipher;
 import org.json.JSONObject;
 
+import javax.crypto.BadPaddingException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -340,12 +341,15 @@ public final class ServerRequest {
             String response = new BufferedReader(new InputStreamReader(socket.getInputStream())).readLine();
             if(ciphered) {
                 assert clientCipher != null;
-                response = clientCipher.decryptResponse(response);
+                try{
+                    response = clientCipher.decryptResponse(response);
+                }catch (BadPaddingException e){
+                    response = "{\"status_code\": -1}";
+                }
             }
             socket = null;
             return new JSONObject(response);
         }catch (Exception e){
-            e.printStackTrace();
             return null;
         }
     }
