@@ -23,6 +23,7 @@ import java.util.ArrayList;
 
 import static com.tecknobit.traderbot.Records.Account.TraderDetails.*;
 import static com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency.*;
+import static com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency.TradingConfig.MODEL_ID_KEY;
 import static com.tecknobit.traderbot.Records.Portfolio.Token.BASE_ASSET_KEY;
 import static java.lang.Math.toIntExact;
 import static java.lang.System.currentTimeMillis;
@@ -409,11 +410,17 @@ public class AndroidBinanceAutoTrader extends BinanceAutoTraderBot implements An
                     .put(TPTOP_INDEX_KEY, cryptocurrency.getTptopIndex(2))
                     .put(LAST_PRICE_KEY, cryptocurrency.getLastPrice(2))
                     .put(PRICE_CHANGE_PERCENT_KEY, cryptocurrency.getPriceChangePercent(2))
-                    .put(TRADING_CONFIG_KEY, cryptocurrency.getTradingConfig().getTradingConfig())
+                    .put(MODEL_ID_KEY, cryptocurrency.getTradingConfig().getModelId())
                     .put(QUOTE_ASSET_KEY, cryptocurrency.getQuoteAsset())
             );
         }
         androidWorkflow.insertCheckingList(checkingList);
+    }
+
+    @Override
+    public void buyCryptocurrencies() throws Exception {
+        super.buyCryptocurrencies();
+        // TODO: 01/07/2022 insert wallet list
     }
 
     /**

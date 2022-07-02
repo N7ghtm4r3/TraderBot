@@ -124,6 +124,11 @@ public final class ServerRequest {
     public static final String INSERT_CHECKING_LIST_OPE = "insert_checking_list_ope";
 
     /**
+     * {@code GET_TRADING_CONFIGS_OPE} request
+     * **/
+    public static final String GET_TRADING_CONFIGS_OPE = "get_trading_configs_request";
+
+    /**
      * {@code LOGOUT_ACCOUNT_OPE} request
      * **/
     public static final String LOGOUT_ACCOUNT_OPE = "logout_account_ope";

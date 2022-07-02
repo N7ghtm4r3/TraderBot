@@ -154,7 +154,8 @@ public final class TraderAccount extends Trader implements RecordDetails {
                     TradingConfig tradingConfig = null;
                     JSONObject config = jsonHelper.getJSONObject(TRADING_CONFIG_KEY);
                     if(config != null){
-                        tradingConfig = new TradingConfig(config.getDouble(MARKET_PHASE_KEY),
+                        tradingConfig = new TradingConfig(config.getLong(MODEL_ID_KEY),
+                                config.getDouble(MARKET_PHASE_KEY),
                                 config.getDouble(WASTE_RANGE_KEY),
                                 config.getInt(DAIS_GAP_KEY),
                                 config.getDouble(MIN_GAIN_FOR_ORDER_KEY),

@@ -474,17 +474,6 @@ public final class AndroidWorkflow implements RoutineMessages {
          * **/
         private TraderDetails traderDetails;
 
-        /**
-         * {
-         *     "secret_key": "I+IGUYuPGADJuzQqKjhB+fnyzrbsT6rqRB29jH8LN/c=",
-         *     "password": "gagagagaga",
-         *     "mail": "aaaaaA@gmail.com",
-         *     "iv_spec": "l47t+O1gG6tCUug20BhTvg==",
-         *     "auth_token": "92bd8bab915a4de5a0e5bf1d8d893162",
-         *     "token": "a9d2b1b92330434cbb8242ab619e913b"
-         * }
-         * **/
-
         /** Constructor to init {@link Credentials}
          * @param mail: is instance that memorize mail of user
          * @param password: is instance that memorize password of user

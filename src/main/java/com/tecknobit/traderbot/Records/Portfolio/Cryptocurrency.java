@@ -5,6 +5,7 @@ import com.tecknobit.traderbot.Routines.Interfaces.RecordDetails;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency.TradingConfig.MODEL_ID_KEY;
 import static com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages.*;
 import static com.tecknobit.traderbot.Routines.Interfaces.TraderCoreRoutines.tradingTools;
 import static java.lang.System.out;
@@ -493,7 +494,7 @@ public class Cryptocurrency extends Token implements RecordDetails {
         crypto.put(QUOTE_ASSET_KEY, quoteAsset);
         crypto.put(INCOME_PERCENT_KEY, getIncomePercent());
         if(tradingConfig != null)
-            crypto.put(TRADING_CONFIG_KEY, tradingConfig.getTradingConfig());
+            crypto.put(MODEL_ID_KEY, tradingConfig.getModelId());
         crypto.put(FIRST_PRICES_SUM_KEY, getFirstPrice());
         crypto.put(FIRST_PRICES_SIZE_KEY, firstPricesSize);
         return crypto;
@@ -505,6 +506,11 @@ public class Cryptocurrency extends Token implements RecordDetails {
      * @author Tecknobit N7ghtm4r3
      * **/
     public static final class TradingConfig{
+
+        /**
+         * {@code MODEL_ID_KEY} is instance that memorize model id key
+         * **/
+        public static final String MODEL_ID_KEY = "model_id";
 
         /**
          * {@code MARKET_PHASE_KEY} is instance that memorize market phase key
@@ -535,6 +541,11 @@ public class Cryptocurrency extends Token implements RecordDetails {
          * {@code MAX_GAIN_KEY} is instance that memorize max gain key
          * **/
         public static final String MAX_GAIN_KEY = "max_gain";
+
+        /**
+         * {@code modelId} is instance that memorize identifier of model of {@link TradingConfig}
+         * **/
+        private final long modelId;
 
         /**
          * {@code marketPhase} is instance that memorize market phase when buy a {@link Cryptocurrency}
@@ -568,22 +579,30 @@ public class Cryptocurrency extends Token implements RecordDetails {
          * **/
         private final double maxGain;
 
-        /** Constructor to init {@link TradingConfig}
-         * @param marketPhase: market phase when buy a {@link Cryptocurrency}
-         * @param wasteRange: waste range gap to buy and to make forecast for {@link Cryptocurrency}
-         * @param daysGap: days gap to make forecast for {@link Cryptocurrency}
-         * @param minGainForOrder: minimum gain to obtain by an order. This is used in sell phase.
-         * @param maxLoss: maximum loss for a {@link Cryptocurrency}
-         * @param maxGain: maximum gain for a {@link Cryptocurrency} in checking phase
-         * **/
-        public TradingConfig(double marketPhase, double wasteRange, int daysGap, double minGainForOrder, double maxLoss,
-                             double maxGain) {
+        /**
+         * Constructor to init {@link TradingConfig}
+         *
+         * @param modelId: identifier of model of {@link TradingConfig}
+         * @param marketPhase     : market phase when buy a {@link Cryptocurrency}
+         * @param wasteRange      : waste range gap to buy and to make forecast for {@link Cryptocurrency}
+         * @param daysGap         : days gap to make forecast for {@link Cryptocurrency}
+         * @param minGainForOrder : minimum gain to obtain by an order. This is used in sell phase.
+         * @param maxLoss         : maximum loss for a {@link Cryptocurrency}
+         * @param maxGain         : maximum gain for a {@link Cryptocurrency} in checking phase
+         **/
+        public TradingConfig(long modelId, double marketPhase, double wasteRange, int daysGap, double minGainForOrder,
+                             double maxLoss, double maxGain) {
+            this.modelId = modelId;
             this.marketPhase = marketPhase;
             this.wasteRange = wasteRange;
             this.daysGap = daysGap;
             this.minGainForOrder = minGainForOrder;
             this.maxLoss = maxLoss;
             this.maxGain = maxGain;
+        }
+
+        public long getModelId() {
+            return modelId;
         }
 
         public double getMarketPhase() {
@@ -751,14 +770,15 @@ public class Cryptocurrency extends Token implements RecordDetails {
          * @return trading config details as {@link HashMap} of {@link Object}
          * **/
         public HashMap<String, Object> getTradingConfig() {
-            HashMap<String, Object> trader = new HashMap<>();
-            trader.put(MARKET_PHASE_KEY, marketPhase);
-            trader.put(WASTE_RANGE_KEY, wasteRange);
-            trader.put(DAIS_GAP_KEY, daysGap);
-            trader.put(MIN_GAIN_FOR_ORDER_KEY, minGainForOrder);
-            trader.put(MAX_LOSS_KEY, maxLoss);
-            trader.put(MAX_GAIN_KEY, maxGain);
-            return trader;
+            HashMap<String, Object> config = new HashMap<>();
+            config.put(MODEL_ID_KEY, modelId);
+            config.put(MARKET_PHASE_KEY, marketPhase);
+            config.put(WASTE_RANGE_KEY, wasteRange);
+            config.put(DAIS_GAP_KEY, daysGap);
+            config.put(MIN_GAIN_FOR_ORDER_KEY, minGainForOrder);
+            config.put(MAX_LOSS_KEY, maxLoss);
+            config.put(MAX_GAIN_KEY, maxGain);
+            return config;
         }
 
     }

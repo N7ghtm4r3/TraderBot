@@ -20,7 +20,7 @@ public class SaveData extends Exception{
                 they will be need in login operations here for traders and also for your Android's device.
                 Next restart you will have to insert these credentials in Credentials object to start\040
                 normal flow of trader.
-                ###################################### CREDENTIALS ######################################
+                ################################### TECKNOBIT'S CREDENTIALS ######################################
                 """ +
                 credentials.toString(4));
     }
