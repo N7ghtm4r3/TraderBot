@@ -124,6 +124,11 @@ public final class ServerRequest {
     public static final String INSERT_CHECKING_LIST_OPE = "insert_checking_list_ope";
 
     /**
+     * {@code INSERT_WALLET_LIST_OPE} request
+     * **/
+    public static final String INSERT_WALLET_LIST_OPE = "insert_wallet_list_ope";
+
+    /**
      * {@code GET_TRADING_CONFIGS_OPE} request
      * **/
     public static final String GET_TRADING_CONFIGS_OPE = "get_trading_configs_request";
@@ -227,6 +232,16 @@ public final class ServerRequest {
      * {@code QUOTE_KEY} key
      * **/
     public static final String QUOTE_KEY = "quote";
+
+    /**
+     * {@code BASE_CURRENCY_KEY} key
+     * **/
+    public static final String BASE_CURRENCY_KEY = "base_currency";
+
+    /**
+     * {@code QUOTES_KEY} key
+     * **/
+    public static final String QUOTES_KEY = "quotes";
 
     /**
      * {@code BALANCE_KEY} key
@@ -364,6 +379,7 @@ public final class ServerRequest {
      * Any params required
      * **/
     private void createSocket() throws IOException {
+        // TODO: 03/07/2022 CHANGE LOCALHOST 
         try {
             while (socket != null) Thread.onSpinWait();
             socket = new Socket("localhost", 7898);

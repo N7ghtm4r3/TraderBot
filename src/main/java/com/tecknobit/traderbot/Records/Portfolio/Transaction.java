@@ -20,7 +20,7 @@ import static java.lang.System.out;
  * @author Tecknobit N7ghtm4r3
  * **/
 
-public final class Transaction implements RecordDetails {
+public class Transaction implements RecordDetails {
 
     /**
      * {@code TRANSACTION_KEY} is instance that memorize transaction key

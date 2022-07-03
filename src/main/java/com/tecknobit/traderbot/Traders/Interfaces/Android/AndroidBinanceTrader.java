@@ -364,7 +364,7 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         if(credentials.getToken() == null)
             credentials.sendRegistrationRequest();
         else
-            credentials.sendLoginRequest();
+            credentials.sendLoginRequest(baseCurrency, quoteCurrencies);
     }
 
     /**
@@ -409,9 +409,13 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
                             }
                             androidWorkflow.insertRefreshedPrices(wallet);
                             wallet.clear();
-                            sleep(REFRESH_PRICES_TIME);
                         }catch (Exception e){
                             printRed("Error during refreshing wallet list");
+                        }finally {
+                            try {
+                                sleep(REFRESH_PRICES_TIME);
+                            } catch (InterruptedException ignored) {
+                            }
                         }
                     }
                 }
@@ -577,23 +581,8 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
         if(side.equals(SELL)){
             cryptocurrency = walletList.get(index);
             double income = cryptocurrency.getIncomePercent();
-            String sellCode = getTypeSellCode(income);
+            sales = androidWorkflow.getSellSales(transaction, traderAccount, cryptocurrency, getTypeSellCode(income));
             traderAccount.addIncome(income);
-            transaction.setIncomePercent(cryptocurrency.getIncomePercent(2));
-            transaction.setTransactionType(sellCode);
-            switch (sellCode){
-                case LOSS_SELL:
-                    traderAccount.addLoss();
-                    sales = traderAccount.getSalesAtLoss();
-                    break;
-                case GAIN_SELL:
-                    traderAccount.addGain();
-                    sales = traderAccount.getSalesAtGain();
-                    break;
-                default:
-                    traderAccount.addPair();
-                    sales = traderAccount.getSalesAtPair();
-            }
         }else{
             cryptocurrency = walletList.get(index);
             if(cryptocurrency == null) {

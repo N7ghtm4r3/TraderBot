@@ -261,8 +261,8 @@ public class Cryptocurrency extends Token implements RecordDetails {
                 double firstPrice = 0;
                 for (double price : firstPrices)
                     firstPrice += price;
-
-                return ((firstPrice + firstPricesSum) / firstPricesSize);
+                if(firstPrice > 0)
+                    return ((firstPrice + firstPricesSum) / firstPricesSize);
             }
         }
         return lastPrice;

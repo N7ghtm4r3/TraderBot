@@ -2,9 +2,11 @@ package com.tecknobit.traderbot.Routines.Android;
 
 import com.tecknobit.apimanager.Tools.Readers.JsonHelper;
 import com.tecknobit.traderbot.Exceptions.SaveData;
+import com.tecknobit.traderbot.Records.Account.TraderAccount;
 import com.tecknobit.traderbot.Records.Account.TraderDetails;
 import com.tecknobit.traderbot.Records.Android.Routine;
 import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency;
+import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency.TradingConfig;
 import com.tecknobit.traderbot.Records.Portfolio.Transaction;
 import com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages;
 import com.tecknobit.traderbot.Routines.Interfaces.TraderCoreRoutines;
@@ -14,9 +16,12 @@ import com.tecknobit.traderbot.Traders.Interfaces.Android.AndroidCoinbaseTrader;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.concurrent.ConcurrentHashMap;
 
-import static com.tecknobit.traderbot.Records.Account.Trader.TraderManager.SELL_KEY;
+import static com.tecknobit.traderbot.Records.Account.Trader.TraderManager.*;
 import static com.tecknobit.traderbot.Records.Account.TraderAccount.TOTAL_INCOME_KEY;
 import static com.tecknobit.traderbot.Records.Account.TraderDetails.*;
 import static com.tecknobit.traderbot.Records.Android.Routine.*;
@@ -24,6 +29,7 @@ import static com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency.CRYPTOCUR
 import static com.tecknobit.traderbot.Records.Portfolio.Transaction.TRANSACTION_KEY;
 import static com.tecknobit.traderbot.Routines.Android.ServerRequest.*;
 import static java.lang.Integer.parseInt;
+import static java.lang.System.currentTimeMillis;
 import static org.apache.commons.validator.routines.EmailValidator.getInstance;
 
 /**
@@ -258,6 +264,58 @@ public final class AndroidWorkflow implements RoutineMessages {
     }
 
     /**
+     * This method is used to clear from wallet list {@link Cryptocurrency} that has not got {@link TradingConfig}
+     * @param wallet: wallet of user trader
+     * @implSpec is useful for Android auto traders
+     * **/
+    public void checkWalletList(ConcurrentHashMap<String, Cryptocurrency> wallet){
+        for (Cryptocurrency cryptocurrency : wallet.values())
+            if(cryptocurrency.getTradingConfig() == null)
+                wallet.remove(cryptocurrency.getAssetIndex());
+    }
+
+    /**
+     * This method is used to add and get sales to increment
+     * @param cryptocurrency: cryptocurrency of order
+     * @implSpec is useful for Android auto traders
+     * @return sales to increment as int
+     * **/
+    public int getSellSales(Transaction transaction, TraderAccount traderAccount, Cryptocurrency cryptocurrency,
+                            String sellCode){
+        int sales;
+        transaction.setIncomePercent(cryptocurrency.getIncomePercent(2));
+        transaction.setTransactionType(sellCode);
+        switch (sellCode){
+            case LOSS_SELL:
+                traderAccount.addLoss();
+                sales = traderAccount.getSalesAtLoss();
+                break;
+            case GAIN_SELL:
+                traderAccount.addGain();
+                sales = traderAccount.getSalesAtGain();
+                break;
+            default:
+                traderAccount.addPair();
+                sales = traderAccount.getSalesAtPair();
+        }
+        return sales;
+    }
+
+    /**
+     * This method is used to assemble a {@link Transaction} object
+     * @param cryptocurrency: cryptocurrency of order
+     * @param side: side of order
+     * @param dateFormat: date formatter for transaction
+     * @implSpec is useful for Android auto traders
+     * @return transaction as {@link Transaction} object
+     * **/
+    public Transaction assembleTransaction(Cryptocurrency cryptocurrency, String side, DateFormat dateFormat){
+        return new Transaction(cryptocurrency.getSymbol(), side, dateFormat.format(new Date(currentTimeMillis())),
+                cryptocurrency.getCryptocurrencyBalance(2), cryptocurrency.getQuantity(),
+                cryptocurrency.getQuoteAsset(), cryptocurrency.getAssetIndex());
+    }
+
+    /**
      * This method is used to insert cryptocurrency in the user wallet<br>
      * @param cryptocurrency: cryptocurrency to insert
      * @param transaction: transaction to insert
@@ -346,6 +404,11 @@ public final class AndroidWorkflow implements RoutineMessages {
         }
     }
 
+    /**
+     * This method is used to insert checking list of cryptocurrencies<br>
+     * @param checkingList: list of cryptocurrencies
+     * @implSpec is useful for Android auto traders
+     * **/
     public void insertCheckingList(JSONArray checkingList) throws Exception {
         serverRequest.sendTokenRequest(new JSONObject().put(CRYPTOCURRENCY_KEY, checkingList), INSERT_CHECKING_LIST_OPE);
         response = serverRequest.readResponse();
@@ -362,6 +425,29 @@ public final class AndroidWorkflow implements RoutineMessages {
             }
         }else
             printOperationFailed(INSERT_CHECKING_LIST_OPE);
+    }
+
+    /**
+     * This method is used to insert wallet list of cryptocurrencies<br>
+     * @param walletList: list of cryptocurrencies
+     * @implSpec is useful for Android auto traders
+     * **/
+    public void insertWalletList(JSONArray walletList) throws Exception {
+        serverRequest.sendTokenRequest(new JSONObject().put(CRYPTOCURRENCY_KEY, walletList), INSERT_WALLET_LIST_OPE);
+        response = serverRequest.readResponse();
+        if(response != null){
+            switch (response.getInt(STATUS_CODE)){
+                case SUCCESSFUL_RESPONSE:
+                    printOperationSuccess(INSERT_WALLET_LIST_OPE);
+                    break;
+                case GENERIC_ERROR_RESPONSE:
+                    printOperationStatus("[" + INSERT_WALLET_LIST_OPE + "] Insert a valid checking list",
+                            false);
+                    break;
+                default: printOperationFailed(INSERT_WALLET_LIST_OPE);
+            }
+        }else
+            printOperationFailed(INSERT_WALLET_LIST_OPE);
     }
 
     /**
@@ -396,11 +482,19 @@ public final class AndroidWorkflow implements RoutineMessages {
             printGreen("[" + ope + "] Operation ended successfully");
     }
 
+    /**
+     * This method is used to set flag to print routine messages
+     * @param printRoutineMessages: flag to insert to print or not routine messages
+     * **/
     @Override
     public void setPrintRoutineMessages(boolean printRoutineMessages) {
         this.printRoutineMessages = printRoutineMessages;
     }
 
+    /**
+     * This method is used to get flag to print or not routine messages
+     * @return flag that indicates the possibility or not to print or not routine messages
+     * **/
     @Override
     public boolean canPrintRoutineMessages() {
         return printRoutineMessages;
@@ -556,7 +650,7 @@ public final class AndroidWorkflow implements RoutineMessages {
          * This method is used to log in a Tecknobit's account <br>
          * Any params required
          * **/
-        public void sendLoginRequest() throws Exception {
+        public void sendLoginRequest(String baseCurrency, ArrayList<String> quoteCurrencies) throws Exception {
             getPublicKeys();
             serverRequest.sendRequest(new JSONObject().put(MAIL_KEY, mail).put(PASSWORD_KEY, password)
                     .put(AUTH_TOKEN_KEY, authToken)
@@ -565,7 +659,9 @@ public final class AndroidWorkflow implements RoutineMessages {
                     .put(TRADER_PLATFORM_KEY, traderDetails.getTraderPlatform())
                     .put(LAST_TRADER_ACTIVITY_KEY, traderDetails.getLastTraderActivity())
                     .put(RUNNING_FROM_DATE_KEY, traderDetails.getRunningFromDate())
-                    .put(TRADER_TYPE_KEY, traderDetails.getTraderType()), LOGIN_OPE);
+                    .put(TRADER_TYPE_KEY, traderDetails.getTraderType())
+                    .put(BASE_CURRENCY_KEY, baseCurrency)
+                    .put(QUOTES_KEY, new JSONArray(quoteCurrencies)), LOGIN_OPE);
             response = serverRequest.readResponse();
             if(response != null) {
                 switch (response.getInt(STATUS_CODE)){

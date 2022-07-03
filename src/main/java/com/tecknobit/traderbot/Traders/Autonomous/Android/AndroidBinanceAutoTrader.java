@@ -20,11 +20,15 @@ import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import static com.tecknobit.binancemanager.Managers.SignedManagers.Trade.Common.TradeConstants.BUY;
+import static com.tecknobit.binancemanager.Managers.SignedManagers.Trade.Common.TradeConstants.SELL;
 import static com.tecknobit.traderbot.Records.Account.TraderDetails.*;
 import static com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency.*;
 import static com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency.TradingConfig.MODEL_ID_KEY;
 import static com.tecknobit.traderbot.Records.Portfolio.Token.BASE_ASSET_KEY;
+import static com.tecknobit.traderbot.Records.Portfolio.Transaction.TRANSACTION_KEY;
 import static java.lang.Math.toIntExact;
 import static java.lang.System.currentTimeMillis;
 import static java.text.DateFormat.getDateTimeInstance;
@@ -382,7 +386,7 @@ public class AndroidBinanceAutoTrader extends BinanceAutoTraderBot implements An
         if(credentials.getToken() == null)
             credentials.sendRegistrationRequest();
         else
-            credentials.sendLoginRequest();
+            credentials.sendLoginRequest(baseCurrency, quoteCurrencies);
     }
 
     /**
@@ -392,6 +396,7 @@ public class AndroidBinanceAutoTrader extends BinanceAutoTraderBot implements An
     @Override
     public void workflowHandler() {
         enableTrader();
+        androidWorkflow.checkWalletList(walletList);
         androidWorkflow.startWorkflow();
     }
 
@@ -417,15 +422,29 @@ public class AndroidBinanceAutoTrader extends BinanceAutoTraderBot implements An
         androidWorkflow.insertCheckingList(checkingList);
     }
 
+    /**
+     * This method is used to buy new cryptocurrencies from list loaded from {@link #checkCryptocurrencies()} routine
+     * using {@link TradingConfig} model. <br>
+     * Any params required
+     * **/
     @Override
     public void buyCryptocurrencies() throws Exception {
+        HashMap<String, Cryptocurrency> mCheckingList = new HashMap<>(checkingList);
         super.buyCryptocurrencies();
-        // TODO: 01/07/2022 insert wallet list
+        JSONArray wallet = new JSONArray();
+        for (Cryptocurrency cryptocurrency : walletList.values()){
+            if(mCheckingList.containsKey(cryptocurrency.getAssetIndex())){
+                wallet.put(new JSONObject(cryptocurrency.getCryptocurrency())
+                        .put(TRANSACTION_KEY, androidWorkflow.assembleTransaction(cryptocurrency, BUY,
+                                        transactionDateFormat).getTransaction()));
+            }
+        }
+        androidWorkflow.insertWalletList(wallet);
     }
 
     /**
      * This method is used to routine of update wallet of cryptocurrencies bought by auto trader. If {@link Cryptocurrency}
-     * respects {@link Cryptocurrency.TradingConfig} model that {@link Cryptocurrency} will be sold. <br>
+     * respects {@link TradingConfig} model that {@link Cryptocurrency} will be sold. <br>
      * Any params required
      * **/
     @Override
@@ -566,8 +585,12 @@ public class AndroidBinanceAutoTrader extends BinanceAutoTraderBot implements An
      * **/
     @Override
     public void sellMarket(String symbol, double quantity) throws Exception {
-        if(runningTrader)
+        if(runningTrader) {
+            Cryptocurrency cryptocurrency = walletList.get(tradingPairsList.get(symbol).getBaseAsset());
             super.sellMarket(symbol, quantity);
+            androidWorkflow.removeCryptocurrency(cryptocurrency.getAssetIndex(),
+                    androidWorkflow.assembleTransaction(cryptocurrency, SELL, transactionDateFormat));
+        }
     }
 
     /**

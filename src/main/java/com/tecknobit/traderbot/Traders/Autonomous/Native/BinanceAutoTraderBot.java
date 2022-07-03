@@ -634,9 +634,8 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
      * @return quantity for the market order es. 1
      * **/
     @Override
-    public double getMarketOrderQuantity(Cryptocurrency cryptocurrency) throws Exception {
-        String symbol = cryptocurrency.getSymbol();
-        Symbol exchangeInformation = binanceMarketManager.getObjectExchangeInformation(symbol).getSymbols().get(0);
+    public double getMarketOrderQuantity(Cryptocurrency cryptocurrency) {
+        Symbol exchangeInformation = tradingPairsList.get(cryptocurrency.getSymbol());
         double stepSize = 0, maxQty = 0, minQty = 0, minNotional = 0, quantity = -1;
         double coinBalance = getCoinBalance(cryptocurrency.getQuoteAsset());
         if(coinBalance != -1){
@@ -663,12 +662,10 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                 else if(quantity > maxQty)
                     quantity = maxQty;
                 else {
-                    if ((quantity - minQty) % stepSize != 0) {
+                    if ((quantity - minQty) % stepSize != 0)
                         quantity = ceil(quantity);
-                    }
-                    if(quantity < (minNotionalQty)) {
+                    if(quantity < minNotionalQty)
                         quantity = ceil(minNotionalQty + 1);
-                    }
                 }
             }
         }

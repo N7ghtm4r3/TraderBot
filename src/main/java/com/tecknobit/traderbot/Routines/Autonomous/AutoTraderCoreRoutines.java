@@ -81,10 +81,10 @@ public interface AutoTraderCoreRoutines extends TraderManager, RoutineMessages {
         // TODO: 22/05/2022 request to fetch trading
         return new TradingConfig(-1, 1,
                 3,
-                29,
-                0.00001,
+                7,
+                2,
                 -10,
-                2
+                12
         );
     }
 
