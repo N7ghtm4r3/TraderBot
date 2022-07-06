@@ -553,18 +553,6 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     }
 
     /**
-     * This method is used to send a buy market order from a Binance SPOT account.<br>
-     * @param symbol: this indicates the symbol for the order es. BTCBUSD
-     * @param quantity: this indicates quantity of that symbol is wanted to buy es. 10
-     * **/
-    @Override
-    public void buyMarket(String symbol, double quantity) throws Exception {
-        super.buyMarket(symbol, quantity);
-        if(sendStatsReport)
-            sendStatsReport(/*params for report*/);
-    }
-
-    /**
      * This method is used to send a sell market order from a Binance SPOT account.<br>
      * @param symbol: this indicates the symbol for the order es. BTCBUSD
      * @param quantity: this indicates quantity of that symbol is wanted to sell es. 10

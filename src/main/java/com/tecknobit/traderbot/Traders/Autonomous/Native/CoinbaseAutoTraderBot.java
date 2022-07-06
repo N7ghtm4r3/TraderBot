@@ -807,18 +807,6 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     }
 
     /**
-     * This method is used to send a buy market order<br>
-     * @param symbol: this indicates the symbol for the order es. BTC-USDT
-     * @param quantity: this indicates quantity of that symbol is wanted to buy es. 10
-     * **/
-    @Override
-    public void buyMarket(String symbol, double quantity) throws Exception {
-        super.buyMarket(symbol, quantity);
-        if(sendStatsReport)
-            sendStatsReport(/*params*/);
-    }
-
-    /**
      * This method is used to send a sell market order<br>
      * @param symbol: this indicates the symbol for the order es. BTC-USDT
      * @param quantity: this indicates quantity of that symbol is wanted to sell es. 10
