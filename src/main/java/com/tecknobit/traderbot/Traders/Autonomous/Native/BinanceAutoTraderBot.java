@@ -22,6 +22,7 @@ import static com.tecknobit.binancemanager.Managers.Market.Records.Stats.Candles
 import static com.tecknobit.binancemanager.Managers.Market.Records.Stats.ExchangeInformation.Symbol;
 import static java.lang.Math.abs;
 import static java.lang.Math.ceil;
+import static java.lang.System.currentTimeMillis;
 
 /**
  * The {@code BinanceAutoTraderBot} class is trader for {@link BinanceManager} library.<br>
@@ -100,6 +101,11 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
      * {@code previousUpdating} is instance that memorize previous timestamp when {@link #updateWallet()} is called
      * **/
     protected long previousUpdating;
+
+    /**
+     * {@code previousTradingConfigFetching} is instance that memorize previous trading confing fetching
+     * **/
+    protected long previousTradingConfigFetching;
 
     /**
      * {@code baseCurrency} is instance that memorize base currency to get all amount value of traders routine es. EUR
@@ -317,7 +323,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     public void start() {
         runningTrader = true;
         printDisclaimer();
-        previousBuying = System.currentTimeMillis();
+        previousBuying = currentTimeMillis();
         new Thread(){
             @Override
             public void run() {
@@ -326,15 +332,15 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                     while (true){
                         while (runningTrader){
                             if(makeRoutine(previousChecking, CHECKING_GAP_TIME)) {
-                                previousChecking = System.currentTimeMillis();
+                                previousChecking = currentTimeMillis();
                                 checkCryptocurrencies();
                             }
                             if(makeRoutine(previousBuying, BUYING_GAP_TIME)){
-                                previousBuying = System.currentTimeMillis();
+                                previousBuying = currentTimeMillis();
                                 buyCryptocurrencies();
                             }
                             if(makeRoutine(previousUpdating, UPDATING_GAP_TIME)) {
-                                previousUpdating = System.currentTimeMillis();
+                                previousUpdating = currentTimeMillis();
                                 updateWallet();
                             }
                         }
@@ -355,7 +361,10 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     @Override
     public void checkCryptocurrencies() throws Exception {
         System.out.println("## CHECKING NEW CRYPTOCURRENCIES");
-        tradingConfig = fetchTradingConfig();
+        if(makeRoutine(previousTradingConfigFetching, BUYING_GAP_TIME * 2)) {
+            previousTradingConfigFetching = currentTimeMillis();
+            tradingConfig = fetchTradingConfig(tradingConfig);
+        }
         String candleInterval = INTERVAL_1d;
         int daysGap = tradingConfig.getDaysGap();
         if(daysGap > 2 && daysGap <= 6)

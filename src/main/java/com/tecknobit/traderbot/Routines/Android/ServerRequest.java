@@ -388,4 +388,22 @@ public final class ServerRequest {
         }
     }
 
+    /**
+     * This method is used fetch public key for register and login operation<br>
+     * Any params required
+     * @return new request object as {@link ServerRequest}
+     * **/
+    public static ServerRequest getPublicRequest() {
+        try {
+            ServerRequest serverRequest = new ServerRequest();
+            serverRequest.sendRequest(new JSONObject(), GET_KEYS_OPE);
+            response = serverRequest.readResponse();
+            if(response != null)
+                return new ServerRequest(response.getString(IV_SPEC_KEY), response.getString(SECRET_KEY));
+        }catch (Exception e){
+            throw new IllegalStateException(SERVICE_UNAVAILABLE);
+        }
+        return null;
+    }
+
 }

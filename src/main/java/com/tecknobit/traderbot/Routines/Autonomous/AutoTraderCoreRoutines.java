@@ -3,11 +3,15 @@ package com.tecknobit.traderbot.Routines.Autonomous;
 import com.tecknobit.traderbot.Records.Account.TraderAccount;
 import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency;
 import com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency.TradingConfig;
+import com.tecknobit.traderbot.Routines.Android.ServerRequest;
 import com.tecknobit.traderbot.Routines.Interfaces.RoutineMessages;
+import org.json.JSONObject;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.tecknobit.traderbot.Records.Account.Trader.TraderManager;
+import static com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency.TradingConfig.*;
+import static com.tecknobit.traderbot.Routines.Android.ServerRequest.*;
 
 /**
  * The {@code AutoTraderCoreRoutines} interface defines base routines methods for auto traders bot.<br>
@@ -77,15 +81,27 @@ public interface AutoTraderCoreRoutines extends TraderManager, RoutineMessages {
      * Any params required
      * @return model of trading as {@link TradingConfig} object
      * **/
-    default TradingConfig fetchTradingConfig(){
-        // TODO: 22/05/2022 request to fetch trading
-        return new TradingConfig(-1, 1,
-                3,
-                7,
-                2,
-                -10,
-                12
-        );
+    default TradingConfig fetchTradingConfig(TradingConfig actualModel){
+        try {
+            ServerRequest serverRequest = getPublicRequest();
+            assert serverRequest != null;
+            serverRequest.sendRequest(new JSONObject(), GET_TRADING_CONFIGS_OPE);
+            response = serverRequest.readResponse();
+            if(response != null) {
+                return new TradingConfig(response.getLong(MODEL_ID_KEY),
+                        response.getDouble(MARKET_PHASE_KEY),
+                        response.getDouble(WASTE_RANGE_KEY),
+                        response.getInt(DAIS_GAP_KEY),
+                        response.getDouble(MIN_GAIN_FOR_ORDER_KEY),
+                        response.getDouble(MAX_LOSS_KEY),
+                        response.getDouble(MAX_GAIN_KEY)
+                );
+            }else
+                return actualModel;
+        } catch (Exception e) {
+            printRed("Error during fetching new Trading Config model, will be use the old model");
+            return actualModel;
+        }
     }
 
     /**

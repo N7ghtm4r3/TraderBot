@@ -598,7 +598,8 @@ public final class AndroidWorkflow implements RoutineMessages {
          * **/
         public void sendRegistrationRequest() throws Exception {
             if(traderDetails != null && token == null){
-                getPublicKeys();
+                serverRequest = getPublicRequest();
+                assert serverRequest != null;
                 serverRequest.sendRequest(new JSONObject().put(MAIL_KEY, mail).put(PASSWORD_KEY, password)
                         .put(TRADER_STATUS_KEY, traderDetails.getTraderStatus())
                         .put(REFRESH_PRICES_TIME_KEY, traderDetails.getRefreshPricesTime())
@@ -651,7 +652,8 @@ public final class AndroidWorkflow implements RoutineMessages {
          * Any params required
          * **/
         public void sendLoginRequest(String baseCurrency, ArrayList<String> quoteCurrencies) throws Exception {
-            getPublicKeys();
+            serverRequest = getPublicRequest();
+            assert serverRequest != null;
             serverRequest.sendRequest(new JSONObject().put(MAIL_KEY, mail).put(PASSWORD_KEY, password)
                     .put(AUTH_TOKEN_KEY, authToken)
                     .put(TRADER_STATUS_KEY, traderDetails.getTraderStatus())
@@ -686,22 +688,6 @@ public final class AndroidWorkflow implements RoutineMessages {
             System.out.println(ANSI_RED + "Credentials object is already instantiated you cannot have multiple Credentials objects in same session"
             + ANSI_RESET);
             System.exit(1);
-        }
-
-        /**
-         * This method is used fetch public key for register and login operation<br>
-         * Any params required
-         * **/
-        private void getPublicKeys() {
-            try {
-                serverRequest = new ServerRequest();
-                serverRequest.sendRequest(new JSONObject(), GET_KEYS_OPE);
-                response = serverRequest.readResponse();
-                if(response != null)
-                    serverRequest = new ServerRequest(response.getString(IV_SPEC_KEY), response.getString(SECRET_KEY));
-            }catch (Exception e){
-                throw new IllegalStateException(SERVICE_UNAVAILABLE);
-            }
         }
 
         /**

@@ -508,6 +508,11 @@ public class Cryptocurrency extends Token implements RecordDetails {
     public static final class TradingConfig{
 
         /**
+         * {@code MAX_FAILS_NUMBER} is instance that memorize max fails number key
+         * **/
+        public static final int MAX_FAILS_NUMBER = 30;
+
+        /**
          * {@code MODEL_ID_KEY} is instance that memorize model id key
          * **/
         public static final String MODEL_ID_KEY = "model_id";

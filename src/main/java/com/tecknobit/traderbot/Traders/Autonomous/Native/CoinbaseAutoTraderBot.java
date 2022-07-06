@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static com.tecknobit.coinbasemanager.Managers.ExchangePro.Products.Records.Candle.GRANULARITY_1d;
 import static java.lang.Math.abs;
 import static java.lang.Math.ceil;
+import static java.lang.System.currentTimeMillis;
 
 /**
  * The {@code CoinbaseAutoTraderBot} class is trader for {@link CoinbaseManager} library.<br>
@@ -98,6 +99,11 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
      * {@code previousUpdating} is instance that memorize previous timestamp when {@link #updateWallet()} is called
      * **/
     private long previousUpdating;
+
+    /**
+     * {@code previousTradingConfigFetching} is instance that memorize previous trading confing fetching
+     * **/
+    protected long previousTradingConfigFetching;
 
     /**
      * {@code baseCurrency} is instance that memorize base currency to get all amount value of traders routine es. EUR
@@ -611,7 +617,10 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     @Override
     public void checkCryptocurrencies() throws Exception {
         System.out.println("## CHECKING NEW CRYPTOCURRENCIES");
-        tradingConfig = fetchTradingConfig();
+        if(makeRoutine(previousTradingConfigFetching, BUYING_GAP_TIME * 2)) {
+            previousTradingConfigFetching = currentTimeMillis();
+            tradingConfig = fetchTradingConfig(tradingConfig);
+        }
         int daysGap = tradingConfig.getDaysGap();
         for (Ticker ticker : coinbaseProductsManager.getAllTickersList()){
             String symbol = ticker.getProductId();
