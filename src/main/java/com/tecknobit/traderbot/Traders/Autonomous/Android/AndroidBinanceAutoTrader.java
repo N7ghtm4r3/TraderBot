@@ -586,10 +586,9 @@ public class AndroidBinanceAutoTrader extends BinanceAutoTraderBot implements An
     @Override
     public void sellMarket(String symbol, double quantity) throws Exception {
         if(runningTrader) {
-            Cryptocurrency cryptocurrency = walletList.get(tradingPairsList.get(symbol).getBaseAsset());
             super.sellMarket(symbol, quantity);
-            androidWorkflow.removeCryptocurrency(cryptocurrency.getAssetIndex(),
-                    androidWorkflow.assembleTransaction(cryptocurrency, SELL, transactionDateFormat));
+            androidWorkflow.removeCryptocurrency(cryptocurrencySold.getAssetIndex(),
+                    androidWorkflow.assembleTransaction(cryptocurrencySold, SELL, transactionDateFormat));
         }
     }
 

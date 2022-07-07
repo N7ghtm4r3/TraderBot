@@ -134,6 +134,11 @@ public final class ServerRequest {
     public static final String GET_TRADING_CONFIGS_OPE = "get_trading_configs_request";
 
     /**
+     * {@code SEND_STATS_REPORT_OPE} request
+     * **/
+    public static final String SEND_STATS_REPORT_OPE = "send_stats_report_ope";
+
+    /**
      * {@code LOGOUT_ACCOUNT_OPE} request
      * **/
     public static final String LOGOUT_ACCOUNT_OPE = "logout_account_ope";
@@ -389,7 +394,7 @@ public final class ServerRequest {
     }
 
     /**
-     * This method is used fetch public key for register and login operation<br>
+     * This method is used fetch public keys for public requests operation<br>
      * Any params required
      * @return new request object as {@link ServerRequest}
      * **/

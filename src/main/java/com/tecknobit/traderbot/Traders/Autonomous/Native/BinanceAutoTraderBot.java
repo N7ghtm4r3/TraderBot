@@ -113,6 +113,11 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     protected String baseCurrency;
 
     /**
+     * {@code cryptocurrencySold} is instance that memorize cryptocurrency that is being sold
+     * **/
+    protected Cryptocurrency cryptocurrencySold;
+
+    /**
      * Constructor to init {@link BinanceAutoTraderBot}
      * @param apiKey               : your Binance's api key
      * @param secretKey            : your Binance's secret key
@@ -523,6 +528,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
      * **/
     @Override
     public void incrementSalesSale(Cryptocurrency cryptocurrency, String codeOpe) throws Exception {
+        cryptocurrencySold = cryptocurrency;
         sellMarket(cryptocurrency.getSymbol(), cryptocurrency.getQuantity());
         walletList.remove(cryptocurrency.getAssetIndex());
         switch (codeOpe){
@@ -561,11 +567,11 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     public void sellMarket(String symbol, double quantity) throws Exception {
         super.sellMarket(symbol, quantity);
         if(sendStatsReport)
-            sendStatsReport(/*params for report*/);
+            sendStatsReport(cryptocurrencySold.getTradingConfig().getModelId(), cryptocurrencySold.getIncomePercent());
     }
 
     /**
-     * This method is used to set flag to send stats report with {@link #sendStatsReport()} method
+     * This method is used to set flag to send stats report with {@link #sendStatsReport(long, double)} method
      * @param sendStatsReport: flag to insert to send or not reports
      * **/
     @Override
@@ -574,7 +580,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     }
 
     /**
-     * This method is used to get flag to send stats report with {@link #sendStatsReport()} method <br>
+     * This method is used to get flag to send stats report with {@link #sendStatsReport(long, double)} method <br>
      * @return flag that indicates the possibility or not to send stats reports
      * **/
     @Override

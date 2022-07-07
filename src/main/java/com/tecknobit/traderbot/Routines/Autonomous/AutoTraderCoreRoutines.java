@@ -205,20 +205,31 @@ public interface AutoTraderCoreRoutines extends TraderManager, RoutineMessages {
      * @implNote any personal data will be sent in this method and any personal data will be saved in our systems anywhere. Data that will be passed are
      * only data contained in {@link TradingConfig} model.
      * **/
-    default void sendStatsReport(/*params*/){
-        // TODO: 22/05/2022 request to send report and add to docu
-        System.out.println("Sent report");
-        //send data in some methods
+    default void sendStatsReport(long modelId, double percent){
+        try {
+            ServerRequest serverRequest = getPublicRequest();
+            assert serverRequest != null;
+            serverRequest.sendRequest(new JSONObject().put(MODEL_ID_KEY, modelId).put(MODEL_FAILED_KEY, percent <= 0),
+                    SEND_STATS_REPORT_OPE);
+            if(response != null){
+                if(response.getInt(STATUS_CODE) == SUCCESSFUL_RESPONSE)
+                    printGreen("Stats report successfully sent");
+                else
+                    printRed("Error during stats report");
+            }
+        }catch (Exception e){
+            printRed("Error during stats report");
+        }
     }
 
     /**
-     * This method is used to set flag to send stats report with {@link #sendStatsReport()} method
+     * This method is used to set flag to send stats report with {@link #sendStatsReport(long, double)} method
      * @param sendStatsReport: flag to insert to send or not reports
      * **/
     void setSendStatsReport(boolean sendStatsReport);
 
     /**
-     * This method is used to get flag to send stats report with {@link #sendStatsReport()} method <br>
+     * This method is used to get flag to send stats report with {@link #sendStatsReport(long, double)} method <br>
      * @return flag that indicates the possibility or not to send stats reports
      * **/
     boolean canSendStatsReport();

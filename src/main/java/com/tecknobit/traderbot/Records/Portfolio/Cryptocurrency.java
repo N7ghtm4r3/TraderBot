@@ -548,6 +548,11 @@ public class Cryptocurrency extends Token implements RecordDetails {
         public static final String MAX_GAIN_KEY = "max_gain";
 
         /**
+         * {@code MODEL_FAILED_KEY} is instance that memorize model failed key
+         * **/
+        public static final String MODEL_FAILED_KEY = "model_failed";
+
+        /**
          * {@code modelId} is instance that memorize identifier of model of {@link TradingConfig}
          * **/
         private final long modelId;
