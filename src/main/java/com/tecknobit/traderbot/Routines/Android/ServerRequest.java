@@ -384,10 +384,9 @@ public final class ServerRequest {
      * Any params required
      * **/
     private void createSocket() throws IOException {
-        // TODO: 03/07/2022 CHANGE LOCALHOST 
         try {
             while (socket != null) Thread.onSpinWait();
-            socket = new Socket("localhost", 7898);
+            socket = new Socket("45.152.125.210", 7898);
             printWriter = new PrintWriter(socket.getOutputStream(), true);
         }catch (ConnectException ignored){
         }
