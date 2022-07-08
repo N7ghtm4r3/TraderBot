@@ -14,15 +14,13 @@ public class SaveData extends Exception{
      * @param credentials: generated for your Tecknobit's account that you must save anywhere you retain safe to salve.
      * **/
     public SaveData(JSONObject credentials) {
-        super("""
-                Note: is not an error, but is an alert!
-                Before restart service save credentials data of Tecknobit's account anywhere that you retain safe,
-                they will be need in login operations here for traders and also for your Android's device.
-                Next restart you will have to insert these credentials in Credentials object to start\040
-                normal flow of trader.
-                ################################### TECKNOBIT'S CREDENTIALS ######################################
-                """ +
-                credentials.toString(4));
+        super("Note: is not an error, but is an alert!\n" +
+              "Before restart service save credentials data of Tecknobit's account anywhere that you retain safe,\n" +
+              "they will be need in login operations here for traders and also for your Android's device.\n" +
+              "Next restart you will have to insert these credentials in Credentials object to start \n" +
+              "normal flow of trader.\n" +
+              "################################### TECKNOBIT'S CREDENTIALS ######################################\n" +
+              credentials.toString(4));
     }
 
 }
