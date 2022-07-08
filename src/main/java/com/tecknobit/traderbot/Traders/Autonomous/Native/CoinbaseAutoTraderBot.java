@@ -692,7 +692,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
      * **/
     @Override
     public void buyCryptocurrencies() throws Exception {
-        while (USING_WALLET_LIST) Thread.onSpinWait();
+        while (USING_WALLET_LIST);
         USING_WALLET_LIST = true;
         System.out.println("## BUYING NEW CRYPTOCURRENCIES");
         for (Cryptocurrency cryptocurrency : checkingList.values()){
@@ -736,7 +736,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                     while (runningTrader){
                         if(makeRoutine(previousUpdating, UPDATING_GAP_TIME)){
                             previousUpdating = System.currentTimeMillis();
-                            while (USING_WALLET_LIST) Thread.onSpinWait();
+                            while (USING_WALLET_LIST);
                             USING_WALLET_LIST = true;
                             try {
                                 if(walletList.size() > 0) {

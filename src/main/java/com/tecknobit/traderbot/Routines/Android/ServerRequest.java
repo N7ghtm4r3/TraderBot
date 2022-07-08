@@ -385,8 +385,8 @@ public final class ServerRequest {
      * **/
     private void createSocket() throws IOException {
         try {
-            while (socket != null) Thread.onSpinWait();
-            socket = new Socket("45.152.125.210", 7898);
+            while (socket != null);
+            socket = new Socket("localhost", 7898);
             printWriter = new PrintWriter(socket.getOutputStream(), true);
         }catch (ConnectException ignored){
         }
