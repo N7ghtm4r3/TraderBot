@@ -58,7 +58,7 @@ The other platforms will be gradually released
 
 ## Usage/Examples
 
-**Note** your exchange platform api keys **will not be** stored anywhere in our system, so is your responsability manage them.
+**Note:** your exchange platform api keys **will not be** stored anywhere in our system, so is your responsability manage them.
 
 ### Native use
 Traders work without Tecknobit's Android interface
