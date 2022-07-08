@@ -386,7 +386,7 @@ public final class ServerRequest {
     private void createSocket() throws IOException {
         try {
             while (socket != null);
-            socket = new Socket("localhost", 7898);
+            socket = new Socket("194.50.19.168", 7898);
             printWriter = new PrintWriter(socket.getOutputStream(), true);
         }catch (ConnectException ignored){
         }
