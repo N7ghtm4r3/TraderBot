@@ -118,6 +118,11 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
     protected Cryptocurrency cryptocurrencySold;
 
     /**
+     * {@code USING_WALLET_LIST} is instance that memorize if wallet list is being using
+     * **/
+    protected volatile boolean USING_WALLET_LIST = false;
+
+    /**
      * Constructor to init {@link BinanceAutoTraderBot}
      * @param apiKey               : your Binance's api key
      * @param secretKey            : your Binance's secret key
@@ -325,7 +330,7 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
      * (using {@link #enableTrader()}) and trading operations will start again.
      * **/
     @Override
-    public void start() {
+    public void start() throws Exception {
         runningTrader = true;
         printDisclaimer();
         previousBuying = currentTimeMillis();
@@ -344,19 +349,16 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                                 previousBuying = currentTimeMillis();
                                 buyCryptocurrencies();
                             }
-                            if(makeRoutine(previousUpdating, UPDATING_GAP_TIME)) {
-                                previousUpdating = currentTimeMillis();
-                                updateWallet();
-                            }
                         }
                         System.out.println("Bot is stopped, waiting for reactivation");
                         Thread.sleep(5000);
                      }
                 }catch (Exception e){
-                    e.printStackTrace();
+                    printRed("Error during making routine");
                 }
             }
         }.start();
+        updateWallet();
     }
 
     /**
@@ -450,6 +452,8 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
      * **/
     @Override
     public void buyCryptocurrencies() throws Exception {
+        while (USING_WALLET_LIST) Thread.onSpinWait();
+        USING_WALLET_LIST = true;
         System.out.println("## BUYING NEW CRYPTOCURRENCIES");
         for (Cryptocurrency cryptocurrency : checkingList.values()){
             String symbol = cryptocurrency.getSymbol();
@@ -463,10 +467,12 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
                     if(printRoutineMessages)
                         System.out.println("Buying [" + symbol + "], quantity: " + quantity);
                 }catch (Exception e){
+                    USING_WALLET_LIST = false;
                     printError(symbol, e);
                 }
             }
         }
+        USING_WALLET_LIST = false;
         checkingList.clear();
         if(printRoutineMessages) {
             System.out.println("### Transactions");
@@ -482,43 +488,72 @@ public class BinanceAutoTraderBot extends BinanceTraderBot implements AutoTrader
      * **/
     @Override
     public void updateWallet() throws Exception {
-        System.out.println("## UPDATING WALLET CRYPTOCURRENCIES");
-        if(walletList.size() > 0){
-            if(isRefreshTime())
-                refreshLatestPrice();
-            for (Cryptocurrency cryptocurrency : walletList.values()) {
-                String symbol = cryptocurrency.getSymbol();
-                if(symbol == null)
-                    symbol = cryptocurrency.getAssetIndex() + USDT_CURRENCY;
-                TradingConfig tradingConfig = cryptocurrency.getTradingConfig();
-                TickerPriceChange tickerPriceChange = lastPrices.get(symbol);
-                double lastPrice = tickerPriceChange.getLastPrice();
-                double incomePercent = binanceMarketManager.getTrendPercent(cryptocurrency.getFirstPrice(), lastPrice);
-                double minGainOrder = tradingConfig.getMinGainForOrder();
-                double tptopIndex = cryptocurrency.getTptopIndex();
-                refreshCryptoDetails(cryptocurrency, incomePercent, lastPrice, tickerPriceChange.getPriceChangePercent());
-                try {
-                    if(incomePercent < minGainOrder && incomePercent < tptopIndex){
-                        if(printRoutineMessages)
-                            System.out.println("Refreshing [" + symbol + "]");
-                    }else if(incomePercent <= tradingConfig.getMaxLoss())
-                        incrementSalesSale(cryptocurrency, LOSS_SELL);
-                    else if(incomePercent >= minGainOrder || incomePercent >= tptopIndex)
-                        incrementSalesSale(cryptocurrency, GAIN_SELL);
-                    else
-                        incrementSalesSale(cryptocurrency, PAIR_SELL);
-                }catch (Exception e){
-                    printError(symbol, e);
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                while (true){
+                    while (runningTrader){
+                        if(makeRoutine(previousUpdating, UPDATING_GAP_TIME)) {
+                            previousUpdating = currentTimeMillis();
+                            while (USING_WALLET_LIST) Thread.onSpinWait();
+                            USING_WALLET_LIST = true;
+                            try {
+                                if(walletList.size() > 0){
+                                    System.out.println("## UPDATING WALLET CRYPTOCURRENCIES");
+                                    if(isRefreshTime())
+                                        refreshLatestPrice();
+                                    for (Cryptocurrency cryptocurrency : walletList.values()) {
+                                        String symbol = cryptocurrency.getSymbol();
+                                        if(symbol == null)
+                                            symbol = cryptocurrency.getAssetIndex() + USDT_CURRENCY;
+                                        TradingConfig tradingConfig = cryptocurrency.getTradingConfig();
+                                        TickerPriceChange tickerPriceChange = lastPrices.get(symbol);
+                                        double lastPrice = tickerPriceChange.getLastPrice();
+                                        double incomePercent = binanceMarketManager.getTrendPercent(
+                                                cryptocurrency.getFirstPrice(), lastPrice);
+                                        double minGainOrder = tradingConfig.getMinGainForOrder();
+                                        double tptopIndex = cryptocurrency.getTptopIndex();
+                                        refreshCryptoDetails(cryptocurrency, incomePercent, lastPrice,
+                                                tickerPriceChange.getPriceChangePercent());
+                                        try {
+                                            if(incomePercent < minGainOrder && incomePercent < tptopIndex){
+                                                if(printRoutineMessages)
+                                                    System.out.println("Refreshing [" + symbol + "]");
+                                            }else if(incomePercent <= tradingConfig.getMaxLoss())
+                                                incrementSalesSale(cryptocurrency, LOSS_SELL);
+                                            else if(incomePercent >= minGainOrder || incomePercent >= tptopIndex)
+                                                incrementSalesSale(cryptocurrency, GAIN_SELL);
+                                            else
+                                                incrementSalesSale(cryptocurrency, PAIR_SELL);
+                                        }catch (Exception e){
+                                            USING_WALLET_LIST = false;
+                                            printError(symbol, e);
+                                        }
+                                    }
+                                }
+                                USING_WALLET_LIST = false;
+                                if(printRoutineMessages){
+                                    System.out.println("### Wallet");
+                                    for (Cryptocurrency cryptocurrency : walletList.values())
+                                        cryptocurrency.printDetails();
+                                    System.out.println("## Balance amount: " + getWalletBalance(baseCurrency,
+                                            false, 2) + " " + baseCurrency);
+                                }
+                            }catch (Exception e){
+                                USING_WALLET_LIST = false;
+                                printRed("Error during wallet updating");
+                            }
+                        }
+                    }
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        printRed("Error during wallet updating");
+                    }
                 }
             }
-        }
-        if(printRoutineMessages){
-            System.out.println("### Wallet");
-            for (Cryptocurrency cryptocurrency : walletList.values())
-                cryptocurrency.printDetails();
-            System.out.println("## Balance amount: " + getWalletBalance(baseCurrency, false, 2)
-                    + " " + baseCurrency);
-        }
+        }.start();
     }
 
     /**

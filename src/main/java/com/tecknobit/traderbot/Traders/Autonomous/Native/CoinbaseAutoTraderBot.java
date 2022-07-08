@@ -56,34 +56,34 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
      * as value of map.
      * @implNote is used in {@link #buyCryptocurrencies()} and {@link #updateWallet()} routines
      * **/
-    private ConcurrentHashMap<String, Cryptocurrency> walletList;
+    protected ConcurrentHashMap<String, Cryptocurrency> walletList;
 
     /**
      * {@code checkingList} is a map that contains checking list assets and index (es. BTCBUSD) as key {@link String} and {@link Cryptocurrency}
      * as value of map.
      * @implNote is used in {@link #checkCryptocurrencies()} routine
      * **/
-    private final HashMap<String, Cryptocurrency> checkingList;
+    protected final HashMap<String, Cryptocurrency> checkingList;
 
     /**
      * {@code tradingConfig} is instance that memorize model of trading to use for trading routines
      * **/
-    private TradingConfig tradingConfig;
+    protected TradingConfig tradingConfig;
 
     /**
      * {@code sendStatsReport} is instance that memorize flag to insert to send or not reports
      * **/
-    private boolean sendStatsReport;
+    protected boolean sendStatsReport;
 
     /**
      * {@code printRoutineMessages} is instance that memorize flag to insert to print or not routine messages
      * **/
-    private boolean printRoutineMessages;
+    protected boolean printRoutineMessages;
 
     /**
-     * {@code runningBot} is instance that memorize flag that indicates if the bot is running
+     * {@code runningTrader} is instance that memorize flag that indicates if the bot is running
      * **/
-    private boolean runningBot;
+    protected boolean runningTrader;
 
     /**
      * {@code previousChecking} is instance that memorize previous timestamp when {@link #checkCryptocurrencies()} is called
@@ -108,12 +108,17 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     /**
      * {@code baseCurrency} is instance that memorize base currency to get all amount value of traders routine es. EUR
      * **/
-    private String baseCurrency;
+    protected String baseCurrency;
 
     /**
      * {@code cryptocurrencySold} is instance that memorize cryptocurrency that is being sold
      * **/
     protected Cryptocurrency cryptocurrencySold;
+
+    /**
+     * {@code USING_WALLET_LIST} is instance that memorize if wallet list is being using
+     * **/
+    protected volatile boolean USING_WALLET_LIST = false;
 
     /**
      * {@code coinbaseCurrenciesManager} is instance of {@link CoinbaseCurrenciesManager} helpful to fetch details about
@@ -581,8 +586,8 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
      * (using {@link #enableTrader()}) and trading operations will start again.
      * **/
     @Override
-    public void start() {
-        runningBot = true;
+    public void start() throws Exception {
+        runningTrader = true;
         printDisclaimer();
         previousBuying = System.currentTimeMillis();
         new Thread(){
@@ -591,7 +596,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                 super.run();
                 try {
                     while (true){
-                        while (runningBot){
+                        while (runningTrader){
                             if(makeRoutine(previousChecking, CHECKING_GAP_TIME)){
                                 previousChecking = System.currentTimeMillis();
                                 checkCryptocurrencies();
@@ -599,10 +604,6 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                             if(makeRoutine(previousBuying, BUYING_GAP_TIME)){
                                 previousBuying = System.currentTimeMillis();
                                 buyCryptocurrencies();
-                            }
-                            if(makeRoutine(previousUpdating, UPDATING_GAP_TIME)){
-                                previousUpdating = System.currentTimeMillis();
-                                updateWallet();
                             }
                         }
                         System.out.println("Bot is stopped, waiting for reactivation");
@@ -613,6 +614,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                 }
             }
         }.start();
+        updateWallet();
     }
 
     /**
@@ -706,6 +708,8 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
      * **/
     @Override
     public void buyCryptocurrencies() throws Exception {
+        while (USING_WALLET_LIST) Thread.onSpinWait();
+        USING_WALLET_LIST = true;
         System.out.println("## BUYING NEW CRYPTOCURRENCIES");
         for (Cryptocurrency cryptocurrency : checkingList.values()){
             String symbol = cryptocurrency.getSymbol();
@@ -719,10 +723,12 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
                     if(printRoutineMessages)
                         System.out.println("Buying [" + symbol + "], quantity: " + quantity);
                 }catch (Exception e){
+                    USING_WALLET_LIST = false;
                     printError(symbol, e);
                 }
             }
         }
+        USING_WALLET_LIST = false;
         checkingList.clear();
         if(printRoutineMessages) {
             System.out.println("### Transactions");
@@ -738,41 +744,68 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
      * **/
     @Override
     public void updateWallet() throws Exception {
-        System.out.println("## UPDATING WALLET CRYPTOCURRENCIES");
-        if(walletList.size() > 0) {
-            if(isRefreshTime())
-                refreshLatestPrice();
-            for (Cryptocurrency cryptocurrency : walletList.values()){
-                String symbol = cryptocurrency.getSymbol();
-                if(symbol == null)
-                    symbol = cryptocurrency.getAssetIndex() + USD_CURRENCY;
-                TradingConfig tradingConfig = cryptocurrency.getTradingConfig();
-                Ticker ticker = lastPrices.get(symbol);
-                double lastPrice = ticker.getPrice();
-                double incomePercent = coinbaseProductsManager.getTrendPercent(cryptocurrency.getFirstPrice(), lastPrice);
-                double minGainOrder = tradingConfig.getMinGainForOrder();
-                double tptopIndex = cryptocurrency.getTptopIndex();
-                double priceChangePercent = coinbaseAccountManager.getTrendPercent(coinbaseProductsManager.
-                        getProductStatsObject(symbol).getLow(), lastPrice);
-                refreshCryptoDetails(cryptocurrency, incomePercent, lastPrice, priceChangePercent);
-                if(incomePercent < tradingConfig.getMinGainForOrder() && incomePercent < tptopIndex){
-                    if(printRoutineMessages)
-                        System.out.println("Refreshing [" + symbol + "]");
-                }else if(incomePercent <= tradingConfig.getMaxLoss())
-                    incrementSalesSale(cryptocurrency, LOSS_SELL);
-                else if(incomePercent >= minGainOrder || incomePercent >= tptopIndex)
-                    incrementSalesSale(cryptocurrency, GAIN_SELL);
-                else
-                    incrementSalesSale(cryptocurrency, PAIR_SELL);
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                while (true){
+                    while (runningTrader){
+                        if(makeRoutine(previousUpdating, UPDATING_GAP_TIME)){
+                            previousUpdating = System.currentTimeMillis();
+                            while (USING_WALLET_LIST) Thread.onSpinWait();
+                            USING_WALLET_LIST = true;
+                            try {
+                                if(walletList.size() > 0) {
+                                    System.out.println("## UPDATING WALLET CRYPTOCURRENCIES");
+                                    if(isRefreshTime())
+                                        refreshLatestPrice();
+                                    for (Cryptocurrency cryptocurrency : walletList.values()){
+                                        String symbol = cryptocurrency.getSymbol();
+                                        if(symbol == null)
+                                            symbol = cryptocurrency.getAssetIndex() + USD_CURRENCY;
+                                        TradingConfig tradingConfig = cryptocurrency.getTradingConfig();
+                                        Ticker ticker = lastPrices.get(symbol);
+                                        double lastPrice = ticker.getPrice();
+                                        double incomePercent = coinbaseProductsManager.getTrendPercent(
+                                                cryptocurrency.getFirstPrice(), lastPrice);
+                                        double minGainOrder = tradingConfig.getMinGainForOrder();
+                                        double tptopIndex = cryptocurrency.getTptopIndex();
+                                        double priceChangePercent = coinbaseAccountManager.getTrendPercent(
+                                                coinbaseProductsManager.getProductStatsObject(symbol).getLow(), lastPrice);
+                                        refreshCryptoDetails(cryptocurrency, incomePercent, lastPrice, priceChangePercent);
+                                        if(incomePercent < tradingConfig.getMinGainForOrder() && incomePercent < tptopIndex){
+                                            if(printRoutineMessages)
+                                                System.out.println("Refreshing [" + symbol + "]");
+                                        }else if(incomePercent <= tradingConfig.getMaxLoss())
+                                            incrementSalesSale(cryptocurrency, LOSS_SELL);
+                                        else if(incomePercent >= minGainOrder || incomePercent >= tptopIndex)
+                                            incrementSalesSale(cryptocurrency, GAIN_SELL);
+                                        else
+                                            incrementSalesSale(cryptocurrency, PAIR_SELL);
+                                    }
+                                }
+                                USING_WALLET_LIST = false;
+                                if(printRoutineMessages){
+                                    System.out.println("### Wallet");
+                                    for (Cryptocurrency cryptocurrency : walletList.values())
+                                        cryptocurrency.printDetails();
+                                    System.out.println("## Balance amount: " + getWalletBalance(baseCurrency,
+                                            false, 2) + " " + baseCurrency);
+                                }
+                            }catch (Exception e){
+                                USING_WALLET_LIST = false;
+                                printRed("Error during wallet updating");
+                            }
+                        }
+                    }
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        printRed("Error during wallet updating");
+                    }
+                }
             }
-        }
-        if(printRoutineMessages){
-            System.out.println("### Wallet");
-            for (Cryptocurrency cryptocurrency : walletList.values())
-                cryptocurrency.printDetails();
-            System.out.println("## Balance amount: " + getWalletBalance(baseCurrency, false, 2)
-                    + " " + baseCurrency);
-        }
+        }.start();
     }
 
     /**
@@ -866,7 +899,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
      * **/
     @Override
     public boolean isTraderRunning() {
-        return runningBot;
+        return runningTrader;
     }
 
     /**
@@ -874,7 +907,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
      * **/
     @Override
     public void disableTrader() {
-        runningBot = false;
+        runningTrader = false;
     }
 
     /**
@@ -882,7 +915,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
      * **/
     @Override
     public void enableTrader() {
-        runningBot = true;
+        runningTrader = true;
     }
 
     /**

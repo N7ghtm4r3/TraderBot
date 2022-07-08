@@ -127,7 +127,7 @@ public interface AutoTraderCoreRoutines extends TraderManager, RoutineMessages {
      * This method is used to start autonomous trader<br>
      * Any params required
      * **/
-    void start();
+    void start() throws Exception;
 
     /**
      * This method is used to check list of possible new cryptocurrencies to buy using {@link TradingConfig} model. <br>

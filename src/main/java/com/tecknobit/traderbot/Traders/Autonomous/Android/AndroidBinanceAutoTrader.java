@@ -364,6 +364,7 @@ public class AndroidBinanceAutoTrader extends BinanceAutoTraderBot implements An
         walletList = traderAccount.getWalletCryptocurrencies();
         workflowHandler();
     }
+
     /**
      *
      * This method init all instances that {@link AndroidBinanceAutoTrader}'s routine need. <br>
