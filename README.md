@@ -86,7 +86,7 @@ trader.start();
 
 ### Android use
 Traders work with <a href="https://play.google.com/store/apps/details?id=com.tecknobit.traderbot">Tecknobit's Android interface </a><br>
-All data will be stored and restored automatically, **will be not saved** your exchange platform api keys
+All data will be stored and restored automatically, **will be not saved** your exchange platform api keys. <br>
 **Application interface will be available soon!**
 #### Interface
 
