@@ -127,8 +127,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     protected final CoinbaseCurrenciesManager coinbaseCurrenciesManager;
 
     /**
-     * Constructor to init CoinbaseTraderBot
-     *
+     * Constructor to init {@link CoinbaseAutoTraderBot}
      * @param apiKey               : your Coinbase's api key
      * @param apiSecret            : your Coinbase's secret key
      * @param passphrase           : your Coinbase's api passphrase
@@ -154,8 +153,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     }
 
     /**
-     * Constructor to init CoinbaseTraderBot
-     *
+     * Constructor to init {@link CoinbaseAutoTraderBot}
      * @param apiKey               : your Coinbase's api key
      * @param apiSecret            : your Coinbase's secret key
      * @param passphrase           : your Coinbase's api passphrase
@@ -180,8 +178,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     }
 
     /**
-     * Constructor to init CoinbaseTraderBot
-     *
+     * Constructor to init {@link CoinbaseAutoTraderBot}
      * @param apiKey               : your Coinbase's api key
      * @param apiSecret            : your Coinbase's secret key
      * @param passphrase           : your Coinbase's api passphrase
@@ -206,8 +203,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     }
 
     /**
-     * Constructor to init CoinbaseTraderBot
-     *
+     * Constructor to init {@link CoinbaseAutoTraderBot}
      * @param apiKey               : your Coinbase's api key
      * @param apiSecret            : your Coinbase's secret key
      * @param passphrase           : your Coinbase's api passphrase
@@ -230,8 +226,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     }
 
     /**
-     * Constructor to init CoinbaseTraderBot
-     *
+     * Constructor to init {@link CoinbaseAutoTraderBot}
      * @param apiKey               : your Coinbase's api key
      * @param apiSecret            : your Coinbase's secret key
      * @param passphrase           : your Coinbase's api passphrase
@@ -258,8 +253,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     }
 
     /**
-     * Constructor to init CoinbaseTraderBot
-     *
+     * Constructor to init {@link CoinbaseAutoTraderBot}
      * @param apiKey               : your Coinbase's api key
      * @param apiSecret            : your Coinbase's secret key
      * @param passphrase           : your Coinbase's api passphrase
@@ -285,8 +279,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     }
 
     /**
-     * Constructor to init CoinbaseTraderBot
-     *
+     * Constructor to init {@link CoinbaseAutoTraderBot}
      * @param apiKey               : your Coinbase's api key
      * @param apiSecret            : your Coinbase's secret key
      * @param passphrase           : your Coinbase's api passphrase
@@ -312,8 +305,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     }
 
     /**
-     * Constructor to init CoinbaseTraderBot
-     *
+     * Constructor to init {@link CoinbaseAutoTraderBot}
      * @param apiKey               : your Coinbase's api key
      * @param apiSecret            : your Coinbase's secret key
      * @param passphrase           : your Coinbase's api passphrase
@@ -338,8 +330,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     }
 
     /**
-     * Constructor to init CoinbaseTraderBot
-     *
+     * Constructor to init {@link CoinbaseAutoTraderBot}
      * @param apiKey               : your Coinbase's api key
      * @param apiSecret            : your Coinbase's secret key
      * @param passphrase           : your Coinbase's api passphrase
@@ -367,8 +358,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     }
 
     /**
-     * Constructor to init CoinbaseTraderBot
-     *
+     * Constructor to init {@link CoinbaseAutoTraderBot}
      * @param apiKey               : your Coinbase's api key
      * @param apiSecret            : your Coinbase's secret key
      * @param passphrase           : your Coinbase's api passphrase
@@ -395,8 +385,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     }
 
     /**
-     * Constructor to init CoinbaseTraderBot
-     *
+     * Constructor to init {@link CoinbaseAutoTraderBot}
      * @param apiKey               : your Coinbase's api key
      * @param apiSecret            : your Coinbase's secret key
      * @param passphrase           : your Coinbase's api passphrase
@@ -423,8 +412,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     }
 
     /**
-     * Constructor to init CoinbaseTraderBot
-     *
+     * Constructor to init {@link CoinbaseAutoTraderBot}
      * @param apiKey               : your Coinbase's api key
      * @param apiSecret            : your Coinbase's secret key
      * @param passphrase           : your Coinbase's api passphrase
@@ -450,8 +438,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     }
 
     /**
-     * Constructor to init CoinbaseTraderBot
-     *
+     * Constructor to init {@link CoinbaseAutoTraderBot}
      * @param apiKey               : your Coinbase's api key
      * @param apiSecret            : your Coinbase's secret key
      * @param passphrase           : your Coinbase's api passphrase
@@ -481,8 +468,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     }
 
     /**
-     * Constructor to init CoinbaseTraderBot
-     *
+     * Constructor to init {@link CoinbaseAutoTraderBot}
      * @param apiKey               : your Coinbase's api key
      * @param apiSecret            : your Coinbase's secret key
      * @param passphrase           : your Coinbase's api passphrase
@@ -510,8 +496,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     }
 
     /**
-     * Constructor to init CoinbaseTraderBot
-     *
+     * Constructor to init {@link CoinbaseAutoTraderBot}
      * @param apiKey               : your Coinbase's api key
      * @param apiSecret            : your Coinbase's secret key
      * @param passphrase           : your Coinbase's api passphrase
@@ -539,8 +524,7 @@ public class CoinbaseAutoTraderBot extends CoinbaseTraderBot implements AutoTrad
     }
 
     /**
-     * Constructor to init CoinbaseTraderBot
-     *
+     * Constructor to init {@link CoinbaseAutoTraderBot}
      * @param apiKey               : your Coinbase's api key
      * @param apiSecret            : your Coinbase's secret key
      * @param passphrase           : your Coinbase's api passphrase
