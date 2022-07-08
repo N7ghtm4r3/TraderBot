@@ -47,33 +47,30 @@ public interface AutoTraderCoreRoutines extends TraderManager, RoutineMessages {
      * Any params required
      * **/
     default void printDisclaimer(){
-        System.out.println("""
-                ############################### DISCLAIMER ALERT #################################\s
-                ## This is an auto trader bot made by Tecknobit and all rights are reserved.    ##\s
-                ## By deciding to use this auto trader bot, you declare that you are aware of   ##\s
-                ## the possible risks associated with the world of crypto investments and how   ##\s
-                ## there may be possible losses, large or small, due to market trends. You also ##\s
-                ## declare that you are aware that the bot developed by us may not reach your   ##\s
-                ## expectations in terms of earnings and that you are solely responsible for    ##\s
-                ## the decision to use this bot for your investments and that, therefore,       ##\s
-                ## Tecknobit and the product that you have choose to use, are excluded from all ##\s
-                ## liability arising from such investments. If you do not want to accept these  ##\s
-                ## terms, even in the case of a long time from its start, you are free to       ##\s
-                ## terminate the operation of the bot without being attributed any fee and      ##\s
-                ## that your personal data entered will not be saved by us at any stage of      ##\s
-                ## operation of that bot, neither from launch neither to its termination.       ##\s
-                ## If you accept to send results data of investments you will contribute to     ##\s
-                ## make grew up this A.I for automatic investments and make it more efficiently ##\s
-                ## The data that will be sent will be only about trend percentage, time gap     ##\s
-                ## from buy to sell and gain or loss percentage when that asset sold and some   ##\s
-                ## market indexes, but ANY personal data that you inserted and ANY data about   ##\s
-                ## assets that bot bought during his operations will be sent.                   ##\s
-                ## You will be able to enable or disable this stats report anytime during all   ##\s
-                ## lifecycle of the bot like as you want.                                       ##\s
-                ##                                 Good use!                                    ##\s
-                ##                         Copyright © 2022 Tecknobit                           ##\s
-                ##################################################################################
-                """);
+        System.out.println("############################### DISCLAIMER ALERT #################################\n" +
+                           "## This is an auto trader bot made by Tecknobit and all rights are reserved.    ##\n" +
+                           "## By deciding to use this auto trader bot, you declare that you are aware of   ##\n" +
+                           "## the possible risks associated with the world of crypto investments and how   ##\n" +
+                           "## there may be possible losses, large or small, due to market trends. You also ##\n" +
+                           "## expectations in terms of earnings and that you are solely responsible for    ##\n" +
+                           "## the decision to use this bot for your investments and that, therefore,       ##\n" +
+                           "## Tecknobit and the product that you have choose to use, are excluded from all ##\n" +
+                           "## liability arising from such investments. If you do not want to accept these  ##\n" +
+                           "## terms, even in the case of a long time from its start, you are free to       ##\n" +
+                           "## terminate the operation of the bot without being attributed any fee and      ##\n" +
+                           "## that your personal data entered will not be saved by us at any stage of      ##\n" +
+                           "## operation of that bot, neither from launch neither to its termination.       ##\n" +
+                           "## If you accept to send results data of investments you will contribute to     ##\n" +
+                           "## make grew up this A.I for automatic investments and make it more efficiently ##\n" +
+                           "## The data that will be sent will be only about trend percentage, time gap     ##\n" +
+                           "## from buy to sell and gain or loss percentage when that asset sold and some   ##\n" +
+                           "## market indexes, but ANY personal data that you inserted and ANY data about   ##\n" +
+                           "## assets that bot bought during his operations will be sent.                   ##\n" +
+                           "## You will be able to enable or disable this stats report anytime during all   ##\n" +
+                           "## lifecycle of the bot like as you want.                                       ##\n" +
+                           "##                                 Good use!                                    ##\n" +
+                           "##                         Copyright © 2022 Tecknobit                           ##\n" +
+                           "##################################################################################");
     }
 
     /**

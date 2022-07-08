@@ -29,15 +29,13 @@ public interface AndroidCoreRoutines extends TraderManager, RoutineMessages {
      * Any params required
      * **/
     default void printAndroidDisclaimer(){
-        System.out.println("""
-                ############################### DISCLAIMER ALERT #################################\s
-                ## Note: The credentials regarding the registration and login for the Android   ##\s
-                ## interfaces will be requested only at the time of starting this service, but  ##\s   
-                ## on other occasions Tecknobit will not ask you to enter any data so do not    ##\s
-                ## share the credentials for the Tecknobit account. The storing and managing    ##\s
-                ## about the credentials to be entered is your responsibility.                  ##\s
-                ##################################################################################
-                """);
+        System.out.println("############################### DISCLAIMER ALERT #################################\n" +
+                           "## Note: The credentials regarding the registration and login for the Android   ##\n" +
+                           "## interfaces will be requested only at the time of starting this service, but  ## \n" +
+                           "## on other occasions Tecknobit will not ask you to enter any data so do not    ##\n" +
+                           "## share the credentials for the Tecknobit account. The storing and managing    ##\n" +
+                           "## about the credentials to be entered is your responsibility.                  ##\n" +
+                           "##################################################################################");
     }
 
     /**
