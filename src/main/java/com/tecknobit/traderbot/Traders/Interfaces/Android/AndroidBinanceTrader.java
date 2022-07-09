@@ -570,21 +570,19 @@ public class AndroidBinanceTrader extends BinanceTraderBot implements AndroidCor
     @Override
     protected void insertCoin(String index, String name, double quantity) {
         super.insertCoin(index, name, quantity);
-        Coin coin = coins.get(index);
-        Cryptocurrency cryptocurrency;
-        TickerPriceChange ticker = lastPrices.get(symbol);
         String quoteAsset = tradingPairsList.get(symbol).getQuoteAsset();
+        Cryptocurrency cryptocurrency = walletList.get(index);
+        TickerPriceChange ticker = lastPrices.get(symbol);
         double lastPrice = ticker.getLastPrice();
+        Coin coin = coins.get(index);
         int sales = 0;
         Transaction transaction = new Transaction(symbol, side, transactionDateFormat.format(new Date(currentTimeMillis())),
                 binanceMarketManager.roundValue(quantity * lastPrice, 2), quantity, quoteAsset, index);
         if(side.equals(SELL)){
-            cryptocurrency = walletList.get(index);
             double income = cryptocurrency.getIncomePercent();
             sales = androidWorkflow.getSellSales(transaction, traderAccount, cryptocurrency, getTypeSellCode(income));
             traderAccount.addIncome(income);
         }else{
-            cryptocurrency = walletList.get(index);
             if(cryptocurrency == null) {
                 cryptocurrency = new Cryptocurrency(index, cryptocurrencyTool.getCryptocurrencyName(index), quantity,
                     symbol, lastPrice, -1 , null, ticker.getPriceChangePercent(), quoteAsset, null);

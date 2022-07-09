@@ -619,11 +619,11 @@ public class AndroidCoinbaseTrader extends CoinbaseTraderBot implements AndroidC
     @Override
     protected void insertCoin(String index, String name, double quantity) {
         super.insertCoin(index, name, quantity);
-        Coin coin = coins.get(index);
-        Cryptocurrency cryptocurrency;
-        Ticker ticker = lastPrices.get(symbol);
         String quoteAsset = tradingPairsList.get(symbol).getQuoteCurrency();
+        Cryptocurrency cryptocurrency = walletList.get(index);
+        Ticker ticker = lastPrices.get(symbol);
         double lastPrice = ticker.getPrice();
+        Coin coin = coins.get(index);
         double priceChangePercent;
         int sales = 0;
         try {
@@ -635,12 +635,10 @@ public class AndroidCoinbaseTrader extends CoinbaseTraderBot implements AndroidC
         Transaction transaction = new Transaction(symbol, side, transactionDateFormat.format(new Date(currentTimeMillis())),
                 coinbaseAccountManager.roundValue(quantity * lastPrice, 2), quantity, quoteAsset, index);
         if(side.equals(SELL_SIDE)){
-            cryptocurrency = walletList.get(index);
             double income = cryptocurrency.getIncomePercent();
             sales = androidWorkflow.getSellSales(transaction, traderAccount, cryptocurrency, getTypeSellCode(income));
             traderAccount.addIncome(income);
         }else{
-            cryptocurrency = walletList.get(index);
             if(cryptocurrency == null) {
                 cryptocurrency = new Cryptocurrency(index, cryptocurrencyTool.getCryptocurrencyName(index), quantity,
                         symbol, lastPrice, -1 , null, priceChangePercent, quoteAsset, null);

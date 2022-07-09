@@ -22,8 +22,8 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.tecknobit.binancemanager.Managers.SignedManagers.Trade.Common.TradeConstants.BUY;
-import static com.tecknobit.binancemanager.Managers.SignedManagers.Trade.Common.TradeConstants.SELL;
+import static com.tecknobit.coinbasemanager.Managers.ExchangePro.Orders.Records.Order.BUY_SIDE;
+import static com.tecknobit.coinbasemanager.Managers.ExchangePro.Orders.Records.Order.SELL_SIDE;
 import static com.tecknobit.traderbot.Records.Account.TraderDetails.*;
 import static com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency.*;
 import static com.tecknobit.traderbot.Records.Portfolio.Cryptocurrency.TradingConfig.MODEL_ID_KEY;
@@ -751,7 +751,7 @@ public class AndroidCoinbaseAutoTrader extends CoinbaseAutoTraderBot implements 
         for (Cryptocurrency cryptocurrency : walletList.values()){
             if(mCheckingList.containsKey(cryptocurrency.getAssetIndex())){
                 wallet.put(new JSONObject(cryptocurrency.getCryptocurrency())
-                        .put(TRANSACTION_KEY, androidWorkflow.assembleTransaction(cryptocurrency, BUY,
+                        .put(TRANSACTION_KEY, androidWorkflow.assembleTransaction(cryptocurrency, BUY_SIDE,
                                 transactionDateFormat).getTransaction()));
             }
         }
@@ -904,7 +904,7 @@ public class AndroidCoinbaseAutoTrader extends CoinbaseAutoTraderBot implements 
         if(runningTrader) {
             super.sellMarket(symbol, quantity);
             androidWorkflow.removeCryptocurrency(cryptocurrencySold.getAssetIndex(),
-                    androidWorkflow.assembleTransaction(cryptocurrencySold, SELL, transactionDateFormat));
+                    androidWorkflow.assembleTransaction(cryptocurrencySold, SELL_SIDE, transactionDateFormat));
         }
     }
 

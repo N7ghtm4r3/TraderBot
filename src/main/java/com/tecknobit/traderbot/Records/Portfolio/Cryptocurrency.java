@@ -169,6 +169,7 @@ public class Cryptocurrency extends Token implements RecordDetails {
     }
 
     /** Constructor to init {@link Cryptocurrency}
+     * @implNote is useful for Android's client interfaces
      * @param assetIndex: index of cryptocurrency es. BTC
      * @param assetName: full name of cryptocurrency es Bitcoin
      * @param quantity: value of quantity bought for this cryptocurrency es 1
@@ -193,7 +194,7 @@ public class Cryptocurrency extends Token implements RecordDetails {
         this.quoteAsset = quoteAsset;
         this.incomePercent = incomePercent;
         this.tradingConfig = tradingConfig;
-        firstPrices = new ArrayList<>();
+        firstPrices = null;
         firstPricesSum = 0;
         previousFirstPricesSize = 0;
     }
