@@ -136,4 +136,13 @@ If you want support project and developer: **0x5f63cc6d13b16dcf39cd8083f21d50151
 
 If you want support project and developer with <a href="https://www.paypal.com/donate/?hosted_button_id=5QMN5UQH7LDT4">PayPal</a>
 
+## Privacy policy
+
+This section reguards Privacy and policy for Android's application published on Google Play Store. <br>
+TraderBot application **will not share any personal data of the user with third part applications.** <br> 
+All data about Tecknobit's account, so not **api keys of exchanges platforms**, will be store in <a href="https://firebase.google.com/">Firebase's services</a>
+and application performance and session will be tracked by <a href="https://analytics.google.com/">Google Analytics's services</a>.
+So all data saved reguard TraderBot's service offered by Tecknobit and **any other data** will be saved.
+Regards and good use!
+
 Copyright © 2022 Tecknobit
