@@ -133,8 +133,6 @@ Credentials credentials = new Credentials(
 AndroidPlatformTraderBot trader = new AndroidPlatformTraderBot(/*your keys and constructor params*/, credentials);
 
 ```
-
-**Application interface will be available soon!**
 #### Interface
 
 You have to create your code flow to use trader
