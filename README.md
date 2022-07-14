@@ -111,7 +111,7 @@ Credentials credentials = new Credentials(
         "token": "valueOfToken"
 }*/
 
-//Note you must save these credentials where you retain safe, because them are needed in auth operations.
+//Note you must save these credentials where you retain safe because them are needed in auth operations.
 ```
 
 - #### Login
