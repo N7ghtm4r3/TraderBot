@@ -69,7 +69,7 @@ You have to create your code flow to use trader
 
 ```java
 //Platform means Binance or Coinbase actually
-PlatformTraderBot trader= new PlatformTraderBot(/*your keys and constructor params*/);
+PlatformTraderBot trader = new PlatformTraderBot(/*your keys and constructor params*/);
 //Operation example
 trader.buyMarket("BTCBUSD", 1);
 ```
@@ -79,7 +79,7 @@ Trader automatically make trading flow, like checking, buying and updating your 
 
 ```java
 //Platform means Binance or Coinbase actually
-PlatformAutoTraderBot trader= new PlatformAutoTraderBot(/*your keys and constructor params*/);
+PlatformAutoTraderBot trader = new PlatformAutoTraderBot(/*your keys and constructor params*/);
 //Start autonomous trader flow 
 trader.start();
 ```
@@ -87,6 +87,53 @@ trader.start();
 ### Android use
 Traders work with <a href="https://play.google.com/store/apps/details?id=com.tecknobit.traderbot">Tecknobit's Android interface </a><br>
 All data will be stored and restored automatically, **will be not saved** your exchange platform api keys. <br>
+#### Auth operations
+- #### Registration
+    To register a new trader, both traders type, you have to use Credentials object to init your Tecknobit's account credentials.
+    In first attemp will throws a SaveData exception so you can save credentials generated.
+
+```java
+//In registration you have to init Credentials object with your email and password for Tecknobit's account.
+
+Credentials credentials = new Credentials(
+    "yourEmail@mail.com",
+    "yourPassword"
+);
+
+//Program will automatically stop and will give to you auth credentials in this format:
+
+/*{
+        "secret_key": "valueOfSecretKey",
+        "password": "yourPasswordInserted",
+        "mail": "yourEmailInserted@mail.com",
+        "iv_spec": "valueOfIvSpec",
+        "auth_token": "valueOfAuthToken",
+        "token": "valueOfToken"
+}*/
+
+//Note you must save these credentials where you retain safe, because them are needed in auth operations.
+```
+
+- #### Login
+    In login operation, both traders type, you have to use Credentials object to init your Tecknobit's account credentials.
+
+```java
+//In login operation you have to init Credentials object with your credentials given from Registration
+
+Credentials credentials = new Credentials(
+    "valueOfAuthToken",
+    "yourEmail@mail.com",
+    "yourPassword",
+    "valueOfIvSpec",
+    "valueOfSecretKey"
+);
+
+//Then you have to insert credentials object in Android's trader constructor and trader will start with your Tecknobit's account.
+
+AndroidPlatformTraderBot trader = new AndroidPlatformTraderBot(/*your keys and constructor params*/, credentials);
+
+```
+
 **Application interface will be available soon!**
 #### Interface
 
@@ -94,7 +141,7 @@ You have to create your code flow to use trader
 
 ```java
 //Platform means Binance or Coinbase actually
-AndroidPlatformTraderBot trader= new AndroidPlatformTraderBot(/*your keys and constructor params*/);
+AndroidPlatformTraderBot trader = new AndroidPlatformTraderBot(/*your keys and constructor params*/, credentials);
 //Operation example
 trader.buyMarket("BTCBUSD", 1);
 ```
@@ -104,7 +151,7 @@ Trader automatically make trading flow, like checking, buying and updating your 
 
 ```java
 //Platform means Binance or Coinbase actually
-AndroidPlatformAutoTrader trader= new AndroidPlatformAutoTrader(/*your keys and constructor params*/);
+AndroidPlatformAutoTrader trader = new AndroidPlatformAutoTrader(/*your keys and constructor params*/, credentials);
 //Start autonomous trader flow 
 trader.start();
 ```
